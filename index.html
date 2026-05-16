@@ -201,15 +201,14 @@ const db = getDatabase(app);
 const ADMIN_NAME = "Wendelinus Christo Snae, SE";
 let currentUser = "";
 
-// --- FUNGSI DOWNLOAD (VERSI SUPER STABIL) ---
+// --- FUNGSI DOWNLOAD (ANTI LIMIT 32767) ---
 window.downloadLaporan = async function() {
     const btn = document.getElementById("adminBtn");
     const label = document.getElementById("labelDownload");
 
     try {
-        // Cek library dulu
         if (typeof XLSX === 'undefined') {
-            alert("Sistem Excel sedang memuat... Tunggu 5 detik lalu coba lagi.");
+            alert("Sistem Excel sedang memuat... Tunggu sebentar.");
             return;
         }
 
@@ -224,10 +223,21 @@ window.downloadLaporan = async function() {
             const snap = await get(ref(db, t));
             if (snap.exists()) {
                 const raw = snap.val();
+                
                 const dataArr = Object.values(raw).map(item => {
-                    // Hapus data Base64 biar tidak macet
-                    const { fileData, ...clean } = item;
-                    return clean;
+                    const cleanItem = {};
+                    for (let key in item) {
+                        // Buang data foto (fileData) agar tidak berat
+                        if (key === 'fileData') continue;
+
+                        let value = item[key];
+                        // Batasi panjang teks maksimal 30.000 karakter (Batas Excel 32.767)
+                        if (typeof value === 'string' && value.length > 30000) {
+                            value = value.substring(0, 30000) + "... (Dipotong sistem)";
+                        }
+                        cleanItem[key] = value;
+                    }
+                    return cleanItem;
                 });
                 
                 if(dataArr.length > 0) {
@@ -239,16 +249,15 @@ window.downloadLaporan = async function() {
         }
 
         if (count === 0) {
-            alert("Tidak ada data di database untuk diunduh.");
+            alert("Tidak ada data di database.");
         } else {
             const tgl = new Date().toISOString().slice(0, 10);
             XLSX.writeFile(wb, `LAPORAN_OELEON_${tgl}.xlsx`);
-            alert("✅ Sukses! File Excel berhasil diunduh.");
+            alert("✅ Berhasil diunduh! Data panjang sudah dirapikan otomatis.");
         }
 
     } catch (e) {
-        console.error(e);
-        alert("Terjadi kesalahan teknis: " + e.message);
+        alert("Gagal Unduh: " + e.message);
     } finally {
         label.innerText = "📥 Unduh Laporan";
         btn.disabled = false;
