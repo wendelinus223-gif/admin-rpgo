@@ -7,6 +7,7 @@
 
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#2563eb">
+<link rel="apple-touch-icon" href="LINK_LOGO_SEKOLAH_BAPAK">
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -34,11 +35,11 @@
 <div id="loginPage" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-50">
   <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md border border-slate-100">
     <div class="text-center mb-8">
-      <div class="w-20 h-20 bg-blue-600 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg shadow-blue-200">
-        <span class="text-white text-3xl font-bold">RPG</span>
+      <div class="w-24 h-24 mx-auto mb-4 overflow-hidden rounded-full border-4 border-blue-100 shadow-md">
+        <img src="LINK_LOGO_SEKOLAH_BAPAK" alt="Logo Sekolah" class="w-full h-full object-cover" onerror="this.src='https://cdn-icons-png.flaticon.com/512/5968/5968260.png'">
       </div>
-      <h2 class="text-2xl font-bold text-slate-800">Selamat Datang</h2>
-      <p class="text-slate-500">Silakan login untuk mengakses sistem</p>
+      <h2 class="text-2xl font-bold text-slate-800">SDI OELEON</h2>
+      <p class="text-slate-500">Sistem Informasi Guru</p>
     </div>
     <div class="space-y-4">
       <input id="name" type="text" placeholder="Nama Lengkap" class="w-full">
@@ -53,8 +54,8 @@
 <div id="app" class="hidden w-full flex overflow-hidden">
   <aside class="sidebar w-72 flex flex-col p-6">
     <div class="flex items-center gap-3 mb-10 px-2">
-      <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-white">R</div>
-      <span class="font-bold text-xl tracking-tight">OELEON <span class="text-blue-600 text-xs">PRO</span></span>
+      <img src="LINK_LOGO_SEKOLAH_BAPAK" alt="Logo" class="w-10 h-10 object-cover rounded-full" onerror="this.src='https://cdn-icons-png.flaticon.com/512/5968/5968260.png'">
+      <span class="font-bold text-xl tracking-tight">RPG <span class="text-blue-600 text-xs">OELEON</span></span>
     </div>
     <nav class="flex-1 space-y-2">
       <button onclick="show(event,'dashboard')" class="nav-btn active w-full flex items-center gap-3 px-4 py-3"><span>🏠</span> Dashboard</button>
@@ -185,13 +186,13 @@ const db = getDatabase(app);
 const ADMIN_NAME = "Wendelinus Christo Snae, SE";
 let currentUser = "";
 
-// FUNGSI DOWNLOAD LAPORAN (PERBAIKAN UTAMA)
+// FUNGSI DOWNLOAD LAPORAN DENGAN PERBAIKAN STABILITAS
 window.downloadLaporan = async function() {
   const btn = document.getElementById("adminBtn");
   const label = document.getElementById("labelDownload");
   
   try {
-    label.innerText = "⏳ Menyiapkan Data...";
+    label.innerText = "⏳ Mengambil Data...";
     btn.disabled = true;
 
     const workbook = XLSX.utils.book_new();
@@ -203,9 +204,12 @@ window.downloadLaporan = async function() {
       if (snap.exists()) {
         hasData = true;
         const rawData = snap.val();
-        // Ubah format object Firebase menjadi Array agar bisa dibaca Excel
-        const dataArray = Object.values(rawData);
-        const ws = XLSX.utils.json_to_sheet(dataArray);
+        // Pembersihan data: Hapus Base64 agar Excel tidak korup/berat
+        const cleanData = Object.values(rawData).map(item => {
+           const { fileData, ...textOnly } = item;
+           return textOnly;
+        });
+        const ws = XLSX.utils.json_to_sheet(cleanData);
         XLSX.utils.book_append_sheet(workbook, ws, table.toUpperCase());
       }
     }
@@ -213,11 +217,12 @@ window.downloadLaporan = async function() {
     if (!hasData) {
       alert("Belum ada data untuk diunduh.");
     } else {
-      XLSX.writeFile(workbook, "LAPORAN_ADMIN_OELEON.xlsx");
+      XLSX.writeFile(workbook, `LAPORAN_OELEON_${new Date().toLocaleDateString()}.xlsx`);
+      alert("✅ Laporan berhasil diunduh!");
     }
   } catch (error) {
-    console.error(error);
-    alert("Gagal mengunduh laporan. Pastikan koneksi internet stabil.");
+    console.error("Error Detail:", error);
+    alert("Gagal mengunduh laporan. Mohon periksa internet atau Firebase Rules.");
   } finally {
     label.innerText = "📥 Unduh Laporan";
     btn.disabled = false;
