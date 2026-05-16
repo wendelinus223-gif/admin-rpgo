@@ -7,7 +7,7 @@
 
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#2563eb">
-<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/Wens-Christo/rpg/main/logo.png">
+<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/wendelinus223-gif/admin-rpgo/main/LOGO.jpg">
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -36,7 +36,7 @@
   <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md border border-slate-100">
     <div class="text-center mb-8">
       <div class="w-24 h-24 mx-auto mb-4 overflow-hidden rounded-full border-4 border-blue-100 shadow-md bg-white">
-        <img src="https://raw.githubusercontent.com/Wens-Christo/rpg/main/logo.png" alt="Logo Sekolah" class="w-full h-full object-contain" onerror="this.src='https://cdn-icons-png.flaticon.com/512/5968/5968260.png'">
+        <img src="https://raw.githubusercontent.com/wendelinus223-gif/admin-rpgo/main/LOGO.jpg" alt="Logo" class="w-full h-full object-contain">
       </div>
       <h2 class="text-2xl font-bold text-slate-800">RPG OELEON</h2>
       <p class="text-slate-500">Premium Admin System</p>
@@ -54,7 +54,7 @@
 <div id="app" class="hidden w-full flex overflow-hidden">
   <aside class="sidebar w-72 flex flex-col p-6">
     <div class="flex items-center gap-3 mb-10 px-2">
-      <img src="https://raw.githubusercontent.com/Wens-Christo/rpg/main/logo.png" alt="Logo" class="w-10 h-10 object-contain rounded-full bg-white shadow-sm" onerror="this.src='https://cdn-icons-png.flaticon.com/512/5968/5968260.png'">
+      <img src="https://raw.githubusercontent.com/wendelinus223-gif/admin-rpgo/main/LOGO.jpg" alt="Logo" class="w-10 h-10 object-contain rounded-full bg-white">
       <span class="font-bold text-xl tracking-tight">RPG <span class="text-blue-600 text-xs">OELEON</span></span>
     </div>
     <nav class="flex-1 space-y-2">
@@ -73,7 +73,7 @@
 
   <main class="flex-1 flex flex-col overflow-hidden bg-slate-50/50">
     <header class="h-20 bg-white border-b border-slate-100 px-8 flex items-center justify-between">
-      <h2 id="pageTitle" class="text-xl font-bold text-slate-800">DASHBOARD</h2>
+      <h2 id="pageTitle" class="text-xl font-bold text-slate-800 uppercase">DASHBOARD</h2>
       <div class="flex items-center gap-4">
         <div class="text-right">
           <p id="userNameDisplay" class="font-semibold text-sm text-slate-700"></p>
@@ -186,41 +186,54 @@ const db = getDatabase(app);
 const ADMIN_NAME = "Wendelinus Christo Snae, SE";
 let currentUser = "";
 
+// --- FUNGSI DOWNLOAD PERBAIKAN TOTAL ---
 window.downloadLaporan = async function() {
   const btn = document.getElementById("adminBtn");
   const label = document.getElementById("labelDownload");
   
   try {
-    label.innerText = "⏳ Mengambil Data...";
+    label.innerText = "⏳ Sedang Memproses...";
     btn.disabled = true;
+
+    // Pastikan library XLSX terpasang
+    if (typeof XLSX === 'undefined') {
+        alert("Library Excel belum siap. Silakan refresh halaman.");
+        return;
+    }
 
     const workbook = XLSX.utils.book_new();
     const tables = ["absensi", "jurnal", "biodata"];
-    let hasData = false;
+    let hasAnyData = false;
 
-    for (let table of tables) {
-      const snap = await get(ref(db, table));
-      if (snap.exists()) {
-        hasData = true;
-        const rawData = snap.val();
-        const cleanData = Object.values(rawData).map(item => {
-           const { fileData, ...textOnly } = item;
-           return textOnly;
+    for (const table of tables) {
+      const snapshot = await get(ref(db, table));
+      if (snapshot.exists()) {
+        const rawData = snapshot.val();
+        // Konversi objek Firebase ke Array
+        const dataArray = Object.values(rawData).map(item => {
+           // Bersihkan data Base64 supaya Excel tidak lag/rusak
+           const { fileData, ...cleanObject } = item;
+           return cleanObject;
         });
-        const ws = XLSX.utils.json_to_sheet(cleanData);
-        XLSX.utils.book_append_sheet(workbook, ws, table.toUpperCase());
+
+        if (dataArray.length > 0) {
+            const worksheet = XLSX.utils.json_to_sheet(dataArray);
+            XLSX.utils.book_append_sheet(workbook, worksheet, table.toUpperCase());
+            hasAnyData = true;
+        }
       }
     }
 
-    if (!hasData) {
-      alert("Belum ada data untuk diunduh.");
+    if (!hasAnyData) {
+      alert("Belum ada data di database untuk diunduh.");
     } else {
-      XLSX.writeFile(workbook, `LAPORAN_OELEON_${new Date().toLocaleDateString()}.xlsx`);
-      alert("✅ Laporan berhasil diunduh!");
+      const fileName = `LAPORAN_OELEON_${new Date().toISOString().split('T')[0]}.xlsx`;
+      XLSX.writeFile(workbook, fileName);
+      alert("✅ Laporan Berhasil Diunduh!");
     }
-  } catch (error) {
-    console.error("Error Detail:", error);
-    alert("Gagal mengunduh laporan.");
+  } catch (err) {
+    console.error("Download Error:", err);
+    alert("Terjadi kesalahan saat mengunduh laporan.");
   } finally {
     label.innerText = "📥 Unduh Laporan";
     btn.disabled = false;
@@ -256,7 +269,10 @@ window.login = async function() {
 window.saveAbsen = function() {
   const data = { guru: currentUser, tanggal: document.getElementById("tgl").value, status: document.getElementById("status").value, waktu: new Date().toLocaleString() };
   if(!data.tanggal) return alert("Pilih tanggal!");
-  push(ref(db, "absensi"), data).then(() => alert("✅ Presensi Berhasil!"));
+  push(ref(db, "absensi"), data).then(() => {
+      alert("✅ Presensi Berhasil!");
+      document.getElementById("tgl").value = "";
+  });
 };
 
 window.saveJurnal = async function() {
@@ -278,11 +294,14 @@ window.saveJurnal = async function() {
     alert("✅ Jurnal Berhasil!");
     btn.innerText = "Posting Jurnal"; btn.disabled = false;
     document.getElementById("mengajar").value = "";
+    document.getElementById("tujuan").value = "";
+    document.getElementById("foto").value = "";
   });
 };
 
 window.saveBiodata = function() {
   const data = { nama: document.getElementById("b_nama").value, tempat: document.getElementById("b_tempat").value, tgl: document.getElementById("b_tgl").value, nip: document.getElementById("b_nip").value };
+  if(!data.nama) return alert("Isi nama minimal!");
   push(ref(db, "biodata"), data).then(() => alert("✅ Biodata diperbarui!"));
 };
 
