@@ -107,6 +107,12 @@
           <div class="space-y-4">
             <div><label class="text-xs text-slate-400">Nama Guru</label><input type="text" id="a_guru" class="w-full bg-slate-50" readonly></div>
             <div><label class="text-xs text-slate-400">Tanggal</label><input type="date" id="tgl" class="w-full"></div>
+            
+            <div id="lateSection" class="hidden animate-pulse">
+                <label class="text-xs text-red-500 font-bold">⚠️ Anda Terlambat (Batas 07:50)</label>
+                <textarea id="lateReason" placeholder="Alasan mengapa terlambat hari ini?" class="w-full border-red-300 bg-red-50"></textarea>
+            </div>
+
             <div><label class="text-xs text-slate-400">Keterangan</label><select id="status" class="w-full"><option>Hadir</option><option>Sakit</option><option>Izin</option><option>Alpa</option></select></div>
             <button onclick="saveAbsen()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold">Simpan Presensi</button>
           </div>
@@ -201,45 +207,43 @@ const db = getDatabase(app);
 const ADMIN_NAME = "Wendelinus Christo Snae, SE";
 let currentUser = "";
 
-// --- FUNGSI DOWNLOAD (ANTI LIMIT 32767) ---
+// FUNGSI CEK JAM TERLAMBAT
+function checkLateStatus() {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    
+    // Batas 07:50
+    if (hours > 7 || (hours === 7 && minutes > 50)) {
+        document.getElementById("lateSection").classList.remove("hidden");
+        return true;
+    } else {
+        document.getElementById("lateSection").classList.add("hidden");
+        return false;
+    }
+}
+
+// Interval untuk cek jam setiap menit agar input dinamis
+setInterval(checkLateStatus, 60000);
+
+// --- FUNGSI DOWNLOAD ---
 window.downloadLaporan = async function() {
     const btn = document.getElementById("adminBtn");
     const label = document.getElementById("labelDownload");
-
     try {
-        if (typeof XLSX === 'undefined') {
-            alert("Sistem Excel sedang memuat... Tunggu sebentar.");
-            return;
-        }
-
-        label.innerText = "⏳ Memproses...";
-        btn.disabled = true;
-
+        if (typeof XLSX === 'undefined') { alert("Memuat Excel..."); return; }
+        label.innerText = "⏳ Memproses..."; btn.disabled = true;
         const wb = XLSX.utils.book_new();
         const tables = ["absensi", "jurnal", "biodata"];
         let count = 0;
-
         for (const t of tables) {
             const snap = await get(ref(db, t));
             if (snap.exists()) {
                 const raw = snap.val();
-                
                 const dataArr = Object.values(raw).map(item => {
-                    const cleanItem = {};
-                    for (let key in item) {
-                        // Buang data foto (fileData) agar tidak berat
-                        if (key === 'fileData') continue;
-
-                        let value = item[key];
-                        // Batasi panjang teks maksimal 30.000 karakter (Batas Excel 32.767)
-                        if (typeof value === 'string' && value.length > 30000) {
-                            value = value.substring(0, 30000) + "... (Dipotong sistem)";
-                        }
-                        cleanItem[key] = value;
-                    }
-                    return cleanItem;
+                    const { fileData, ...clean } = item;
+                    return clean;
                 });
-                
                 if(dataArr.length > 0) {
                     const ws = XLSX.utils.json_to_sheet(dataArr);
                     XLSX.utils.book_append_sheet(wb, ws, t.toUpperCase());
@@ -247,21 +251,13 @@ window.downloadLaporan = async function() {
                 }
             }
         }
-
-        if (count === 0) {
-            alert("Tidak ada data di database.");
-        } else {
-            const tgl = new Date().toISOString().slice(0, 10);
-            XLSX.writeFile(wb, `LAPORAN_OELEON_${tgl}.xlsx`);
-            alert("✅ Berhasil diunduh! Data panjang sudah dirapikan otomatis.");
+        if (count === 0) { alert("Tidak ada data."); } 
+        else {
+            XLSX.writeFile(wb, `LAPORAN_OELEON_${new Date().toISOString().slice(0,10)}.xlsx`);
+            alert("✅ Sukses!");
         }
-
-    } catch (e) {
-        alert("Gagal Unduh: " + e.message);
-    } finally {
-        label.innerText = "📥 Unduh Laporan";
-        btn.disabled = false;
-    }
+    } catch (e) { alert("Error: " + e.message); } 
+    finally { label.innerText = "📥 Unduh Laporan"; btn.disabled = false; }
 };
 
 window.login = async function() {
@@ -280,6 +276,16 @@ window.login = async function() {
     document.getElementById("userNameDisplay").innerText = currentUser;
     document.getElementById("j_guru").value = currentUser;
     document.getElementById("a_guru").value = currentUser;
+    
+    // LIMIT TANGGAL HANYA SAMPAI HARI INI
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById("tgl").setAttribute("max", today);
+    document.getElementById("j_tgl").setAttribute("max", today);
+    document.getElementById("tgl").value = today;
+    document.getElementById("j_tgl").value = today;
+
+    checkLateStatus();
+
     document.getElementById("loginPage").classList.add("hidden");
     document.getElementById("app").classList.remove("hidden");
     if(currentUser === ADMIN_NAME) {
@@ -292,9 +298,28 @@ window.login = async function() {
 
 window.saveAbsen = function() {
   const tgl = document.getElementById("tgl").value;
+  const status = document.getElementById("status").value;
+  const reason = document.getElementById("lateReason").value;
+  
   if(!tgl) return alert("Pilih tanggal!");
-  const data = { guru: currentUser, tanggal: tgl, status: document.getElementById("status").value, waktu: new Date().toLocaleString() };
-  push(ref(db, "absensi"), data).then(() => alert("✅ Presensi Berhasil!"));
+  
+  // Validasi Alasan jika terlambat
+  if(!document.getElementById("lateSection").classList.contains("hidden") && status === "Hadir" && !reason) {
+      return alert("Wajib mengisi alasan terlambat!");
+  }
+
+  const data = { 
+      guru: currentUser, 
+      tanggal: tgl, 
+      status: status, 
+      waktu_input: new Date().toLocaleTimeString(),
+      alasan_terlambat: reason || "-"
+  };
+
+  push(ref(db, "absensi"), data).then(() => {
+      alert("✅ Presensi Berhasil!");
+      document.getElementById("lateReason").value = "";
+  });
 };
 
 window.saveJurnal = async function() {
@@ -331,7 +356,11 @@ function loadAll() {
     let s = { Hadir:0, Sakit:0, Izin:0, Alpa:0 };
     document.getElementById("listAbsen").innerHTML = Object.values(data).reverse().map(x => {
       if(s[x.status] !== undefined) s[x.status]++;
-      return `<div class="glass-card p-4 border-l-4 border-blue-500"><p class="font-bold text-sm">${x.guru}</p><p class="text-[10px] text-slate-400">${x.tanggal} • ${x.status}</p></div>`;
+      return `<div class="glass-card p-4 border-l-4 border-blue-500">
+                <p class="font-bold text-sm">${x.guru}</p>
+                <p class="text-[10px] text-slate-400">${x.tanggal} • ${x.status}</p>
+                ${x.alasan_terlambat && x.alasan_terlambat !== '-' ? `<p class="text-[9px] text-red-500 italic mt-1">Alasan: ${x.alasan_terlambat}</p>` : ''}
+              </div>`;
     }).join("");
     document.getElementById("statHadir").innerText = s.Hadir;
     document.getElementById("statSakit").innerText = s.Sakit;
@@ -371,6 +400,7 @@ window.show = (e, id) => {
     document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
     if(e) e.currentTarget.classList.add("active");
     document.getElementById("pageTitle").innerText = id.toUpperCase();
+    if(id === 'absen') checkLateStatus();
 };
 
 window.logout = () => location.reload();
