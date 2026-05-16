@@ -67,7 +67,7 @@
 
   <main class="flex-1 flex flex-col overflow-hidden bg-slate-50/50">
     <header class="h-20 bg-white border-b border-slate-100 px-8 flex items-center justify-between">
-      <h2 id="pageTitle" class="text-xl font-bold text-slate-800">Dashboard</h2>
+      <h2 id="pageTitle" class="text-xl font-bold text-slate-800">DASHBOARD</h2>
       <div class="flex items-center gap-4">
         <div class="text-right">
           <p id="userNameDisplay" class="font-semibold text-sm text-slate-700"></p>
@@ -103,9 +103,9 @@
         <div class="glass-card p-8 max-w-2xl mx-auto">
           <h3 class="text-xl font-bold mb-6">Presensi Kehadiran</h3>
           <div class="space-y-4">
-            <select id="guru" class="w-full" disabled></select>
-            <input type="date" id="tgl" class="w-full">
-            <select id="status" class="w-full"><option>Hadir</option><option>Sakit</option><option>Izin</option><option>Alpa</option></select>
+            <div><label class="text-xs text-slate-400">Nama Guru</label><input type="text" id="a_guru" class="w-full bg-slate-50" readonly></div>
+            <div><label class="text-xs text-slate-400">Tanggal</label><input type="date" id="tgl" class="w-full"></div>
+            <div><label class="text-xs text-slate-400">Keterangan</label><select id="status" class="w-full"><option>Hadir</option><option>Sakit</option><option>Izin</option><option>Alpa</option></select></div>
             <button onclick="saveAbsen()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold">Simpan Presensi</button>
           </div>
         </div>
@@ -197,8 +197,8 @@ window.login = async function() {
   if(passInput === dbPass) {
     currentUser = found;
     document.getElementById("userNameDisplay").innerText = currentUser;
-    document.getElementById("j_guru").value = currentUser;
-    document.getElementById("guru").innerHTML = `<option>${currentUser}</option>`;
+    document.getElementById("j_guru").value = currentUser; // Otomatis isi nama di Jurnal
+    document.getElementById("a_guru").value = currentUser; // Otomatis isi nama di Absen
     document.getElementById("loginPage").classList.add("hidden");
     document.getElementById("app").classList.remove("hidden");
     if(currentUser === ADMIN_NAME) {
@@ -207,6 +207,17 @@ window.login = async function() {
     }
     loadAll();
   } else { document.getElementById("error").classList.remove("hidden"); }
+};
+
+window.saveAbsen = function() {
+  const data = { 
+    guru: currentUser, 
+    tanggal: document.getElementById("tgl").value, 
+    status: document.getElementById("status").value, 
+    waktu: new Date().toLocaleString() 
+  };
+  if(!data.tanggal) return alert("Pilih tanggal!");
+  push(ref(db, "absensi"), data).then(() => alert("✅ Presensi Berhasil!"));
 };
 
 window.saveJurnal = async function() {
@@ -232,12 +243,6 @@ window.saveJurnal = async function() {
     document.getElementById("mengajar").value = "";
     document.getElementById("tujuan").value = "";
   });
-};
-
-window.saveAbsen = function() {
-  const data = { guru: currentUser, tanggal: document.getElementById("tgl").value, status: document.getElementById("status").value, waktu: new Date().toLocaleString() };
-  if(!data.tanggal) return alert("Pilih tanggal!");
-  push(ref(db, "absensi"), data).then(() => alert("✅ Presensi Berhasil!"));
 };
 
 window.saveBiodata = function() {
