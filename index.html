@@ -38,8 +38,8 @@
       <div class="w-24 h-24 mx-auto mb-4 overflow-hidden rounded-full border-4 border-blue-100 shadow-md">
         <img src="LINK_LOGO_SEKOLAH_BAPAK" alt="Logo Sekolah" class="w-full h-full object-cover" onerror="this.src='https://cdn-icons-png.flaticon.com/512/5968/5968260.png'">
       </div>
-      <h2 class="text-2xl font-bold text-slate-800">SDI OELEON</h2>
-      <p class="text-slate-500">Sistem Informasi Guru</p>
+      <h2 class="text-2xl font-bold text-slate-800">RPG OELEON</h2>
+      <p class="text-slate-500">Premium Admin System</p>
     </div>
     <div class="space-y-4">
       <input id="name" type="text" placeholder="Nama Lengkap" class="w-full">
@@ -186,7 +186,7 @@ const db = getDatabase(app);
 const ADMIN_NAME = "Wendelinus Christo Snae, SE";
 let currentUser = "";
 
-// FUNGSI DOWNLOAD LAPORAN DENGAN PERBAIKAN STABILITAS
+// FUNGSI DOWNLOAD LAPORAN YANG DIPERBAIKI (TETAP STABIL)
 window.downloadLaporan = async function() {
   const btn = document.getElementById("adminBtn");
   const label = document.getElementById("labelDownload");
@@ -222,7 +222,7 @@ window.downloadLaporan = async function() {
     }
   } catch (error) {
     console.error("Error Detail:", error);
-    alert("Gagal mengunduh laporan. Mohon periksa internet atau Firebase Rules.");
+    alert("Gagal mengunduh laporan. Pastikan koneksi internet stabil atau cek Firebase Rules.");
   } finally {
     label.innerText = "📥 Unduh Laporan";
     btn.disabled = false;
