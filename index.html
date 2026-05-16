@@ -54,7 +54,7 @@
 <div id="app" class="hidden w-full flex overflow-hidden">
   <aside class="sidebar w-72 flex flex-col p-6">
     <div class="flex items-center gap-3 mb-10 px-2">
-      <img src="https://raw.githubusercontent.com/wendelinus223-gif/admin-rpgo/main/LOGO.jpg" alt="Logo" class="w-10 h-10 object-contain rounded-full bg-white">
+      <img src="https://raw.githubusercontent.com/wendelinus223-gif/admin-rpgo/main/LOGO.jpg" alt="Logo" class="w-10 h-10 object-contain rounded-full bg-white shadow-sm">
       <span class="font-bold text-xl tracking-tight">RPG <span class="text-blue-600 text-xs">OELEON</span></span>
     </div>
     <nav class="flex-1 space-y-2">
@@ -127,12 +127,31 @@
               <div><label class="text-xs text-slate-400">Tanggal</label><input type="date" id="j_tgl" class="w-full"></div>
               <div><label class="text-xs text-slate-400">Jam Mengajar</label>
                 <select id="j_jam" class="w-full">
-                  <option value="Jam Ke-1">Jam Ke-1</option><option value="Jam Ke-2">Jam Ke-2</option><option value="Jam Ke-3">Jam Ke-3</option><option value="Jam Ke-4">Jam Ke-4</option>
+                  <option value="Jam Ke-1">Jam Ke-1</option><option value="Jam Ke-2">Jam Ke-2</option><option value="Jam Ke-3">Jam Ke-3</option><option value="Jam Ke-4">Jam Ke-4</option><option value="Jam Ke-5">Jam Ke-5</option><option value="Jam Ke-6">Jam Ke-6</option><option value="Jam Ke-7">Jam Ke-7</option><option value="Jam Ke-8">Jam Ke-8</option>
                 </select>
               </div>
               <div><label class="text-xs text-slate-400">Mata Pelajaran</label>
                 <select id="mapel" class="w-full">
-                  <option>Matematika</option><option>Bahasa Indonesia</option><option>IPA</option><option>IPS</option><option>Informatika</option><option>Agama</option>
+                  <option value="Pendidikan Agama & Budi Pekerti">Pendidikan Agama & Budi Pekerti</option>
+                  <option value="Pendidikan Pancasila (PKn)">Pendidikan Pancasila (PKn)</option>
+                  <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+                  <option value="Matematika">Matematika</option>
+                  <option value="Bahasa Inggris">Bahasa Inggris</option>
+                  <option value="IPA (Ilmu Pengetahuan Alam)">IPA (Ilmu Pengetahuan Alam)</option>
+                  <option value="IPS (Ilmu Pengetahuan Sosial)">IPS (Ilmu Pengetahuan Sosial)</option>
+                  <option value="Ekonomi">Ekonomi</option>
+                  <option value="Sejarah">Sejarah</option>
+                  <option value="Geografi">Geografi</option>
+                  <option value="Sosiologi">Sosiologi</option>
+                  <option value="Literasi">Literasi</option>
+                  <option value="Numerasi">Numerasi</option>
+                  <option value="Informatika / TIK">Informatika / TIK</option>
+                  <option value="PJOK (Penjasorkes)">PJOK (Penjasorkes)</option>
+                  <option value="Seni Budaya">Seni Budaya</option>
+                  <option value="Prakarya">Prakarya</option>
+                  <option value="Bahasa Daerah">Bahasa Daerah</option>
+                  <option value="Muatan Lokal">Muatan Lokal</option>
+                  <option value="Lainnya">Lainnya</option>
                 </select>
               </div>
             </div>
@@ -186,58 +205,39 @@ const db = getDatabase(app);
 const ADMIN_NAME = "Wendelinus Christo Snae, SE";
 let currentUser = "";
 
-// --- FUNGSI DOWNLOAD PERBAIKAN TOTAL ---
 window.downloadLaporan = async function() {
   const btn = document.getElementById("adminBtn");
   const label = document.getElementById("labelDownload");
-  
   try {
-    label.innerText = "⏳ Sedang Memproses...";
+    label.innerText = "⏳ Mengolah Data...";
     btn.disabled = true;
-
-    // Pastikan library XLSX terpasang
-    if (typeof XLSX === 'undefined') {
-        alert("Library Excel belum siap. Silakan refresh halaman.");
-        return;
-    }
-
-    const workbook = XLSX.utils.book_new();
+    if (typeof XLSX === 'undefined') { alert("Library Excel belum siap."); return; }
+    const wb = XLSX.utils.book_new();
     const tables = ["absensi", "jurnal", "biodata"];
-    let hasAnyData = false;
-
-    for (const table of tables) {
-      const snapshot = await get(ref(db, table));
-      if (snapshot.exists()) {
-        const rawData = snapshot.val();
-        // Konversi objek Firebase ke Array
-        const dataArray = Object.values(rawData).map(item => {
-           // Bersihkan data Base64 supaya Excel tidak lag/rusak
-           const { fileData, ...cleanObject } = item;
-           return cleanObject;
+    let dataAda = false;
+    for (const t of tables) {
+      const snap = await get(ref(db, t));
+      if (snap.exists()) {
+        const raw = snap.val();
+        const dataArr = Object.values(raw).map(item => {
+           const { fileData, ...textOnly } = item;
+           return textOnly;
         });
-
-        if (dataArray.length > 0) {
-            const worksheet = XLSX.utils.json_to_sheet(dataArray);
-            XLSX.utils.book_append_sheet(workbook, worksheet, table.toUpperCase());
-            hasAnyData = true;
+        if(dataArr.length > 0) {
+          const ws = XLSX.utils.json_to_sheet(dataArr);
+          XLSX.utils.book_append_sheet(wb, ws, t.toUpperCase());
+          dataAda = true;
         }
       }
     }
-
-    if (!hasAnyData) {
-      alert("Belum ada data di database untuk diunduh.");
-    } else {
-      const fileName = `LAPORAN_OELEON_${new Date().toISOString().split('T')[0]}.xlsx`;
-      XLSX.writeFile(workbook, fileName);
-      alert("✅ Laporan Berhasil Diunduh!");
+    if (!dataAda) { alert("Belum ada data untuk diunduh."); } 
+    else {
+      const tgl = new Date().toISOString().split('T')[0];
+      XLSX.writeFile(wb, `LAPORAN_OELEON_${tgl}.xlsx`);
+      alert("✅ Laporan Berhasil!");
     }
-  } catch (err) {
-    console.error("Download Error:", err);
-    alert("Terjadi kesalahan saat mengunduh laporan.");
-  } finally {
-    label.innerText = "📥 Unduh Laporan";
-    btn.disabled = false;
-  }
+  } catch (e) { alert("Gagal mengunduh laporan."); } 
+  finally { label.innerText = "📥 Unduh Laporan"; btn.disabled = false; }
 };
 
 window.login = async function() {
@@ -245,12 +245,10 @@ window.login = async function() {
   const passInput = document.getElementById("pass").value;
   const users = ["Wendelinus Christo Snae, SE", "Yasintha Tualaka, S.Pd", "Veronika Ngallu Bulu, S.Pd", "Angelis Soares, S.Pd", "Marci T.A Manu, S.Kom", "Esyban A. Banu, S.Pd", "Yohanis Tualaka, S.Sos"];
   const found = users.find(u => u.toLowerCase().trim() === nameInput.toLowerCase());
-
   if(!found) { alert("Nama tidak terdaftar!"); return; }
   const userKey = btoa(found).replace(/=/g, "");
   const snap = await get(ref(db, `users_auth/${userKey}`));
   const dbPass = snap.val() ? snap.val().password : "sekolahrpgo";
-
   if(passInput === dbPass) {
     currentUser = found;
     document.getElementById("userNameDisplay").innerText = currentUser;
@@ -267,29 +265,24 @@ window.login = async function() {
 };
 
 window.saveAbsen = function() {
-  const data = { guru: currentUser, tanggal: document.getElementById("tgl").value, status: document.getElementById("status").value, waktu: new Date().toLocaleString() };
-  if(!data.tanggal) return alert("Pilih tanggal!");
-  push(ref(db, "absensi"), data).then(() => {
-      alert("✅ Presensi Berhasil!");
-      document.getElementById("tgl").value = "";
-  });
+  const tgl = document.getElementById("tgl").value;
+  if(!tgl) return alert("Pilih tanggal!");
+  const data = { guru: currentUser, tanggal: tgl, status: document.getElementById("status").value, waktu: new Date().toLocaleString() };
+  push(ref(db, "absensi"), data).then(() => alert("✅ Presensi Berhasil!"));
 };
 
 window.saveJurnal = async function() {
   const btn = document.getElementById("btnJurnal");
   const file = document.getElementById("foto").files[0];
+  const mtr = document.getElementById("mengajar").value;
+  const tgl = document.getElementById("j_tgl").value;
+  if(!tgl || !mtr) return alert("Isi tanggal & materi!");
+  btn.innerText = "⏳ Memposting..."; btn.disabled = true;
   const data = { 
-    guru: currentUser,
-    tanggal: document.getElementById("j_tgl").value,
-    jam: document.getElementById("j_jam").value,
-    mapel: document.getElementById("mapel").value,
-    mengajar: document.getElementById("mengajar").value,
-    tujuan: document.getElementById("tujuan").value,
-    fileData: file ? await toBase64(file) : "",
-    fileName: file ? file.name : ""
+    guru: currentUser, tanggal: tgl, jam: document.getElementById("j_jam").value, mapel: document.getElementById("mapel").value,
+    mengajar: mtr, tujuan: document.getElementById("tujuan").value,
+    fileData: file ? await toBase64(file) : "", fileName: file ? file.name : ""
   };
-  if(!data.tanggal || !data.mengajar) return alert("Isi tanggal & materi!");
-  btn.innerText = "⏳ Sedang Memposting..."; btn.disabled = true;
   push(ref(db, "jurnal"), data).then(() => {
     alert("✅ Jurnal Berhasil!");
     btn.innerText = "Posting Jurnal"; btn.disabled = false;
@@ -300,8 +293,9 @@ window.saveJurnal = async function() {
 };
 
 window.saveBiodata = function() {
-  const data = { nama: document.getElementById("b_nama").value, tempat: document.getElementById("b_tempat").value, tgl: document.getElementById("b_tgl").value, nip: document.getElementById("b_nip").value };
-  if(!data.nama) return alert("Isi nama minimal!");
+  const n = document.getElementById("b_nama").value;
+  if(!n) return alert("Minimal isi nama!");
+  const data = { nama: n, tempat: document.getElementById("b_tempat").value, tgl: document.getElementById("b_tgl").value, nip: document.getElementById("b_nip").value };
   push(ref(db, "biodata"), data).then(() => alert("✅ Biodata diperbarui!"));
 };
 
@@ -311,20 +305,20 @@ function loadAll() {
     let s = { Hadir:0, Sakit:0, Izin:0, Alpa:0 };
     document.getElementById("listAbsen").innerHTML = Object.values(data).reverse().map(x => {
       if(s[x.status] !== undefined) s[x.status]++;
-      return `<div class="glass-card p-4 border-l-4 border-blue-500"><p class="font-bold">${x.guru}</p><p class="text-xs text-slate-400">${x.tanggal} • ${x.status}</p></div>`;
+      return `<div class="glass-card p-4 border-l-4 border-blue-500"><p class="font-bold text-sm">${x.guru}</p><p class="text-[10px] text-slate-400">${x.tanggal} • ${x.status}</p></div>`;
     }).join("");
     document.getElementById("statHadir").innerText = s.Hadir;
     document.getElementById("statSakit").innerText = s.Sakit;
     document.getElementById("statIzin").innerText = s.Izin;
     document.getElementById("statAlpa").innerText = s.Alpa;
   });
-
   onValue(ref(db, "jurnal"), snap => {
     const d = snap.val() || {};
     document.getElementById("listJurnal").innerHTML = Object.values(d).reverse().map(x => `
-      <div class="glass-card p-6 border-l-4 border-indigo-500">
-        <h4 class="font-bold text-indigo-600">${x.mapel}</h4><p class="text-xs text-slate-400">${x.guru} • ${x.tanggal}</p>
-        <p class="text-sm mt-2">${x.mengajar}</p>
+      <div class="glass-card p-4 border-l-4 border-indigo-500">
+        <h4 class="font-bold text-indigo-600 text-sm">${x.mapel}</h4>
+        <p class="text-[10px] text-slate-400">${x.guru} • ${x.tanggal}</p>
+        <p class="text-xs mt-2 text-slate-600">${x.mengajar}</p>
       </div>`).join("");
   });
 }
