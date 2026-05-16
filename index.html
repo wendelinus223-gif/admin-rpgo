@@ -22,7 +22,6 @@
     overflow: hidden;
   }
 
-  /* Morph Animation */
   .page {
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     transform-origin: top left;
@@ -35,7 +34,6 @@
     transform: scale(0.95) translateY(10px);
   }
 
-  /* Glassmorphism Elements */
   .glass-card {
     background: white;
     border: 1px solid rgba(226, 232, 240, 0.8);
@@ -48,7 +46,6 @@
     transform: translateY(-5px);
   }
 
-  /* Sidebar Styling */
   .sidebar {
     background: white;
     border-right: 1px solid #e2e8f0;
@@ -66,23 +63,16 @@
     font-weight: 600;
   }
 
-  /* Colorful Cards */
   .card-blue { background: linear-gradient(135deg, #60a5fa, #2563eb); color: white; }
   .card-purple { background: linear-gradient(135deg, #a78bfa, #7c3aed); color: white; }
   .card-pink { background: linear-gradient(135deg, #f472b6, #db2777); color: white; }
   .card-orange { background: linear-gradient(135deg, #fb923c, #ea580c); color: white; }
 
-  /* Input Styling */
   input, select, textarea {
     border: 1px solid #e2e8f0 !important;
     border-radius: 10px !important;
     padding: 10px !important;
     transition: all 0.3s;
-  }
-
-  input:focus {
-    border-color: var(--primary) !important;
-    ring: 2px solid #bfdbfe;
   }
 </style>
 </head>
@@ -177,6 +167,25 @@
             <h3 id="statAlpa" class="text-3xl font-bold">0</h3>
           </div>
         </div>
+
+        <div id="adminSection" class="glass-card p-6 border-l-4 border-amber-500 hidden">
+          <h3 class="font-bold text-lg mb-4 text-amber-700 flex items-center gap-2">🔐 Reset Password Guru</h3>
+          <div class="flex flex-col md:flex-row gap-4 items-end">
+            <div class="flex-1">
+              <label class="block text-sm mb-1 text-slate-600">Pilih Guru:</label>
+              <select id="reset_guru_select" class="w-full">
+                <option value="Wendelinus Christo Snae, SE">Wendelinus Christo Snae, SE</option>
+                <option value="Yasintha Tualaka, S.Pd">Yasintha Tualaka, S.Pd</option>
+                <option value="Veronika Ngallu Bulu, S.Pd">Veronika Ngallu Bulu, S.Pd</option>
+                <option value="Angelis Soares, S.Pd">Angelis Soares, S.Pd</option>
+                <option value="Marci T.A Manu, S.Kom">Marci T.A Manu, S.Kom</option>
+                <option value="Esyban A. Banu, S.Pd">Esyban A. Banu, S.Pd</option>
+                <option value="Yohanis Tualaka, S.Sos">Yohanis Tualaka, S.Sos</option>
+              </select>
+            </div>
+            <button onclick="resetUserPassword()" class="bg-amber-600 text-white px-6 py-2 rounded-xl font-bold hover:bg-amber-700 transition">Reset Sekarang</button>
+          </div>
+        </div>
         
         <div class="glass-card p-6">
           <h3 class="font-bold text-lg mb-4">Pengumuman Terbaru</h3>
@@ -188,7 +197,6 @@
         <div class="glass-card p-8 max-w-2xl mx-auto">
           <h3 class="text-xl font-bold mb-6">Formulir Presensi</h3>
           <div class="space-y-4">
-            <label class="block text-sm font-medium text-slate-700">Pilih Guru</label>
             <select id="guru" class="w-full">
               <option value="Wendelinus Christo Snae, SE">Wendelinus Christo Snae, SE</option>
               <option value="Yasintha Tualaka, S.Pd">Yasintha Tualaka, S.Pd</option>
@@ -202,7 +210,7 @@
             <select id="status" class="w-full">
               <option>Hadir</option><option>Sakit</option><option>Izin</option><option>Alpa</option>
             </select>
-            <button onclick="saveAbsen()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg shadow-blue-100">Simpan Presensi</button>
+            <button onclick="saveAbsen()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold">Simpan Presensi</button>
           </div>
         </div>
         <div id="listAbsen" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
@@ -224,7 +232,7 @@
               <textarea id="tujuan" placeholder="Tujuan pembelajaran..." class="w-full h-24"></textarea>
             </div>
           </div>
-          <button onclick="saveJurnal()" class="mt-6 w-full bg-indigo-600 text-white py-3 rounded-xl font-bold shadow-lg">Posting Jurnal</button>
+          <button onclick="saveJurnal()" class="mt-6 w-full bg-indigo-600 text-white py-3 rounded-xl font-bold">Posting Jurnal</button>
         </div>
         <div id="listJurnal" class="space-y-4"></div>
       </div>
@@ -249,7 +257,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, push, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, push, onValue, get, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "API_KEY",
@@ -265,102 +273,102 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 const ADMIN_NAME = "Wendelinus Christo Snae, SE";
-const PASSWORD = "sekolahrpgo";
+const DEFAULT_PASS = "sekolahrpgo";
 let currentUser = "";
 
-// MORPH NAVIGATION
-window.show = function(e, id) {
-    const pages = document.querySelectorAll(".page");
-    const navBtns = document.querySelectorAll(".nav-btn");
-    
-    // Smooth transition
-    pages.forEach(p => {
-        p.style.opacity = "0";
-        setTimeout(() => p.classList.add("hidden"), 300);
-    });
+// Utils
+function clean(s) { return s.toLowerCase().trim().replace(/\s+/g, ''); }
 
-    setTimeout(() => {
-        const target = document.getElementById(id);
-        target.classList.remove("hidden");
-        setTimeout(() => target.style.opacity = "1", 50);
-        document.getElementById("pageTitle").innerText = id.charAt(0).toUpperCase() + id.slice(1);
-    }, 300);
+// LOGIN LOGIC DENGAN PASSWORD DATABASE
+window.login = async function() {
+  const nameInput = document.getElementById("name").value.trim();
+  const passInput = document.getElementById("pass").value;
+  const users = ["Wendelinus Christo Snae, SE", "Yasintha Tualaka, S.Pd", "Veronika Ngallu Bulu, S.Pd", "Angelis Soares, S.Pd", "Marci T.A Manu, S.Kom", "Esyban A. Banu, S.Pd", "Yohanis Tualaka, S.Sos"];
 
-    navBtns.forEach(b => b.classList.remove("active"));
-    if(e && e.currentTarget) e.currentTarget.classList.add("active");
-};
+  const found = users.find(u => clean(u) === clean(nameInput));
 
-// LOGIN LOGIC
-window.login = function() {
-  const name = document.getElementById("name").value.trim();
-  const pass = document.getElementById("pass").value;
+  if(!found) {
+    alert("Nama tidak terdaftar!");
+    return;
+  }
 
-  if(name && pass === PASSWORD) {
-    currentUser = name;
+  // Cek Password di Database
+  const userKey = btoa(found).replace(/=/g, "");
+  const snap = await get(ref(db, `users_auth/${userKey}`));
+  const dbPass = snap.val() ? snap.val().password : DEFAULT_PASS;
+
+  if(passInput === dbPass) {
+    currentUser = found;
     document.getElementById("userNameDisplay").innerText = currentUser;
     document.getElementById("loginPage").classList.add("hidden");
     document.getElementById("app").classList.remove("hidden");
     
-    if(currentUser === ADMIN_NAME) document.getElementById("adminBtn").classList.remove("hidden");
+    if(clean(currentUser) === clean(ADMIN_NAME)) {
+      document.getElementById("adminBtn").classList.remove("hidden");
+      document.getElementById("adminSection").classList.remove("hidden");
+    }
     loadAll();
   } else {
     document.getElementById("error").classList.remove("hidden");
   }
 };
 
+// RESET PASSWORD (ADMIN ONLY)
+window.resetUserPassword = function() {
+  const target = document.getElementById("reset_guru_select").value;
+  const newPass = prompt(`Masukkan password baru untuk ${target}:`, DEFAULT_PASS);
+  
+  if(newPass) {
+    const userKey = btoa(target).replace(/=/g, "");
+    set(ref(db, `users_auth/${userKey}`), { password: newPass }).then(() => {
+      alert(`Password ${target} berhasil diupdate!`);
+    });
+  }
+};
+
 window.logout = () => location.reload();
 
-// DATA OPERATIONS (Sama seperti sebelumnya namun dengan UI Feedback)
+window.show = function(e, id) {
+    const pages = document.querySelectorAll(".page");
+    pages.forEach(p => {
+        p.style.opacity = "0";
+        setTimeout(() => p.classList.add("hidden"), 300);
+    });
+    setTimeout(() => {
+        const target = document.getElementById(id);
+        target.classList.remove("hidden");
+        setTimeout(() => target.style.opacity = "1", 50);
+        document.getElementById("pageTitle").innerText = id.charAt(0).toUpperCase() + id.slice(1);
+    }, 300);
+    document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+    if(e && e.currentTarget) e.currentTarget.classList.add("active");
+};
+
 window.saveAbsen = function() {
-  const data = {
-    guru: document.getElementById("guru").value,
-    tanggal: document.getElementById("tgl").value,
-    status: document.getElementById("status").value,
-    user: currentUser,
-    waktu: new Date().toLocaleString()
-  };
+  const data = { guru: document.getElementById("guru").value, tanggal: document.getElementById("tgl").value, status: document.getElementById("status").value, user: currentUser, waktu: new Date().toLocaleString() };
   if(!data.tanggal) return alert("Pilih tanggal!");
-  push(ref(db, "absensi"), data).then(() => alert("✅ Presensi berhasil!"));
+  push(ref(db, "absensi"), data).then(() => alert("✅ Berhasil!"));
 };
 
 window.saveJurnal = async function() {
   const file = document.getElementById("foto").files[0];
-  const data = {
-    tanggal: document.getElementById("j_tgl").value,
-    mapel: document.getElementById("mapel").value,
-    mengajar: document.getElementById("mengajar").value,
-    tujuan: document.getElementById("tujuan").value,
-    user: currentUser,
-    foto: file ? await toBase64(file) : ""
-  };
-  if(!data.tanggal || !data.mengajar) return alert("Isi jurnal dengan lengkap!");
-  push(ref(db, "jurnal"), data).then(() => {
-    alert("✅ Jurnal terposting!");
-    document.getElementById("mengajar").value = "";
-  });
+  const data = { tanggal: document.getElementById("j_tgl").value, mapel: document.getElementById("mapel").value, mengajar: document.getElementById("mengajar").value, tujuan: document.getElementById("tujuan").value, user: currentUser, foto: file ? await toBase64(file) : "" };
+  if(!data.tanggal) return alert("Isi lengkap!");
+  push(ref(db, "jurnal"), data).then(() => alert("✅ Terposting!"));
 };
 
 window.saveBiodata = function() {
-  const data = {
-    nama: document.getElementById("b_nama").value,
-    tempat: document.getElementById("b_tempat").value,
-    tgl: document.getElementById("b_tgl").value,
-    nip: document.getElementById("b_nip").value
-  };
-  push(ref(db, "biodata"), data).then(() => alert("✅ Biodata diperbarui!"));
+  const data = { nama: document.getElementById("b_nama").value, tempat: document.getElementById("b_tempat").value, tgl: document.getElementById("b_tgl").value, nip: document.getElementById("b_nip").value };
+  push(ref(db, "biodata"), data).then(() => alert("✅ Biodata OK!"));
 };
 
-// REALTIME LOADERS
 function loadAll() {
   onValue(ref(db, "absensi"), snap => {
     const data = snap.val() || {};
     let s = { Hadir:0, Sakit:0, Izin:0, Alpa:0 };
     document.getElementById("listAbsen").innerHTML = Object.values(data).reverse().map(x => {
       if(s[x.status] !== undefined) s[x.status]++;
-      return `<div class="glass-card p-4 border-l-4 border-blue-500">
-                <p class="font-bold">${x.guru}</p>
-                <p class="text-xs text-slate-400">${x.tanggal} • ${x.status}</p>
-              </div>`;
+      return `<div class="glass-card p-4 border-l-4 border-blue-500"><p class="font-bold">${x.guru}</p><p class="text-xs text-slate-400">${x.tanggal} • ${x.status}</p></div>`;
     }).join("");
     document.getElementById("statHadir").innerText = s.Hadir;
     document.getElementById("statSakit").innerText = s.Sakit;
@@ -373,21 +381,15 @@ function loadAll() {
     document.getElementById("listJurnal").innerHTML = Object.values(d).reverse().map(x => `
       <div class="glass-card p-6 flex gap-4">
         ${x.foto ? `<img src="${x.foto}" class="w-24 h-24 object-cover rounded-xl shadow-sm">` : ''}
-        <div>
-          <h4 class="font-bold text-blue-600">${x.mapel}</h4>
-          <p class="text-sm text-slate-600">${x.mengajar}</p>
-          <p class="text-[10px] text-slate-400 mt-2">${x.tanggal} oleh ${x.user}</p>
-        </div>
+        <div><h4 class="font-bold text-blue-600">${x.mapel}</h4><p class="text-sm text-slate-600">${x.mengajar}</p></div>
       </div>`).join("");
   });
 }
 
 function toBase64(file) {
   return new Promise((r, j) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => r(reader.result);
-    reader.onerror = e => j(e);
+    const reader = new FileReader(); reader.readAsDataURL(file);
+    reader.onload = () => r(reader.result); reader.onerror = e => j(e);
   });
 }
 
@@ -404,6 +406,5 @@ window.downloadLaporan = async function() {
   XLSX.writeFile(workbook, "LAPORAN_RPG_OELEON.xlsx");
 };
 </script>
-
 </body>
 </html>
