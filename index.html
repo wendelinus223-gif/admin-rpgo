@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RPG OELEON - Premium Admin</title>
 
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563eb">
+
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -60,7 +63,9 @@
       <button onclick="show(event,'biodata')" class="nav-btn w-full flex items-center gap-3 px-4 py-3"><span>👤</span> Biodata Guru</button>
     </nav>
     <div class="pt-6 border-t border-slate-100">
-      <button id="adminBtn" onclick="downloadLaporan()" class="hidden w-full bg-amber-500 hover:bg-amber-600 text-white rounded-xl py-3 font-semibold mb-3 flex items-center justify-center gap-2">📥 Unduh Laporan</button>
+      <button id="adminBtn" onclick="downloadLaporan()" class="hidden w-full bg-amber-500 hover:bg-amber-600 text-white rounded-xl py-3 font-semibold mb-3 flex items-center justify-center gap-2 transition-all">
+        <span id="labelDownload">📥 Unduh Laporan</span>
+      </button>
       <button onclick="logout()" class="w-full text-slate-400 hover:text-red-500 flex items-center gap-3 px-4 py-3 transition"><span>🚪</span> Keluar</button>
     </div>
   </aside>
@@ -121,10 +126,7 @@
               <div><label class="text-xs text-slate-400">Tanggal</label><input type="date" id="j_tgl" class="w-full"></div>
               <div><label class="text-xs text-slate-400">Jam Mengajar</label>
                 <select id="j_jam" class="w-full">
-                  <option value="Jam Ke-1">Jam Ke-1 (Pertama)</option>
-                  <option value="Jam Ke-2">Jam Ke-2 (Kedua)</option>
-                  <option value="Jam Ke-3">Jam Ke-3 (Ketiga)</option>
-                  <option value="Jam Ke-4">Jam Ke-4 (Keempat)</option>
+                  <option value="Jam Ke-1">Jam Ke-1</option><option value="Jam Ke-2">Jam Ke-2</option><option value="Jam Ke-3">Jam Ke-3</option><option value="Jam Ke-4">Jam Ke-4</option>
                 </select>
               </div>
               <div><label class="text-xs text-slate-400">Mata Pelajaran</label>
@@ -136,8 +138,8 @@
             <div class="space-y-4">
               <textarea id="mengajar" placeholder="Materi yang diajarkan..." class="w-full h-24"></textarea>
               <textarea id="tujuan" placeholder="Tujuan pembelajaran..." class="w-full h-24"></textarea>
-              <div><label class="text-xs text-slate-400 block mb-1">Upload File (Gambar/PDF/Word)</label>
-                <input type="file" id="foto" class="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:bg-blue-50 file:text-blue-700" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
+              <div><label class="text-xs text-slate-400 block mb-1">Upload File</label>
+                <input type="file" id="foto" class="w-full text-sm" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
               </div>
             </div>
           </div>
@@ -183,6 +185,45 @@ const db = getDatabase(app);
 const ADMIN_NAME = "Wendelinus Christo Snae, SE";
 let currentUser = "";
 
+// FUNGSI DOWNLOAD LAPORAN (PERBAIKAN UTAMA)
+window.downloadLaporan = async function() {
+  const btn = document.getElementById("adminBtn");
+  const label = document.getElementById("labelDownload");
+  
+  try {
+    label.innerText = "⏳ Menyiapkan Data...";
+    btn.disabled = true;
+
+    const workbook = XLSX.utils.book_new();
+    const tables = ["absensi", "jurnal", "biodata"];
+    let hasData = false;
+
+    for (let table of tables) {
+      const snap = await get(ref(db, table));
+      if (snap.exists()) {
+        hasData = true;
+        const rawData = snap.val();
+        // Ubah format object Firebase menjadi Array agar bisa dibaca Excel
+        const dataArray = Object.values(rawData);
+        const ws = XLSX.utils.json_to_sheet(dataArray);
+        XLSX.utils.book_append_sheet(workbook, ws, table.toUpperCase());
+      }
+    }
+
+    if (!hasData) {
+      alert("Belum ada data untuk diunduh.");
+    } else {
+      XLSX.writeFile(workbook, "LAPORAN_ADMIN_OELEON.xlsx");
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Gagal mengunduh laporan. Pastikan koneksi internet stabil.");
+  } finally {
+    label.innerText = "📥 Unduh Laporan";
+    btn.disabled = false;
+  }
+};
+
 window.login = async function() {
   const nameInput = document.getElementById("name").value.trim();
   const passInput = document.getElementById("pass").value;
@@ -197,8 +238,8 @@ window.login = async function() {
   if(passInput === dbPass) {
     currentUser = found;
     document.getElementById("userNameDisplay").innerText = currentUser;
-    document.getElementById("j_guru").value = currentUser; // Otomatis isi nama di Jurnal
-    document.getElementById("a_guru").value = currentUser; // Otomatis isi nama di Absen
+    document.getElementById("j_guru").value = currentUser;
+    document.getElementById("a_guru").value = currentUser;
     document.getElementById("loginPage").classList.add("hidden");
     document.getElementById("app").classList.remove("hidden");
     if(currentUser === ADMIN_NAME) {
@@ -210,12 +251,7 @@ window.login = async function() {
 };
 
 window.saveAbsen = function() {
-  const data = { 
-    guru: currentUser, 
-    tanggal: document.getElementById("tgl").value, 
-    status: document.getElementById("status").value, 
-    waktu: new Date().toLocaleString() 
-  };
+  const data = { guru: currentUser, tanggal: document.getElementById("tgl").value, status: document.getElementById("status").value, waktu: new Date().toLocaleString() };
   if(!data.tanggal) return alert("Pilih tanggal!");
   push(ref(db, "absensi"), data).then(() => alert("✅ Presensi Berhasil!"));
 };
@@ -233,15 +269,12 @@ window.saveJurnal = async function() {
     fileData: file ? await toBase64(file) : "",
     fileName: file ? file.name : ""
   };
-  
-  if(!data.tanggal || !data.mengajar) return alert("Mohon isi tanggal dan materi!");
+  if(!data.tanggal || !data.mengajar) return alert("Isi tanggal & materi!");
   btn.innerText = "⏳ Sedang Memposting..."; btn.disabled = true;
-  
   push(ref(db, "jurnal"), data).then(() => {
-    alert("✅ Jurnal Berhasil Diposting!");
+    alert("✅ Jurnal Berhasil!");
     btn.innerText = "Posting Jurnal"; btn.disabled = false;
     document.getElementById("mengajar").value = "";
-    document.getElementById("tujuan").value = "";
   });
 };
 
@@ -268,12 +301,8 @@ function loadAll() {
     const d = snap.val() || {};
     document.getElementById("listJurnal").innerHTML = Object.values(d).reverse().map(x => `
       <div class="glass-card p-6 border-l-4 border-indigo-500">
-        <div class="flex justify-between items-start mb-2">
-            <div><h4 class="font-bold text-indigo-600">${x.mapel} (${x.jam})</h4><p class="text-xs text-slate-400">${x.guru} • ${x.tanggal}</p></div>
-            ${x.fileData ? `<a href="${x.fileData}" download="${x.fileName}" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-1 rounded">💾 Download File</a>` : ''}
-        </div>
-        <p class="text-sm text-slate-600 mb-2"><strong>Materi:</strong> ${x.mengajar}</p>
-        <p class="text-xs text-slate-500 italic"><strong>Tujuan:</strong> ${x.tujuan}</p>
+        <h4 class="font-bold text-indigo-600">${x.mapel}</h4><p class="text-xs text-slate-400">${x.guru} • ${x.tanggal}</p>
+        <p class="text-sm mt-2">${x.mengajar}</p>
       </div>`).join("");
   });
 }
@@ -287,7 +316,7 @@ function toBase64(file) {
 
 window.resetUserPassword = function() {
   const target = document.getElementById("reset_guru_select").value;
-  const newPass = prompt(`Masukkan password baru untuk ${target}:`, "sekolahrpgo");
+  const newPass = prompt(`Password baru untuk ${target}:`, "sekolahrpgo");
   if(newPass) {
     const userKey = btoa(target).replace(/=/g, "");
     set(ref(db, `users_auth/${userKey}`), { password: newPass }).then(() => alert("Password diupdate!"));
@@ -303,18 +332,6 @@ window.show = (e, id) => {
 };
 
 window.logout = () => location.reload();
-window.downloadLaporan = async function() {
-  const workbook = XLSX.utils.book_new();
-  const nodes = ["absensi", "jurnal", "biodata"];
-  for (let n of nodes) {
-    const snap = await get(ref(db, n));
-    if (snap.val()) {
-      const ws = XLSX.utils.json_to_sheet(Object.values(snap.val()));
-      XLSX.utils.book_append_sheet(workbook, ws, n.toUpperCase());
-    }
-  }
-  XLSX.writeFile(workbook, "LAPORAN_OELEON_LENGKAP.xlsx");
-};
 </script>
 </body>
 </html>
