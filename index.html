@@ -10,70 +10,19 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
-  :root {
-    --primary: #2563eb;
-    --bg-light: #f8fafc;
-  }
-
-  body {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    background-color: var(--bg-light);
-    color: #1e293b;
-    overflow: hidden;
-  }
-
-  .page {
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    transform-origin: top left;
-    opacity: 1;
-  }
-
-  .page.hidden {
-    display: none;
-    opacity: 0;
-    transform: scale(0.95) translateY(10px);
-  }
-
-  .glass-card {
-    background: white;
-    border: 1px solid rgba(226, 232, 240, 0.8);
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    border-radius: 20px;
-    transition: transform 0.3s ease;
-  }
-
-  .glass-card:hover {
-    transform: translateY(-5px);
-  }
-
-  .sidebar {
-    background: white;
-    border-right: 1px solid #e2e8f0;
-  }
-
-  .nav-btn {
-    transition: all 0.3s;
-    border-radius: 12px;
-    color: #64748b;
-  }
-
-  .nav-btn.active {
-    background: #eff6ff;
-    color: var(--primary);
-    font-weight: 600;
-  }
-
+  :root { --primary: #2563eb; --bg-light: #f8fafc; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-light); color: #1e293b; overflow: hidden; }
+  .page { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); transform-origin: top left; opacity: 1; }
+  .page.hidden { display: none; opacity: 0; transform: scale(0.95) translateY(10px); }
+  .glass-card { background: white; border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border-radius: 20px; transition: transform 0.3s ease; }
+  .sidebar { background: white; border-right: 1px solid #e2e8f0; }
+  .nav-btn { transition: all 0.3s; border-radius: 12px; color: #64748b; }
+  .nav-btn.active { background: #eff6ff; color: var(--primary); font-weight: 600; }
   .card-blue { background: linear-gradient(135deg, #60a5fa, #2563eb); color: white; }
   .card-purple { background: linear-gradient(135deg, #a78bfa, #7c3aed); color: white; }
   .card-pink { background: linear-gradient(135deg, #f472b6, #db2777); color: white; }
   .card-orange { background: linear-gradient(135deg, #fb923c, #ea580c); color: white; }
-
-  input, select, textarea {
-    border: 1px solid #e2e8f0 !important;
-    border-radius: 10px !important;
-    padding: 10px !important;
-    transition: all 0.3s;
-  }
+  input, select, textarea { border: 1px solid #e2e8f0 !important; border-radius: 10px !important; padding: 10px !important; }
 </style>
 </head>
 
@@ -88,52 +37,31 @@
       <h2 class="text-2xl font-bold text-slate-800">Selamat Datang</h2>
       <p class="text-slate-500">Silakan login untuk mengakses sistem</p>
     </div>
-
     <div class="space-y-4">
       <input id="name" type="text" placeholder="Nama Lengkap" class="w-full">
       <input id="pass" type="password" placeholder="Password" class="w-full">
       <p id="error" class="text-red-500 text-sm hidden">Nama atau Password salah!</p>
-      <button onclick="login()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-blue-100">
-        Masuk ke Sistem
-      </button>
-      
-      <p class="text-center text-[10px] text-slate-400 mt-6 tracking-widest uppercase">
-        Aplikasi oleh : Wendelinus Christo Snae, SE
-      </p>
+      <button onclick="login()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition shadow-lg">Masuk ke Sistem</button>
+      <p class="text-center text-[10px] text-slate-400 mt-6 tracking-widest uppercase">Aplikasi oleh : Wendelinus Christo Snae, SE</p>
     </div>
   </div>
 </div>
 
 <div id="app" class="hidden w-full flex overflow-hidden">
-  
   <aside class="sidebar w-72 flex flex-col p-6">
     <div class="flex items-center gap-3 mb-10 px-2">
-      <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-white shadow-md">R</div>
+      <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-white">R</div>
       <span class="font-bold text-xl tracking-tight">OELEON <span class="text-blue-600 text-xs">PRO</span></span>
     </div>
-
     <nav class="flex-1 space-y-2">
-      <button onclick="show(event,'dashboard')" class="nav-btn active w-full flex items-center gap-3 px-4 py-3">
-        <span>🏠</span> Dashboard
-      </button>
-      <button onclick="show(event,'absen')" class="nav-btn w-full flex items-center gap-3 px-4 py-3">
-        <span>📅</span> Presensi Guru
-      </button>
-      <button onclick="show(event,'jurnal')" class="nav-btn w-full flex items-center gap-3 px-4 py-3">
-        <span>📖</span> Jurnal Harian
-      </button>
-      <button onclick="show(event,'biodata')" class="nav-btn w-full flex items-center gap-3 px-4 py-3">
-        <span>👤</span> Biodata Guru
-      </button>
+      <button onclick="show(event,'dashboard')" class="nav-btn active w-full flex items-center gap-3 px-4 py-3"><span>🏠</span> Dashboard</button>
+      <button onclick="show(event,'absen')" class="nav-btn w-full flex items-center gap-3 px-4 py-3"><span>📅</span> Presensi Guru</button>
+      <button onclick="show(event,'jurnal')" class="nav-btn w-full flex items-center gap-3 px-4 py-3"><span>📖</span> Jurnal Harian</button>
+      <button onclick="show(event,'biodata')" class="nav-btn w-full flex items-center gap-3 px-4 py-3"><span>👤</span> Biodata Guru</button>
     </nav>
-
     <div class="pt-6 border-t border-slate-100">
-      <button id="adminBtn" onclick="downloadLaporan()" class="hidden w-full bg-amber-500 hover:bg-amber-600 text-white rounded-xl py-3 font-semibold mb-3 flex items-center justify-center gap-2">
-        📥 Unduh Laporan
-      </button>
-      <button onclick="logout()" class="w-full text-slate-400 hover:text-red-500 flex items-center gap-3 px-4 py-3 transition">
-        <span>🚪</span> Keluar
-      </button>
+      <button id="adminBtn" onclick="downloadLaporan()" class="hidden w-full bg-amber-500 hover:bg-amber-600 text-white rounded-xl py-3 font-semibold mb-3 flex items-center justify-center gap-2">📥 Unduh Laporan</button>
+      <button onclick="logout()" class="w-full text-slate-400 hover:text-red-500 flex items-center gap-3 px-4 py-3 transition"><span>🚪</span> Keluar</button>
     </div>
   </aside>
 
@@ -143,77 +71,41 @@
       <div class="flex items-center gap-4">
         <div class="text-right">
           <p id="userNameDisplay" class="font-semibold text-sm text-slate-700"></p>
-          <p class="text-xs text-green-500 flex items-center justify-end gap-1">
-            <span class="w-2 h-2 bg-green-500 rounded-full"></span> Aktif
-          </p>
+          <p class="text-xs text-green-500 flex items-center justify-end gap-1"><span class="w-2 h-2 bg-green-500 rounded-full"></span> Aktif</p>
         </div>
       </div>
     </header>
 
     <div class="flex-1 overflow-y-auto p-8">
-      
       <div id="dashboard" class="page space-y-8">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div class="glass-card card-blue p-6 rounded-3xl">
-            <p class="text-blue-100 text-sm">Hadir</p>
-            <h3 id="statHadir" class="text-3xl font-bold">0</h3>
-          </div>
-          <div class="glass-card card-purple p-6 rounded-3xl">
-            <p class="text-purple-100 text-sm">Sakit</p>
-            <h3 id="statSakit" class="text-3xl font-bold">0</h3>
-          </div>
-          <div class="glass-card card-pink p-6 rounded-3xl">
-            <p class="text-pink-100 text-sm">Izin</p>
-            <h3 id="statIzin" class="text-3xl font-bold">0</h3>
-          </div>
-          <div class="glass-card card-orange p-6 rounded-3xl">
-            <p class="text-orange-100 text-sm">Alpa</p>
-            <h3 id="statAlpa" class="text-3xl font-bold">0</h3>
-          </div>
+          <div class="glass-card card-blue p-6 rounded-3xl"><p class="text-blue-100 text-sm">Hadir</p><h3 id="statHadir" class="text-3xl font-bold">0</h3></div>
+          <div class="glass-card card-purple p-6 rounded-3xl"><p class="text-purple-100 text-sm">Sakit</p><h3 id="statSakit" class="text-3xl font-bold">0</h3></div>
+          <div class="glass-card card-pink p-6 rounded-3xl"><p class="text-pink-100 text-sm">Izin</p><h3 id="statIzin" class="text-3xl font-bold">0</h3></div>
+          <div class="glass-card card-orange p-6 rounded-3xl"><p class="text-orange-100 text-sm">Alpa</p><h3 id="statAlpa" class="text-3xl font-bold">0</h3></div>
         </div>
-
         <div id="adminSection" class="glass-card p-6 border-l-4 border-amber-500 hidden">
-          <h3 class="font-bold text-lg mb-4 text-amber-700 flex items-center gap-2">🔐 Reset Password Guru</h3>
-          <div class="flex flex-col md:flex-row gap-4 items-end">
-            <div class="flex-1">
-              <label class="block text-sm mb-1 text-slate-600">Pilih Guru:</label>
-              <select id="reset_guru_select" class="w-full">
-                <option value="Wendelinus Christo Snae, SE">Wendelinus Christo Snae, SE</option>
-                <option value="Yasintha Tualaka, S.Pd">Yasintha Tualaka, S.Pd</option>
-                <option value="Veronika Ngallu Bulu, S.Pd">Veronika Ngallu Bulu, S.Pd</option>
-                <option value="Angelis Soares, S.Pd">Angelis Soares, S.Pd</option>
-                <option value="Marci T.A Manu, S.Kom">Marci T.A Manu, S.Kom</option>
-                <option value="Esyban A. Banu, S.Pd">Esyban A. Banu, S.Pd</option>
-                <option value="Yohanis Tualaka, S.Sos">Yohanis Tualaka, S.Sos</option>
-              </select>
-            </div>
-            <button onclick="resetUserPassword()" class="bg-amber-600 text-white px-6 py-2 rounded-xl font-bold hover:bg-amber-700 transition">Reset Sekarang</button>
-          </div>
-        </div>
-        
-        <div class="glass-card p-6">
-          <h3 class="font-bold text-lg mb-4">Pengumuman Terbaru</h3>
-          <p class="text-slate-500 italic">Belum ada pengumuman hari ini.</p>
+          <h3 class="font-bold text-lg mb-4 text-amber-700">🔐 Admin Control</h3>
+          <select id="reset_guru_select" class="w-full mb-2">
+            <option value="Wendelinus Christo Snae, SE">Wendelinus Christo Snae, SE</option>
+            <option value="Yasintha Tualaka, S.Pd">Yasintha Tualaka, S.Pd</option>
+            <option value="Veronika Ngallu Bulu, S.Pd">Veronika Ngallu Bulu, S.Pd</option>
+            <option value="Angelis Soares, S.Pd">Angelis Soares, S.Pd</option>
+            <option value="Marci T.A Manu, S.Kom">Marci T.A Manu, S.Kom</option>
+            <option value="Esyban A. Banu, S.Pd">Esyban A. Banu, S.Pd</option>
+            <option value="Yohanis Tualaka, S.Sos">Yohanis Tualaka, S.Sos</option>
+          </select>
+          <button onclick="resetUserPassword()" class="bg-amber-600 text-white px-6 py-2 rounded-xl font-bold">Reset Password</button>
         </div>
       </div>
 
       <div id="absen" class="page hidden space-y-6">
         <div class="glass-card p-8 max-w-2xl mx-auto">
-          <h3 class="text-xl font-bold mb-6">Formulir Presensi</h3>
+          <h3 class="text-xl font-bold mb-6">Presensi Kehadiran</h3>
           <div class="space-y-4">
-            <select id="guru" class="w-full">
-              <option value="Wendelinus Christo Snae, SE">Wendelinus Christo Snae, SE</option>
-              <option value="Yasintha Tualaka, S.Pd">Yasintha Tualaka, S.Pd</option>
-              <option value="Veronika Ngallu Bulu, S.Pd">Veronika Ngallu Bulu, S.Pd</option>
-              <option value="Angelis Soares, S.Pd">Angelis Soares, S.Pd</option>
-              <option value="Marci T.A Manu, S.Kom">Marci T.A Manu, S.Kom</option>
-              <option value="Esyban A. Banu, S.Pd">Esyban A. Banu, S.Pd</option>
-              <option value="Yohanis Tualaka, S.Sos">Yohanis Tualaka, S.Sos</option>
-            </select>
+            <select id="guru" class="w-full" disabled></select>
             <input type="date" id="tgl" class="w-full">
-            <select id="status" class="w-full">
-              <option>Hadir</option><option>Sakit</option><option>Izin</option><option>Alpa</option>
-            </select>
+            <select id="status" class="w-full"><option>Hadir</option><option>Sakit</option><option>Izin</option><option>Alpa</option></select>
             <button onclick="saveAbsen()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold">Simpan Presensi</button>
           </div>
         </div>
@@ -222,39 +114,51 @@
 
       <div id="jurnal" class="page hidden space-y-6">
         <div class="glass-card p-8">
-          <h3 class="text-xl font-bold mb-6 text-center">Jurnal Mengajar</h3>
+          <h3 class="text-xl font-bold mb-6 text-center">Jurnal Mengajar Harian</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-4">
-              <input type="date" id="j_tgl" class="w-full">
-              <input type="file" id="foto" class="w-full text-sm">
-              <select id="mapel" class="w-full">
-                <option>Matematika</option><option>Bahasa Indonesia</option><option>IPA</option><option>IPS</option><option>Informatika</option><option>Agama</option>
-              </select>
+              <div><label class="text-xs text-slate-400">Nama Guru</label><input type="text" id="j_guru" class="w-full bg-slate-50" readonly></div>
+              <div><label class="text-xs text-slate-400">Tanggal</label><input type="date" id="j_tgl" class="w-full"></div>
+              <div><label class="text-xs text-slate-400">Jam Mengajar</label>
+                <select id="j_jam" class="w-full">
+                  <option value="Jam Ke-1">Jam Ke-1 (Pertama)</option>
+                  <option value="Jam Ke-2">Jam Ke-2 (Kedua)</option>
+                  <option value="Jam Ke-3">Jam Ke-3 (Ketiga)</option>
+                  <option value="Jam Ke-4">Jam Ke-4 (Keempat)</option>
+                </select>
+              </div>
+              <div><label class="text-xs text-slate-400">Mata Pelajaran</label>
+                <select id="mapel" class="w-full">
+                  <option>Matematika</option><option>Bahasa Indonesia</option><option>IPA</option><option>IPS</option><option>Informatika</option><option>Agama</option>
+                </select>
+              </div>
             </div>
             <div class="space-y-4">
               <textarea id="mengajar" placeholder="Materi yang diajarkan..." class="w-full h-24"></textarea>
               <textarea id="tujuan" placeholder="Tujuan pembelajaran..." class="w-full h-24"></textarea>
+              <div><label class="text-xs text-slate-400 block mb-1">Upload File (Gambar/PDF/Word)</label>
+                <input type="file" id="foto" class="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:bg-blue-50 file:text-blue-700" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
+              </div>
             </div>
           </div>
-          <button onclick="saveJurnal()" class="mt-6 w-full bg-indigo-600 text-white py-3 rounded-xl font-bold">Posting Jurnal</button>
+          <button id="btnJurnal" onclick="saveJurnal()" class="mt-6 w-full bg-indigo-600 text-white py-3 rounded-xl font-bold">Posting Jurnal</button>
         </div>
         <div id="listJurnal" class="space-y-4"></div>
       </div>
 
       <div id="biodata" class="page hidden space-y-6">
         <div class="glass-card p-8 max-w-2xl mx-auto">
-          <h3 class="text-xl font-bold mb-6">Kelengkapan Profil</h3>
+          <h3 class="text-xl font-bold mb-6">Update Biodata</h3>
           <div class="grid grid-cols-2 gap-4">
             <input id="b_nama" placeholder="Nama Lengkap" class="col-span-2">
             <input id="b_tempat" placeholder="Tempat Lahir">
             <input type="date" id="b_tgl">
-            <input id="b_nip" placeholder="NIP" class="col-span-2">
+            <input id="b_nip" placeholder="NIP/NUPTK" class="col-span-2">
           </div>
           <button onclick="saveBiodata()" class="mt-6 w-full bg-emerald-600 text-white py-3 rounded-xl font-bold">Perbarui Biodata</button>
         </div>
         <div id="listBiodata" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
       </div>
-
     </div>
   </main>
 </div>
@@ -276,85 +180,69 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-
 const ADMIN_NAME = "Wendelinus Christo Snae, SE";
-const DEFAULT_PASS = "sekolahrpgo";
 let currentUser = "";
-
-function clean(s) { return s.toLowerCase().trim().replace(/\s+/g, ''); }
 
 window.login = async function() {
   const nameInput = document.getElementById("name").value.trim();
   const passInput = document.getElementById("pass").value;
   const users = ["Wendelinus Christo Snae, SE", "Yasintha Tualaka, S.Pd", "Veronika Ngallu Bulu, S.Pd", "Angelis Soares, S.Pd", "Marci T.A Manu, S.Kom", "Esyban A. Banu, S.Pd", "Yohanis Tualaka, S.Sos"];
+  const found = users.find(u => u.toLowerCase().trim() === nameInput.toLowerCase());
 
-  const found = users.find(u => clean(u) === clean(nameInput));
   if(!found) { alert("Nama tidak terdaftar!"); return; }
-
   const userKey = btoa(found).replace(/=/g, "");
   const snap = await get(ref(db, `users_auth/${userKey}`));
-  const dbPass = snap.val() ? snap.val().password : DEFAULT_PASS;
+  const dbPass = snap.val() ? snap.val().password : "sekolahrpgo";
 
   if(passInput === dbPass) {
     currentUser = found;
     document.getElementById("userNameDisplay").innerText = currentUser;
+    document.getElementById("j_guru").value = currentUser;
+    document.getElementById("guru").innerHTML = `<option>${currentUser}</option>`;
     document.getElementById("loginPage").classList.add("hidden");
     document.getElementById("app").classList.remove("hidden");
-    if(clean(currentUser) === clean(ADMIN_NAME)) {
+    if(currentUser === ADMIN_NAME) {
       document.getElementById("adminBtn").classList.remove("hidden");
       document.getElementById("adminSection").classList.remove("hidden");
     }
     loadAll();
-  } else {
-    document.getElementById("error").classList.remove("hidden");
-  }
-};
-
-window.resetUserPassword = function() {
-  const target = document.getElementById("reset_guru_select").value;
-  const newPass = prompt(`Masukkan password baru untuk ${target}:`, DEFAULT_PASS);
-  if(newPass) {
-    const userKey = btoa(target).replace(/=/g, "");
-    set(ref(db, `users_auth/${userKey}`), { password: newPass }).then(() => {
-      alert(`Password ${target} berhasil diupdate!`);
-    });
-  }
-};
-
-window.logout = () => location.reload();
-
-window.show = function(e, id) {
-    const pages = document.querySelectorAll(".page");
-    pages.forEach(p => {
-        p.style.opacity = "0";
-        setTimeout(() => p.classList.add("hidden"), 300);
-    });
-    setTimeout(() => {
-        const target = document.getElementById(id);
-        target.classList.remove("hidden");
-        setTimeout(() => target.style.opacity = "1", 50);
-        document.getElementById("pageTitle").innerText = id.charAt(0).toUpperCase() + id.slice(1);
-    }, 300);
-    document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
-    if(e && e.currentTarget) e.currentTarget.classList.add("active");
-};
-
-window.saveAbsen = function() {
-  const data = { guru: document.getElementById("guru").value, tanggal: document.getElementById("tgl").value, status: document.getElementById("status").value, user: currentUser, waktu: new Date().toLocaleString() };
-  if(!data.tanggal) return alert("Pilih tanggal!");
-  push(ref(db, "absensi"), data).then(() => alert("✅ Berhasil!"));
+  } else { document.getElementById("error").classList.remove("hidden"); }
 };
 
 window.saveJurnal = async function() {
+  const btn = document.getElementById("btnJurnal");
   const file = document.getElementById("foto").files[0];
-  const data = { tanggal: document.getElementById("j_tgl").value, mapel: document.getElementById("mapel").value, mengajar: document.getElementById("mengajar").value, tujuan: document.getElementById("tujuan").value, user: currentUser, foto: file ? await toBase64(file) : "" };
-  if(!data.tanggal) return alert("Isi lengkap!");
-  push(ref(db, "jurnal"), data).then(() => alert("✅ Terposting!"));
+  const data = { 
+    guru: currentUser,
+    tanggal: document.getElementById("j_tgl").value,
+    jam: document.getElementById("j_jam").value,
+    mapel: document.getElementById("mapel").value,
+    mengajar: document.getElementById("mengajar").value,
+    tujuan: document.getElementById("tujuan").value,
+    fileData: file ? await toBase64(file) : "",
+    fileName: file ? file.name : ""
+  };
+  
+  if(!data.tanggal || !data.mengajar) return alert("Mohon isi tanggal dan materi!");
+  btn.innerText = "⏳ Sedang Memposting..."; btn.disabled = true;
+  
+  push(ref(db, "jurnal"), data).then(() => {
+    alert("✅ Jurnal Berhasil Diposting!");
+    btn.innerText = "Posting Jurnal"; btn.disabled = false;
+    document.getElementById("mengajar").value = "";
+    document.getElementById("tujuan").value = "";
+  });
+};
+
+window.saveAbsen = function() {
+  const data = { guru: currentUser, tanggal: document.getElementById("tgl").value, status: document.getElementById("status").value, waktu: new Date().toLocaleString() };
+  if(!data.tanggal) return alert("Pilih tanggal!");
+  push(ref(db, "absensi"), data).then(() => alert("✅ Presensi Berhasil!"));
 };
 
 window.saveBiodata = function() {
   const data = { nama: document.getElementById("b_nama").value, tempat: document.getElementById("b_tempat").value, tgl: document.getElementById("b_tgl").value, nip: document.getElementById("b_nip").value };
-  push(ref(db, "biodata"), data).then(() => alert("✅ Biodata OK!"));
+  push(ref(db, "biodata"), data).then(() => alert("✅ Biodata diperbarui!"));
 };
 
 function loadAll() {
@@ -374,9 +262,13 @@ function loadAll() {
   onValue(ref(db, "jurnal"), snap => {
     const d = snap.val() || {};
     document.getElementById("listJurnal").innerHTML = Object.values(d).reverse().map(x => `
-      <div class="glass-card p-6 flex gap-4">
-        ${x.foto ? `<img src="${x.foto}" class="w-24 h-24 object-cover rounded-xl shadow-sm">` : ''}
-        <div><h4 class="font-bold text-blue-600">${x.mapel}</h4><p class="text-sm text-slate-600">${x.mengajar}</p></div>
+      <div class="glass-card p-6 border-l-4 border-indigo-500">
+        <div class="flex justify-between items-start mb-2">
+            <div><h4 class="font-bold text-indigo-600">${x.mapel} (${x.jam})</h4><p class="text-xs text-slate-400">${x.guru} • ${x.tanggal}</p></div>
+            ${x.fileData ? `<a href="${x.fileData}" download="${x.fileName}" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-1 rounded">💾 Download File</a>` : ''}
+        </div>
+        <p class="text-sm text-slate-600 mb-2"><strong>Materi:</strong> ${x.mengajar}</p>
+        <p class="text-xs text-slate-500 italic"><strong>Tujuan:</strong> ${x.tujuan}</p>
       </div>`).join("");
   });
 }
@@ -388,6 +280,24 @@ function toBase64(file) {
   });
 }
 
+window.resetUserPassword = function() {
+  const target = document.getElementById("reset_guru_select").value;
+  const newPass = prompt(`Masukkan password baru untuk ${target}:`, "sekolahrpgo");
+  if(newPass) {
+    const userKey = btoa(target).replace(/=/g, "");
+    set(ref(db, `users_auth/${userKey}`), { password: newPass }).then(() => alert("Password diupdate!"));
+  }
+};
+
+window.show = (e, id) => {
+    document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
+    document.getElementById(id).classList.remove("hidden");
+    document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+    if(e) e.currentTarget.classList.add("active");
+    document.getElementById("pageTitle").innerText = id.toUpperCase();
+};
+
+window.logout = () => location.reload();
 window.downloadLaporan = async function() {
   const workbook = XLSX.utils.book_new();
   const nodes = ["absensi", "jurnal", "biodata"];
@@ -398,7 +308,7 @@ window.downloadLaporan = async function() {
       XLSX.utils.book_append_sheet(workbook, ws, n.toUpperCase());
     }
   }
-  XLSX.writeFile(workbook, "LAPORAN_RPG_OELEON.xlsx");
+  XLSX.writeFile(workbook, "LAPORAN_OELEON_LENGKAP.xlsx");
 };
 </script>
 </body>
