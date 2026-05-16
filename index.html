@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RPG OELEON - Premium Admin</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --primary: #2563eb;
+    --bg-light: #f8fafc;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--bg-light);
+    color: #1e293b;
+    overflow: hidden;
+  }
+
+  /* Morph Animation */
+  .page {
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: top left;
+    opacity: 1;
+  }
+
+  .page.hidden {
+    display: none;
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+
+  /* Glassmorphism Elements */
+  .glass-card {
+    background: white;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    border-radius: 20px;
+    transition: transform 0.3s ease;
+  }
+
+  .glass-card:hover {
+    transform: translateY(-5px);
+  }
+
+  /* Sidebar Styling */
+  .sidebar {
+    background: white;
+    border-right: 1px solid #e2e8f0;
+  }
+
+  .nav-btn {
+    transition: all 0.3s;
+    border-radius: 12px;
+    color: #64748b;
+  }
+
+  .nav-btn.active {
+    background: #eff6ff;
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  /* Colorful Cards */
+  .card-blue { background: linear-gradient(135deg, #60a5fa, #2563eb); color: white; }
+  .card-purple { background: linear-gradient(135deg, #a78bfa, #7c3aed); color: white; }
+  .card-pink { background: linear-gradient(135deg, #f472b6, #db2777); color: white; }
+  .card-orange { background: linear-gradient(135deg, #fb923c, #ea580c); color: white; }
+
+  /* Input Styling */
+  input, select, textarea {
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    padding: 10px !important;
+    transition: all 0.3s;
+  }
+
+  input:focus {
+    border-color: var(--primary) !important;
+    ring: 2px solid #bfdbfe;
+  }
+</style>
+</head>
+
+<body class="h-screen flex">
+
+<div id="loginPage" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-50">
+  <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md border border-slate-100">
+    <div class="text-center mb-8">
+      <div class="w-20 h-20 bg-blue-600 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg shadow-blue-200">
+        <span class="text-white text-3xl font-bold">RPG</span>
+      </div>
+      <h2 class="text-2xl font-bold text-slate-800">Selamat Datang</h2>
+      <p class="text-slate-500">Silakan login untuk mengakses sistem</p>
+    </div>
+
+    <div class="space-y-4">
+      <input id="name" type="text" placeholder="Nama Lengkap" class="w-full">
+      <input id="pass" type="password" placeholder="Password" class="w-full">
+      <p id="error" class="text-red-500 text-sm hidden">Nama atau Password salah!</p>
+      <button onclick="login()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-blue-100">
+        Masuk ke Sistem
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="app" class="hidden w-full flex overflow-hidden">
+  
+  <aside class="sidebar w-72 flex flex-col p-6">
+    <div class="flex items-center gap-3 mb-10 px-2">
+      <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-white shadow-md">R</div>
+      <span class="font-bold text-xl tracking-tight">OELEON <span class="text-blue-600 text-xs">PRO</span></span>
+    </div>
+
+    <nav class="flex-1 space-y-2">
+      <button onclick="show(event,'dashboard')" class="nav-btn active w-full flex items-center gap-3 px-4 py-3">
+        <span>🏠</span> Dashboard
+      </button>
+      <button onclick="show(event,'absen')" class="nav-btn w-full flex items-center gap-3 px-4 py-3">
+        <span>📅</span> Presensi Guru
+      </button>
+      <button onclick="show(event,'jurnal')" class="nav-btn w-full flex items-center gap-3 px-4 py-3">
+        <span>📖</span> Jurnal Harian
+      </button>
+      <button onclick="show(event,'biodata')" class="nav-btn w-full flex items-center gap-3 px-4 py-3">
+        <span>👤</span> Biodata Guru
+      </button>
+    </nav>
+
+    <div class="pt-6 border-t border-slate-100">
+      <button id="adminBtn" onclick="downloadLaporan()" class="hidden w-full bg-amber-500 hover:bg-amber-600 text-white rounded-xl py-3 font-semibold mb-3 flex items-center justify-center gap-2">
+        📥 Unduh Laporan
+      </button>
+      <button onclick="logout()" class="w-full text-slate-400 hover:text-red-500 flex items-center gap-3 px-4 py-3 transition">
+        <span>🚪</span> Keluar
+      </button>
+    </div>
+  </aside>
+
+  <main class="flex-1 flex flex-col overflow-hidden bg-slate-50/50">
+    <header class="h-20 bg-white border-b border-slate-100 px-8 flex items-center justify-between">
+      <h2 id="pageTitle" class="text-xl font-bold text-slate-800">Dashboard</h2>
+      <div class="flex items-center gap-4">
+        <div class="text-right">
+          <p id="userNameDisplay" class="font-semibold text-sm text-slate-700"></p>
+          <p class="text-xs text-green-500 flex items-center justify-end gap-1">
+            <span class="w-2 h-2 bg-green-500 rounded-full"></span> Aktif
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <div class="flex-1 overflow-y-auto p-8">
+      
+      <div id="dashboard" class="page space-y-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div class="glass-card card-blue p-6 rounded-3xl">
+            <p class="text-blue-100 text-sm">Hadir</p>
+            <h3 id="statHadir" class="text-3xl font-bold">0</h3>
+          </div>
+          <div class="glass-card card-purple p-6 rounded-3xl">
+            <p class="text-purple-100 text-sm">Sakit</p>
+            <h3 id="statSakit" class="text-3xl font-bold">0</h3>
+          </div>
+          <div class="glass-card card-pink p-6 rounded-3xl">
+            <p class="text-pink-100 text-sm">Izin</p>
+            <h3 id="statIzin" class="text-3xl font-bold">0</h3>
+          </div>
+          <div class="glass-card card-orange p-6 rounded-3xl">
+            <p class="text-orange-100 text-sm">Alpa</p>
+            <h3 id="statAlpa" class="text-3xl font-bold">0</h3>
+          </div>
+        </div>
+        
+        <div class="glass-card p-6">
+          <h3 class="font-bold text-lg mb-4">Pengumuman Terbaru</h3>
+          <p class="text-slate-500 italic">Belum ada pengumuman hari ini.</p>
+        </div>
+      </div>
+
+      <div id="absen" class="page hidden space-y-6">
+        <div class="glass-card p-8 max-w-2xl mx-auto">
+          <h3 class="text-xl font-bold mb-6">Formulir Presensi</h3>
+          <div class="space-y-4">
+            <label class="block text-sm font-medium text-slate-700">Pilih Guru</label>
+            <select id="guru" class="w-full">
+              <option value="Wendelinus Christo Snae, SE">Wendelinus Christo Snae, SE</option>
+              <option value="Yasintha Tualaka, S.Pd">Yasintha Tualaka, S.Pd</option>
+              <option value="Veronika Ngallu Bulu, S.Pd">Veronika Ngallu Bulu, S.Pd</option>
+              <option value="Angelis Soares, S.Pd">Angelis Soares, S.Pd</option>
+              <option value="Marci T.A Manu, S.Kom">Marci T.A Manu, S.Kom</option>
+              <option value="Esyban A. Banu, S.Pd">Esyban A. Banu, S.Pd</option>
+              <option value="Yohanis Tualaka, S.Sos">Yohanis Tualaka, S.Sos</option>
+            </select>
+            <input type="date" id="tgl" class="w-full">
+            <select id="status" class="w-full">
+              <option>Hadir</option><option>Sakit</option><option>Izin</option><option>Alpa</option>
+            </select>
+            <button onclick="saveAbsen()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg shadow-blue-100">Simpan Presensi</button>
+          </div>
+        </div>
+        <div id="listAbsen" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+      </div>
+
+      <div id="jurnal" class="page hidden space-y-6">
+        <div class="glass-card p-8">
+          <h3 class="text-xl font-bold mb-6 text-center">Jurnal Mengajar</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+              <input type="date" id="j_tgl" class="w-full">
+              <input type="file" id="foto" class="w-full text-sm">
+              <select id="mapel" class="w-full">
+                <option>Matematika</option><option>Bahasa Indonesia</option><option>IPA</option><option>IPS</option><option>Informatika</option><option>Agama</option>
+              </select>
+            </div>
+            <div class="space-y-4">
+              <textarea id="mengajar" placeholder="Materi yang diajarkan..." class="w-full h-24"></textarea>
+              <textarea id="tujuan" placeholder="Tujuan pembelajaran..." class="w-full h-24"></textarea>
+            </div>
+          </div>
+          <button onclick="saveJurnal()" class="mt-6 w-full bg-indigo-600 text-white py-3 rounded-xl font-bold shadow-lg">Posting Jurnal</button>
+        </div>
+        <div id="listJurnal" class="space-y-4"></div>
+      </div>
+
+      <div id="biodata" class="page hidden space-y-6">
+        <div class="glass-card p-8 max-w-2xl mx-auto">
+          <h3 class="text-xl font-bold mb-6">Kelengkapan Profil</h3>
+          <div class="grid grid-cols-2 gap-4">
+            <input id="b_nama" placeholder="Nama Lengkap" class="col-span-2">
+            <input id="b_tempat" placeholder="Tempat Lahir">
+            <input type="date" id="b_tgl">
+            <input id="b_nip" placeholder="NIP" class="col-span-2">
+          </div>
+          <button onclick="saveBiodata()" class="mt-6 w-full bg-emerald-600 text-white py-3 rounded-xl font-bold">Perbarui Biodata</button>
+        </div>
+        <div id="listBiodata" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, push, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "API_KEY",
+  authDomain: "PROJECT.firebaseapp.com",
+  databaseURL: "https://guru-rpgo-default-rtdb.asia-southeast1.firebasedatabase.app/",
+  projectId: "PROJECT",
+  storageBucket: "PROJECT.appspot.com",
+  messagingSenderId: "ID",
+  appId: "APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const ADMIN_NAME = "Wendelinus Christo Snae, SE";
+const PASSWORD = "sekolahrpgo";
+let currentUser = "";
+
+// MORPH NAVIGATION
+window.show = function(e, id) {
+    const pages = document.querySelectorAll(".page");
+    const navBtns = document.querySelectorAll(".nav-btn");
+    
+    // Smooth transition
+    pages.forEach(p => {
+        p.style.opacity = "0";
+        setTimeout(() => p.classList.add("hidden"), 300);
+    });
+
+    setTimeout(() => {
+        const target = document.getElementById(id);
+        target.classList.remove("hidden");
+        setTimeout(() => target.style.opacity = "1", 50);
+        document.getElementById("pageTitle").innerText = id.charAt(0).toUpperCase() + id.slice(1);
+    }, 300);
+
+    navBtns.forEach(b => b.classList.remove("active"));
+    if(e && e.currentTarget) e.currentTarget.classList.add("active");
+};
+
+// LOGIN LOGIC
+window.login = function() {
+  const name = document.getElementById("name").value.trim();
+  const pass = document.getElementById("pass").value;
+
+  if(name && pass === PASSWORD) {
+    currentUser = name;
+    document.getElementById("userNameDisplay").innerText = currentUser;
+    document.getElementById("loginPage").classList.add("hidden");
+    document.getElementById("app").classList.remove("hidden");
+    
+    if(currentUser === ADMIN_NAME) document.getElementById("adminBtn").classList.remove("hidden");
+    loadAll();
+  } else {
+    document.getElementById("error").classList.remove("hidden");
+  }
+};
+
+window.logout = () => location.reload();
+
+// DATA OPERATIONS (Sama seperti sebelumnya namun dengan UI Feedback)
+window.saveAbsen = function() {
+  const data = {
+    guru: document.getElementById("guru").value,
+    tanggal: document.getElementById("tgl").value,
+    status: document.getElementById("status").value,
+    user: currentUser,
+    waktu: new Date().toLocaleString()
+  };
+  if(!data.tanggal) return alert("Pilih tanggal!");
+  push(ref(db, "absensi"), data).then(() => alert("✅ Presensi berhasil!"));
+};
+
+window.saveJurnal = async function() {
+  const file = document.getElementById("foto").files[0];
+  const data = {
+    tanggal: document.getElementById("j_tgl").value,
+    mapel: document.getElementById("mapel").value,
+    mengajar: document.getElementById("mengajar").value,
+    tujuan: document.getElementById("tujuan").value,
+    user: currentUser,
+    foto: file ? await toBase64(file) : ""
+  };
+  if(!data.tanggal || !data.mengajar) return alert("Isi jurnal dengan lengkap!");
+  push(ref(db, "jurnal"), data).then(() => {
+    alert("✅ Jurnal terposting!");
+    document.getElementById("mengajar").value = "";
+  });
+};
+
+window.saveBiodata = function() {
+  const data = {
+    nama: document.getElementById("b_nama").value,
+    tempat: document.getElementById("b_tempat").value,
+    tgl: document.getElementById("b_tgl").value,
+    nip: document.getElementById("b_nip").value
+  };
+  push(ref(db, "biodata"), data).then(() => alert("✅ Biodata diperbarui!"));
+};
+
+// REALTIME LOADERS
+function loadAll() {
+  onValue(ref(db, "absensi"), snap => {
+    const data = snap.val() || {};
+    let s = { Hadir:0, Sakit:0, Izin:0, Alpa:0 };
+    document.getElementById("listAbsen").innerHTML = Object.values(data).reverse().map(x => {
+      if(s[x.status] !== undefined) s[x.status]++;
+      return `<div class="glass-card p-4 border-l-4 border-blue-500">
+                <p class="font-bold">${x.guru}</p>
+                <p class="text-xs text-slate-400">${x.tanggal} • ${x.status}</p>
+              </div>`;
+    }).join("");
+    document.getElementById("statHadir").innerText = s.Hadir;
+    document.getElementById("statSakit").innerText = s.Sakit;
+    document.getElementById("statIzin").innerText = s.Izin;
+    document.getElementById("statAlpa").innerText = s.Alpa;
+  });
+
+  onValue(ref(db, "jurnal"), snap => {
+    const d = snap.val() || {};
+    document.getElementById("listJurnal").innerHTML = Object.values(d).reverse().map(x => `
+      <div class="glass-card p-6 flex gap-4">
+        ${x.foto ? `<img src="${x.foto}" class="w-24 h-24 object-cover rounded-xl shadow-sm">` : ''}
+        <div>
+          <h4 class="font-bold text-blue-600">${x.mapel}</h4>
+          <p class="text-sm text-slate-600">${x.mengajar}</p>
+          <p class="text-[10px] text-slate-400 mt-2">${x.tanggal} oleh ${x.user}</p>
+        </div>
+      </div>`).join("");
+  });
+}
+
+function toBase64(file) {
+  return new Promise((r, j) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => r(reader.result);
+    reader.onerror = e => j(e);
+  });
+}
+
+window.downloadLaporan = async function() {
+  const workbook = XLSX.utils.book_new();
+  const nodes = ["absensi", "jurnal", "biodata"];
+  for (let n of nodes) {
+    const snap = await get(ref(db, n));
+    if (snap.val()) {
+      const ws = XLSX.utils.json_to_sheet(Object.values(snap.val()));
+      XLSX.utils.book_append_sheet(workbook, ws, n.toUpperCase());
+    }
+  }
+  XLSX.writeFile(workbook, "LAPORAN_RPG_OELEON.xlsx");
+};
+</script>
+
+</body>
+</html>
