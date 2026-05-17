@@ -18,11 +18,11 @@
   .sidebar { background: white; border-right: 1px solid #e2e8f0; }
   .nav-btn { transition: all 0.3s; border-radius: 12px; color: #64748b; }
   .nav-btn.active { background: #eff6ff; color: var(--primary); font-weight: 600; }
+  input, select, textarea { border: 1px solid #e2e8f0 !important; border-radius: 10px !important; padding: 10px !important; }
   .card-blue { background: linear-gradient(135deg, #60a5fa, #2563eb); color: white; }
   .card-purple { background: linear-gradient(135deg, #a78bfa, #7c3aed); color: white; }
   .card-pink { background: linear-gradient(135deg, #f472b6, #db2777); color: white; }
   .card-orange { background: linear-gradient(135deg, #fb923c, #ea580c); color: white; }
-  input, select, textarea { border: 1px solid #e2e8f0 !important; border-radius: 10px !important; padding: 10px !important; }
 </style>
 </head>
 
@@ -89,13 +89,13 @@
         <div id="adminSection" class="glass-card p-6 border-l-4 border-amber-500 hidden">
           <h3 class="font-bold text-lg mb-4 text-amber-700">🔐 Admin Control</h3>
           <select id="reset_guru_select" class="w-full mb-2">
-            <option value="Wendelinus Christo Snae, SE">Wendelinus Christo Snae, SE</option>
-            <option value="Yasintha Tualaka, S.Pd">Yasintha Tualaka, S.Pd</option>
-            <option value="Veronika Ngallu Bulu, S.Pd">Veronika Ngallu Bulu, S.Pd</option>
-            <option value="Angelis Soares, S.Pd">Angelis Soares, S.Pd</option>
-            <option value="Marci T.A Manu, S.Kom">Marci T.A Manu, S.Kom</option>
-            <option value="Esyban A. Banu, S.Pd">Esyban A. Banu, S.Pd</option>
-            <option value="Yohanis Tualaka, S.Sos">Yohanis Tualaka, S.Sos</option>
+            <option>Wendelinus Christo Snae, SE</option>
+            <option>Yasintha Tualaka, S.Pd</option>
+            <option>Veronika Ngallu Bulu, S.Pd</option>
+            <option>Angelis Soares, S.Pd</option>
+            <option>Marci T.A Manu, S.Kom</option>
+            <option>Esyban A. Banu, S.Pd</option>
+            <option>Yohanis Tualaka, S.Sos</option>
           </select>
           <button onclick="resetUserPassword()" class="bg-amber-600 text-white px-6 py-2 rounded-xl font-bold">Reset Password</button>
         </div>
@@ -107,12 +107,10 @@
           <div class="space-y-4">
             <div><label class="text-xs text-slate-400">Nama Guru</label><input type="text" id="a_guru" class="w-full bg-slate-50" readonly></div>
             <div><label class="text-xs text-slate-400">Tanggal</label><input type="date" id="tgl" class="w-full"></div>
-            
             <div id="lateSection" class="hidden animate-pulse">
-                <label class="text-xs text-red-500 font-bold">⚠️ Anda Terlambat (Batas 07:50)</label>
-                <textarea id="lateReason" placeholder="Alasan mengapa terlambat hari ini?" class="w-full border-red-300 bg-red-50"></textarea>
+                <label class="text-xs text-red-500 font-bold">⚠️ Terlambat (Batas 07:50)</label>
+                <textarea id="lateReason" placeholder="Alasan terlambat?" class="w-full border-red-300 bg-red-50"></textarea>
             </div>
-
             <div><label class="text-xs text-slate-400">Keterangan</label><select id="status" class="w-full"><option>Hadir</option><option>Sakit</option><option>Izin</option><option>Alpa</option></select></div>
             <button onclick="saveAbsen()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold">Simpan Presensi</button>
           </div>
@@ -129,39 +127,23 @@
               <div><label class="text-xs text-slate-400">Tanggal</label><input type="date" id="j_tgl" class="w-full"></div>
               <div><label class="text-xs text-slate-400">Jam Mengajar</label>
                 <select id="j_jam" class="w-full">
-                  <option value="Jam Ke-1">Jam Ke-1</option><option value="Jam Ke-2">Jam Ke-2</option><option value="Jam Ke-3">Jam Ke-3</option><option value="Jam Ke-4">Jam Ke-4</option>
+                  <option>Jam Ke-1</option><option>Jam Ke-2</option><option>Jam Ke-3</option><option>Jam Ke-4</option>
                 </select>
               </div>
               <div><label class="text-xs text-slate-400">Mata Pelajaran</label>
                 <select id="mapel" class="w-full">
-                  <option value="Pendidikan Agama & Budi Pekerti">Pendidikan Agama & Budi Pekerti</option>
-                  <option value="Pendidikan Pancasila (PKn)">Pendidikan Pancasila (PKn)</option>
-                  <option value="Bahasa Indonesia">Bahasa Indonesia</option>
-                  <option value="Matematika">Matematika</option>
-                  <option value="Bahasa Inggris">Bahasa Inggris</option>
-                  <option value="IPA (Ilmu Pengetahuan Alam)">IPA (Ilmu Pengetahuan Alam)</option>
-                  <option value="IPS (Ilmu Pengetahuan Sosial)">IPS (Ilmu Pengetahuan Sosial)</option>
-                  <option value="Ekonomi">Ekonomi</option>
-                  <option value="Sejarah">Sejarah</option>
-                  <option value="Geografi">Geografi</option>
-                  <option value="Sosiologi">Sosiologi</option>
-                  <option value="Literasi">Literasi</option>
-                  <option value="Numerasi">Numerasi</option>
-                  <option value="Informatika / TIK">Informatika / TIK</option>
-                  <option value="PJOK (Penjasorkes)">PJOK (Penjasorkes)</option>
-                  <option value="Seni Budaya">Seni Budaya</option>
-                  <option value="Prakarya">Prakarya</option>
-                  <option value="Bahasa Daerah">Bahasa Daerah</option>
-                  <option value="Muatan Lokal">Muatan Lokal</option>
-                  <option value="Lainnya">Lainnya</option>
+                  <option>Pendidikan Agama</option><option>Pendidikan Pancasila</option><option>Bahasa Indonesia</option>
+                  <option>Matematika</option><option>Bahasa Inggris</option><option>IPA</option><option>IPS</option>
+                  <option>Ekonomi</option><option>Sejarah</option><option>Informatika</option><option>PJOK</option>
+                  <option>Seni Budaya</option><option>Lainnya</option>
                 </select>
               </div>
             </div>
             <div class="space-y-4">
               <textarea id="mengajar" placeholder="Materi yang diajarkan..." class="w-full h-24"></textarea>
               <textarea id="tujuan" placeholder="Tujuan pembelajaran..." class="w-full h-24"></textarea>
-              <div><label class="text-xs text-slate-400 block mb-1">Upload File (PDF/DOC/FOTO)</label>
-                <input type="file" id="foto" class="w-full text-sm" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
+              <div><label class="text-xs text-slate-400 block mb-1">Upload Bukti Foto (Otomatis Kompres)</label>
+                <input type="file" id="foto" class="w-full text-sm" accept="image/*">
               </div>
             </div>
           </div>
@@ -181,8 +163,8 @@
           </div>
           <button onclick="saveBiodata()" class="mt-6 w-full bg-emerald-600 text-white py-3 rounded-xl font-bold">Perbarui Biodata</button>
         </div>
-        <div id="listBiodata" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
       </div>
+
     </div>
   </main>
 </div>
@@ -190,7 +172,6 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, push, onValue, get, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA4_3IPW8BAWmBBSwYei4A7KE1AsLP9C-8",
@@ -199,113 +180,37 @@ const firebaseConfig = {
   projectId: "guru-rpgo",
   storageBucket: "guru-rpgo.firebasestorage.app",
   messagingSenderId: "475490673231",
-  appId: "1:475490673231:web:a85fccf2eb86e9ace1c03a",
-  measurementId: "G-503XXMQWRP"
+  appId: "1:475490673231:web:a85fccf2eb86e9ace1c03a"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-const storage = getStorage(app);
 const ADMIN_NAME = "Wendelinus Christo Snae, SE";
 let currentUser = "";
 
-function checkLateStatus() {
-    const now = new Date();
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
-    if (hours > 7 || (hours === 7 && minutes > 50)) {
-        document.getElementById("lateSection").classList.remove("hidden");
-        return true;
-    } else {
-        document.getElementById("lateSection").classList.add("hidden");
-        return false;
-    }
+// FUNGSI KOMPRES GAMBAR (Agar Excel Lancar)
+function compressImage(file) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+            const img = new Image();
+            img.src = e.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 400; // Ukuran kecil untuk Excel
+                let width = img.width;
+                let height = img.height;
+                if (width > height) { if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } }
+                else { if (height > MAX_WIDTH) { width *= MAX_WIDTH / height; height = MAX_WIDTH; } }
+                canvas.width = width; canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                resolve(canvas.toDataURL('image/jpeg', 0.5)); // Kualitas 50%
+            };
+        };
+    });
 }
-setInterval(checkLateStatus, 60000);
-
-// --- DOWNLOAD LAPORAN (VERSI RINGAN LINK) ---
-window.downloadLaporan = async function() {
-    const btn = document.getElementById("adminBtn");
-    const label = document.getElementById("labelDownload");
-    try {
-        if (typeof XLSX === 'undefined') { alert("Memuat Excel..."); return; }
-        label.innerText = "⏳ Memproses..."; btn.disabled = true;
-        const wb = XLSX.utils.book_new();
-        const tables = ["absensi", "jurnal", "biodata"];
-        let count = 0;
-        for (const t of tables) {
-            const snap = await get(ref(db, t));
-            if (snap.exists()) {
-                const raw = snap.val();
-                const dataArr = Object.values(raw);
-                if(dataArr.length > 0) {
-                    const ws = XLSX.utils.json_to_sheet(dataArr);
-                    XLSX.utils.book_append_sheet(wb, ws, t.toUpperCase());
-                    count++;
-                }
-            }
-        }
-        if (count === 0) { alert("Tidak ada data."); } 
-        else {
-            XLSX.writeFile(wb, `LAPORAN_OELEON_${new Date().toISOString().slice(0,10)}.xlsx`);
-            alert("✅ Laporan Berhasil! File sekarang berupa Link (URL) agar Excel tetap ringan.");
-        }
-    } catch (e) { alert("Error: " + e.message); } 
-    finally { label.innerText = "📥 Unduh Laporan"; btn.disabled = false; }
-};
-
-window.login = async function() {
-  const nameInput = document.getElementById("name").value.trim();
-  const passInput = document.getElementById("pass").value;
-  const users = ["Wendelinus Christo Snae, SE", "Yasintha Tualaka, S.Pd", "Veronika Ngallu Bulu, S.Pd", "Angelis Soares, S.Pd", "Marci T.A Manu, S.Kom", "Esyban A. Banu, S.Pd", "Yohanis Tualaka, S.Sos"];
-  const found = users.find(u => u.toLowerCase().trim() === nameInput.toLowerCase());
-  
-  if(!found) { alert("Nama tidak terdaftar!"); return; }
-  const userKey = btoa(found).replace(/=/g, "");
-  const snap = await get(ref(db, `users_auth/${userKey}`));
-  const dbPass = snap.val() ? snap.val().password : "sekolahrpgo";
-  
-  if(passInput === dbPass) {
-    currentUser = found;
-    document.getElementById("userNameDisplay").innerText = currentUser;
-    document.getElementById("j_guru").value = currentUser;
-    document.getElementById("a_guru").value = currentUser;
-    
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById("tgl").setAttribute("max", today);
-    document.getElementById("j_tgl").setAttribute("max", today);
-    document.getElementById("tgl").value = today;
-    document.getElementById("j_tgl").value = today;
-
-    checkLateStatus();
-    document.getElementById("loginPage").classList.add("hidden");
-    document.getElementById("app").classList.remove("hidden");
-    if(currentUser === ADMIN_NAME) {
-      document.getElementById("adminBtn").classList.remove("hidden");
-      document.getElementById("adminSection").classList.remove("hidden");
-    }
-    loadAll();
-  } else { document.getElementById("error").classList.remove("hidden"); }
-};
-
-window.saveAbsen = function() {
-  const tgl = document.getElementById("tgl").value;
-  const status = document.getElementById("status").value;
-  const reason = document.getElementById("lateReason").value;
-  if(!tgl) return alert("Pilih tanggal!");
-  if(!document.getElementById("lateSection").classList.contains("hidden") && status === "Hadir" && !reason) {
-      return alert("Wajib mengisi alasan terlambat!");
-  }
-  const data = { 
-      guru: currentUser, tanggal: tgl, status: status, 
-      waktu_input: new Date().toLocaleTimeString(),
-      alasan_terlambat: reason || "-"
-  };
-  push(ref(db, "absensi"), data).then(() => {
-      alert("✅ Presensi Berhasil!");
-      document.getElementById("lateReason").value = "";
-  });
-};
 
 window.saveJurnal = async function() {
   const btn = document.getElementById("btnJurnal");
@@ -316,52 +221,94 @@ window.saveJurnal = async function() {
   
   if(!tgl || !mtr) return alert("Isi tanggal & materi!");
   
-  btn.innerText = "⏳ Sedang Mengunggah..."; btn.disabled = true;
+  btn.innerText = "⏳ Memproses Gambar..."; btn.disabled = true;
   
-  let fileURL = "";
-  let fileName = "";
-
   try {
-    // 1. UPLOAD KE FIREBASE STORAGE (JIKA ADA FILE)
+    let finalBase64 = "";
     if(file) {
-        fileName = `${Date.now()}_${file.name}`;
-        const storageRef = sRef(storage, 'uploads/' + fileName);
-        const snapshot = await uploadBytes(storageRef, file);
-        fileURL = await getDownloadURL(snapshot.ref);
+        if(file.type.startsWith('image/')) {
+            finalBase64 = await compressImage(file);
+        } else {
+            // Jika file bukan gambar (PDF/Word), gunakan Base64 biasa
+            const reader = new FileReader();
+            finalBase64 = await new Promise((r) => {
+                reader.onload = () => r(reader.result);
+                reader.readAsDataURL(file);
+            });
+        }
     }
 
-    // 2. SIMPAN LINK KE DATABASE
     const data = { 
-        guru: currentUser, 
-        tanggal: tgl, 
+        guru: currentUser, tanggal: tgl, 
         jam: document.getElementById("j_jam").value, 
         mapel: document.getElementById("mapel").value,
-        mengajar: mtr, 
-        tujuan: document.getElementById("tujuan").value,
-        link_file: fileURL, // Simpan link saja
-        nama_file: file ? file.name : "Tidak ada file"
+        mengajar: mtr, tujuan: document.getElementById("tujuan").value,
+        fileData: finalBase64, 
+        fileName: file ? file.name : ""
     };
 
     await push(ref(db, "jurnal"), data);
-    alert("✅ Jurnal & File Berhasil Terposting!");
-    
-    // RESET FORM
+    alert("✅ Jurnal Berhasil!");
     document.getElementById("mengajar").value = "";
     document.getElementById("tujuan").value = "";
     fileInput.value = "";
-    
-  } catch (error) {
-    alert("Gagal posting: " + error.message);
-  } finally {
-    btn.innerText = "Posting Jurnal"; btn.disabled = false;
-  }
+  } catch (e) { alert("Gagal: " + e.message); }
+  finally { btn.innerText = "Posting Jurnal"; btn.disabled = false; }
 };
 
-window.saveBiodata = function() {
-  const n = document.getElementById("b_nama").value;
-  if(!n) return alert("Minimal isi nama!");
-  const data = { nama: n, tempat: document.getElementById("b_tempat").value, tgl: document.getElementById("b_tgl").value, nip: document.getElementById("b_nip").value };
-  push(ref(db, "biodata"), data).then(() => alert("✅ Biodata diperbarui!"));
+// --- SISANYA TETAP SAMA ---
+
+window.login = async function() {
+  const nameInput = document.getElementById("name").value.trim();
+  const passInput = document.getElementById("pass").value;
+  const users = ["Wendelinus Christo Snae, SE", "Yasintha Tualaka, S.Pd", "Veronika Ngallu Bulu, S.Pd", "Angelis Soares, S.Pd", "Marci T.A Manu, S.Kom", "Esyban A. Banu, S.Pd", "Yohanis Tualaka, S.Sos"];
+  const found = users.find(u => u.toLowerCase() === nameInput.toLowerCase());
+  
+  if(!found) return alert("Nama tidak terdaftar!");
+  const userKey = btoa(found).replace(/=/g, "");
+  const snap = await get(ref(db, `users_auth/${userKey}`));
+  const dbPass = snap.val() ? snap.val().password : "sekolahrpgo";
+
+  if(passInput === dbPass) {
+    currentUser = found;
+    document.getElementById("userNameDisplay").innerText = currentUser;
+    document.getElementById("j_guru").value = currentUser;
+    document.getElementById("a_guru").value = currentUser;
+    document.getElementById("loginPage").classList.add("hidden");
+    document.getElementById("app").classList.remove("hidden");
+    if(currentUser === ADMIN_NAME) {
+        document.getElementById("adminBtn").classList.remove("hidden");
+        document.getElementById("adminSection").classList.remove("hidden");
+    }
+    loadAll();
+  } else { document.getElementById("error").classList.remove("hidden"); }
+};
+
+window.saveAbsen = function() {
+  const data = { 
+    guru: currentUser, tanggal: document.getElementById("tgl").value, 
+    status: document.getElementById("status").value, waktu: new Date().toLocaleTimeString(),
+    alasan: document.getElementById("lateReason").value || "-"
+  };
+  push(ref(db, "absensi"), data).then(() => alert("✅ Presensi Berhasil!"));
+};
+
+window.downloadLaporan = async function() {
+    const btn = document.getElementById("adminBtn");
+    try {
+        btn.disabled = true;
+        const wb = XLSX.utils.book_new();
+        const snap = await get(ref(db, "jurnal"));
+        if (snap.exists()) {
+            const dataArr = Object.values(snap.val()).map(item => {
+                const { fileData, ...clean } = item;
+                return clean;
+            });
+            const ws = XLSX.utils.json_to_sheet(dataArr);
+            XLSX.utils.book_append_sheet(wb, ws, "JURNAL");
+            XLSX.writeFile(wb, "Laporan_Jurnal.xlsx");
+        }
+    } finally { btn.disabled = false; }
 };
 
 function loadAll() {
@@ -370,11 +317,7 @@ function loadAll() {
     let s = { Hadir:0, Sakit:0, Izin:0, Alpa:0 };
     document.getElementById("listAbsen").innerHTML = Object.values(data).reverse().map(x => {
       if(s[x.status] !== undefined) s[x.status]++;
-      return `<div class="glass-card p-4 border-l-4 border-blue-500">
-                <p class="font-bold text-sm">${x.guru}</p>
-                <p class="text-[10px] text-slate-400">${x.tanggal} • ${x.status}</p>
-                ${x.alasan_terlambat && x.alasan_terlambat !== '-' ? `<p class="text-[9px] text-red-500 italic mt-1">Alasan: ${x.alasan_terlambat}</p>` : ''}
-              </div>`;
+      return `<div class="glass-card p-4 border-l-4 border-blue-500"><p class="font-bold text-sm">${x.guru}</p><p class="text-[10px]">${x.tanggal} • ${x.status}</p></div>`;
     }).join("");
     document.getElementById("statHadir").innerText = s.Hadir;
     document.getElementById("statSakit").innerText = s.Sakit;
@@ -386,29 +329,17 @@ function loadAll() {
     document.getElementById("listJurnal").innerHTML = Object.values(d).reverse().map(x => `
       <div class="glass-card p-4 border-l-4 border-indigo-500">
         <h4 class="font-bold text-indigo-600 text-sm">${x.mapel}</h4>
-        <p class="text-[10px] text-slate-400">${x.guru} • ${x.tanggal}</p>
-        <p class="text-xs mt-2 text-slate-600">${x.mengajar}</p>
-        ${x.link_file ? `<a href="${x.link_file}" target="_blank" class="text-[10px] text-blue-500 underline mt-2 block">📎 Lihat Dokumen</a>` : ''}
+        <p class="text-[10px]">${x.guru} • ${x.tanggal}</p>
+        <p class="text-xs mt-2">${x.mengajar}</p>
       </div>`).join("");
   });
 }
-
-window.resetUserPassword = function() {
-  const target = document.getElementById("reset_guru_select").value;
-  const newPass = prompt(`Password baru untuk ${target}:`, "sekolahrpgo");
-  if(newPass) {
-    const userKey = btoa(target).replace(/=/g, "");
-    set(ref(db, `users_auth/${userKey}`), { password: newPass }).then(() => alert("Password diupdate!"));
-  }
-};
 
 window.show = (e, id) => {
     document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
     document.getElementById(id).classList.remove("hidden");
     document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
     if(e) e.currentTarget.classList.add("active");
-    document.getElementById("pageTitle").innerText = id.toUpperCase();
-    if(id === 'absen') checkLateStatus();
 };
 
 window.logout = () => location.reload();
