@@ -160,7 +160,7 @@
             <div class="space-y-4">
               <textarea id="mengajar" placeholder="Materi yang diajarkan..." class="w-full h-24"></textarea>
               <textarea id="tujuan" placeholder="Tujuan pembelajaran..." class="w-full h-24"></textarea>
-              <div><label class="text-xs text-slate-400 block mb-1">Upload File</label>
+              <div><label class="text-xs text-slate-400 block mb-1">Upload File (PDF/DOC/FOTO)</label>
                 <input type="file" id="foto" class="w-full text-sm" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
               </div>
             </div>
@@ -190,6 +190,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, push, onValue, get, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA4_3IPW8BAWmBBSwYei4A7KE1AsLP9C-8",
@@ -204,16 +205,14 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const storage = getStorage(app);
 const ADMIN_NAME = "Wendelinus Christo Snae, SE";
 let currentUser = "";
 
-// FUNGSI CEK JAM TERLAMBAT
 function checkLateStatus() {
     const now = new Date();
     const hours = now.getHours();
     const minutes = now.getMinutes();
-    
-    // Batas 07:50
     if (hours > 7 || (hours === 7 && minutes > 50)) {
         document.getElementById("lateSection").classList.remove("hidden");
         return true;
@@ -222,11 +221,9 @@ function checkLateStatus() {
         return false;
     }
 }
-
-// Interval untuk cek jam setiap menit agar input dinamis
 setInterval(checkLateStatus, 60000);
 
-// --- FUNGSI DOWNLOAD ---
+// --- DOWNLOAD LAPORAN (VERSI RINGAN LINK) ---
 window.downloadLaporan = async function() {
     const btn = document.getElementById("adminBtn");
     const label = document.getElementById("labelDownload");
@@ -240,10 +237,7 @@ window.downloadLaporan = async function() {
             const snap = await get(ref(db, t));
             if (snap.exists()) {
                 const raw = snap.val();
-                const dataArr = Object.values(raw).map(item => {
-                    const { fileData, ...clean } = item;
-                    return clean;
-                });
+                const dataArr = Object.values(raw);
                 if(dataArr.length > 0) {
                     const ws = XLSX.utils.json_to_sheet(dataArr);
                     XLSX.utils.book_append_sheet(wb, ws, t.toUpperCase());
@@ -254,7 +248,7 @@ window.downloadLaporan = async function() {
         if (count === 0) { alert("Tidak ada data."); } 
         else {
             XLSX.writeFile(wb, `LAPORAN_OELEON_${new Date().toISOString().slice(0,10)}.xlsx`);
-            alert("✅ Sukses!");
+            alert("✅ Laporan Berhasil! File sekarang berupa Link (URL) agar Excel tetap ringan.");
         }
     } catch (e) { alert("Error: " + e.message); } 
     finally { label.innerText = "📥 Unduh Laporan"; btn.disabled = false; }
@@ -277,7 +271,6 @@ window.login = async function() {
     document.getElementById("j_guru").value = currentUser;
     document.getElementById("a_guru").value = currentUser;
     
-    // LIMIT TANGGAL HANYA SAMPAI HARI INI
     const today = new Date().toISOString().split('T')[0];
     document.getElementById("tgl").setAttribute("max", today);
     document.getElementById("j_tgl").setAttribute("max", today);
@@ -285,7 +278,6 @@ window.login = async function() {
     document.getElementById("j_tgl").value = today;
 
     checkLateStatus();
-
     document.getElementById("loginPage").classList.add("hidden");
     document.getElementById("app").classList.remove("hidden");
     if(currentUser === ADMIN_NAME) {
@@ -300,22 +292,15 @@ window.saveAbsen = function() {
   const tgl = document.getElementById("tgl").value;
   const status = document.getElementById("status").value;
   const reason = document.getElementById("lateReason").value;
-  
   if(!tgl) return alert("Pilih tanggal!");
-  
-  // Validasi Alasan jika terlambat
   if(!document.getElementById("lateSection").classList.contains("hidden") && status === "Hadir" && !reason) {
       return alert("Wajib mengisi alasan terlambat!");
   }
-
   const data = { 
-      guru: currentUser, 
-      tanggal: tgl, 
-      status: status, 
+      guru: currentUser, tanggal: tgl, status: status, 
       waktu_input: new Date().toLocaleTimeString(),
       alasan_terlambat: reason || "-"
   };
-
   push(ref(db, "absensi"), data).then(() => {
       alert("✅ Presensi Berhasil!");
       document.getElementById("lateReason").value = "";
@@ -324,23 +309,52 @@ window.saveAbsen = function() {
 
 window.saveJurnal = async function() {
   const btn = document.getElementById("btnJurnal");
-  const file = document.getElementById("foto").files[0];
+  const fileInput = document.getElementById("foto");
+  const file = fileInput.files[0];
   const mtr = document.getElementById("mengajar").value;
   const tgl = document.getElementById("j_tgl").value;
+  
   if(!tgl || !mtr) return alert("Isi tanggal & materi!");
-  btn.innerText = "⏳ Memposting..."; btn.disabled = true;
-  const data = { 
-    guru: currentUser, tanggal: tgl, jam: document.getElementById("j_jam").value, mapel: document.getElementById("mapel").value,
-    mengajar: mtr, tujuan: document.getElementById("tujuan").value,
-    fileData: file ? await toBase64(file) : "", fileName: file ? file.name : ""
-  };
-  push(ref(db, "jurnal"), data).then(() => {
-    alert("✅ Jurnal Berhasil!");
-    btn.innerText = "Posting Jurnal"; btn.disabled = false;
+  
+  btn.innerText = "⏳ Sedang Mengunggah..."; btn.disabled = true;
+  
+  let fileURL = "";
+  let fileName = "";
+
+  try {
+    // 1. UPLOAD KE FIREBASE STORAGE (JIKA ADA FILE)
+    if(file) {
+        fileName = `${Date.now()}_${file.name}`;
+        const storageRef = sRef(storage, 'uploads/' + fileName);
+        const snapshot = await uploadBytes(storageRef, file);
+        fileURL = await getDownloadURL(snapshot.ref);
+    }
+
+    // 2. SIMPAN LINK KE DATABASE
+    const data = { 
+        guru: currentUser, 
+        tanggal: tgl, 
+        jam: document.getElementById("j_jam").value, 
+        mapel: document.getElementById("mapel").value,
+        mengajar: mtr, 
+        tujuan: document.getElementById("tujuan").value,
+        link_file: fileURL, // Simpan link saja
+        nama_file: file ? file.name : "Tidak ada file"
+    };
+
+    await push(ref(db, "jurnal"), data);
+    alert("✅ Jurnal & File Berhasil Terposting!");
+    
+    // RESET FORM
     document.getElementById("mengajar").value = "";
     document.getElementById("tujuan").value = "";
-    document.getElementById("foto").value = "";
-  });
+    fileInput.value = "";
+    
+  } catch (error) {
+    alert("Gagal posting: " + error.message);
+  } finally {
+    btn.innerText = "Posting Jurnal"; btn.disabled = false;
+  }
 };
 
 window.saveBiodata = function() {
@@ -374,14 +388,8 @@ function loadAll() {
         <h4 class="font-bold text-indigo-600 text-sm">${x.mapel}</h4>
         <p class="text-[10px] text-slate-400">${x.guru} • ${x.tanggal}</p>
         <p class="text-xs mt-2 text-slate-600">${x.mengajar}</p>
+        ${x.link_file ? `<a href="${x.link_file}" target="_blank" class="text-[10px] text-blue-500 underline mt-2 block">📎 Lihat Dokumen</a>` : ''}
       </div>`).join("");
-  });
-}
-
-function toBase64(file) {
-  return new Promise((r, j) => {
-    const reader = new FileReader(); reader.readAsDataURL(file);
-    reader.onload = () => r(reader.result); reader.onerror = e => j(e);
   });
 }
 
