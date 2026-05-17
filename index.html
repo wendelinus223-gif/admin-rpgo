@@ -4,16 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RPG OELEON - Premium Admin</title>
-
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-
 <style>
   :root { --primary: #2563eb; --bg-light: #f8fafc; }
-  body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-light); color: #1e293b; overflow: hidden; }
-  .page { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); transform-origin: top left; opacity: 1; }
-  .page.hidden { display: none; opacity: 0; transform: scale(0.95) translateY(10px); }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-light); color: #1e293b; overflow-x: hidden; }
+  .page { transition: all 0.3s ease; }
+  .page.hidden { display: none; }
   .glass-card { background: white; border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border-radius: 20px; }
   .sidebar { background: white; border-right: 1px solid #e2e8f0; }
   .nav-btn { transition: all 0.3s; border-radius: 12px; color: #64748b; }
@@ -25,7 +23,6 @@
   .card-orange { background: linear-gradient(135deg, #fb923c, #ea580c); color: white; }
 </style>
 </head>
-
 <body class="h-screen flex">
 
 <div id="loginPage" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-50">
@@ -107,10 +104,6 @@
           <div class="space-y-4">
             <div><label class="text-xs text-slate-400">Nama Guru</label><input type="text" id="a_guru" class="w-full bg-slate-50" readonly></div>
             <div><label class="text-xs text-slate-400">Tanggal</label><input type="date" id="tgl" class="w-full"></div>
-            <div id="lateSection" class="hidden animate-pulse">
-                <label class="text-xs text-red-500 font-bold">⚠️ Terlambat (Batas 07:50)</label>
-                <textarea id="lateReason" placeholder="Alasan terlambat?" class="w-full border-red-300 bg-red-50"></textarea>
-            </div>
             <div><label class="text-xs text-slate-400">Keterangan</label><select id="status" class="w-full"><option>Hadir</option><option>Sakit</option><option>Izin</option><option>Alpa</option></select></div>
             <button onclick="saveAbsen()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold">Simpan Presensi</button>
           </div>
@@ -120,7 +113,7 @@
 
       <div id="jurnal" class="page hidden space-y-6">
         <div class="glass-card p-8">
-          <h3 class="text-xl font-bold mb-6 text-center">Jurnal Mengajar Harian</h3>
+          <h3 class="text-xl font-bold mb-6 text-center text-indigo-700">Jurnal Mengajar Harian</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-4">
               <div><label class="text-xs text-slate-400">Nama Guru</label><input type="text" id="j_guru" class="w-full bg-slate-50" readonly></div>
@@ -135,19 +128,24 @@
                   <option>Pendidikan Agama</option><option>Pendidikan Pancasila</option><option>Bahasa Indonesia</option>
                   <option>Matematika</option><option>Bahasa Inggris</option><option>IPA</option><option>IPS</option>
                   <option>Ekonomi</option><option>Sejarah</option><option>Informatika</option><option>PJOK</option>
-                  <option>Seni Budaya</option><option>Lainnya</option>
+                  <option>Seni Budaya</option>
+                  <option>Prakarya</option><option>Sosiologi</option><option>Geografi</option>
+                  <option>Mulok</option><option>Literasi</option><option>Numerasi</option>
+                  <option>Lainnya</option>
                 </select>
               </div>
             </div>
             <div class="space-y-4">
               <textarea id="mengajar" placeholder="Materi yang diajarkan..." class="w-full h-24"></textarea>
               <textarea id="tujuan" placeholder="Tujuan pembelajaran..." class="w-full h-24"></textarea>
-              <div><label class="text-xs text-slate-400 block mb-1">Upload Bukti Foto (Otomatis Kompres)</label>
-                <input type="file" id="foto" class="w-full text-sm" accept="image/*">
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Bukti File (Foto/PDF/Word/Excel)</label>
+                <input type="file" id="foto" class="w-full text-sm">
+                <p class="text-[10px] text-blue-500 mt-1">*File otomatis terkirim ke Google Drive</p>
               </div>
             </div>
           </div>
-          <button id="btnJurnal" onclick="saveJurnal()" class="mt-6 w-full bg-indigo-600 text-white py-3 rounded-xl font-bold">Posting Jurnal</button>
+          <button id="btnJurnal" onclick="saveJurnal()" class="mt-6 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold transition shadow-lg">Posting Jurnal</button>
         </div>
         <div id="listJurnal" class="space-y-4"></div>
       </div>
@@ -164,7 +162,6 @@
           <button onclick="saveBiodata()" class="mt-6 w-full bg-emerald-600 text-white py-3 rounded-xl font-bold">Perbarui Biodata</button>
         </div>
       </div>
-
     </div>
   </main>
 </div>
@@ -188,29 +185,8 @@ const db = getDatabase(app);
 const ADMIN_NAME = "Wendelinus Christo Snae, SE";
 let currentUser = "";
 
-// FUNGSI KOMPRES GAMBAR (Agar Excel Lancar)
-function compressImage(file) {
-    return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = (e) => {
-            const img = new Image();
-            img.src = e.target.result;
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 400; // Ukuran kecil untuk Excel
-                let width = img.width;
-                let height = img.height;
-                if (width > height) { if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } }
-                else { if (height > MAX_WIDTH) { width *= MAX_WIDTH / height; height = MAX_WIDTH; } }
-                canvas.width = width; canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-                resolve(canvas.toDataURL('image/jpeg', 0.5)); // Kualitas 50%
-            };
-        };
-    });
-}
+// LINK GOOGLE APPS SCRIPT BERHASIL DIPERBARUI
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxg5sMUnYu8PQ0UAwK9RpdoudJcPSQlx2ifBzZgSnZ9mVU65-IqTAInckGyBpI3_xlR1g/exec";
 
 window.saveJurnal = async function() {
   const btn = document.getElementById("btnJurnal");
@@ -219,44 +195,59 @@ window.saveJurnal = async function() {
   const mtr = document.getElementById("mengajar").value;
   const tgl = document.getElementById("j_tgl").value;
   
-  if(!tgl || !mtr) return alert("Isi tanggal & materi!");
+  if(!tgl || !mtr) return alert("Mohon lengkapi tanggal dan materi!");
   
-  btn.innerText = "⏳ Memproses Gambar..."; btn.disabled = true;
+  btn.innerText = "⏳ Mengunggah ke Drive..."; btn.disabled = true;
   
   try {
-    let finalBase64 = "";
+    let driveUrl = "";
     if(file) {
-        if(file.type.startsWith('image/')) {
-            finalBase64 = await compressImage(file);
+        const reader = new FileReader();
+        const base64Promise = new Promise((resolve) => {
+            reader.onload = () => resolve(reader.result);
+            reader.readAsDataURL(file);
+        });
+        const base64Data = await base64Promise;
+
+        const response = await fetch(SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify({
+                file: base64Data,
+                name: file.name
+            })
+        });
+        
+        const result = await response.json();
+        if(result.result === "success") {
+            driveUrl = result.url;
         } else {
-            // Jika file bukan gambar (PDF/Word), gunakan Base64 biasa
-            const reader = new FileReader();
-            finalBase64 = await new Promise((r) => {
-                reader.onload = () => r(reader.result);
-                reader.readAsDataURL(file);
-            });
+            throw new Error(result.error);
         }
     }
 
     const data = { 
-        guru: currentUser, tanggal: tgl, 
+        guru: currentUser, 
+        tanggal: tgl, 
         jam: document.getElementById("j_jam").value, 
         mapel: document.getElementById("mapel").value,
-        mengajar: mtr, tujuan: document.getElementById("tujuan").value,
-        fileData: finalBase64, 
-        fileName: file ? file.name : ""
+        mengajar: mtr, 
+        tujuan: document.getElementById("tujuan").value,
+        driveLink: driveUrl,
+        fileName: file ? file.name : "Tidak ada file"
     };
 
     await push(ref(db, "jurnal"), data);
-    alert("✅ Jurnal Berhasil!");
+    alert("✅ Jurnal & File Berhasil Disimpan!");
     document.getElementById("mengajar").value = "";
     document.getElementById("tujuan").value = "";
     fileInput.value = "";
-  } catch (e) { alert("Gagal: " + e.message); }
-  finally { btn.innerText = "Posting Jurnal"; btn.disabled = false; }
+  } catch (e) { 
+    console.error(e);
+    alert("Gagal mengunggah: " + e.message); 
+  } finally { 
+    btn.innerText = "Posting Jurnal"; btn.disabled = false; 
+  }
 };
-
-// --- SISANYA TETAP SAMA ---
 
 window.login = async function() {
   const nameInput = document.getElementById("name").value.trim();
@@ -287,8 +278,7 @@ window.login = async function() {
 window.saveAbsen = function() {
   const data = { 
     guru: currentUser, tanggal: document.getElementById("tgl").value, 
-    status: document.getElementById("status").value, waktu: new Date().toLocaleTimeString(),
-    alasan: document.getElementById("lateReason").value || "-"
+    status: document.getElementById("status").value, waktu: new Date().toLocaleTimeString()
   };
   push(ref(db, "absensi"), data).then(() => alert("✅ Presensi Berhasil!"));
 };
@@ -301,12 +291,18 @@ window.downloadLaporan = async function() {
         const snap = await get(ref(db, "jurnal"));
         if (snap.exists()) {
             const dataArr = Object.values(snap.val()).map(item => {
-                const { fileData, ...clean } = item;
-                return clean;
+                return {
+                    Nama_Guru: item.guru,
+                    Tanggal: item.tanggal,
+                    Mapel: item.mapel,
+                    Materi: item.mengajar,
+                    Tujuan: item.tujuan,
+                    Link_File: item.driveLink || "-"
+                };
             });
             const ws = XLSX.utils.json_to_sheet(dataArr);
             XLSX.utils.book_append_sheet(wb, ws, "JURNAL");
-            XLSX.writeFile(wb, "Laporan_Jurnal.xlsx");
+            XLSX.writeFile(wb, "Laporan_Jurnal_Drive.xlsx");
         }
     } finally { btn.disabled = false; }
 };
@@ -317,20 +313,33 @@ function loadAll() {
     let s = { Hadir:0, Sakit:0, Izin:0, Alpa:0 };
     document.getElementById("listAbsen").innerHTML = Object.values(data).reverse().map(x => {
       if(s[x.status] !== undefined) s[x.status]++;
-      return `<div class="glass-card p-4 border-l-4 border-blue-500"><p class="font-bold text-sm">${x.guru}</p><p class="text-[10px]">${x.tanggal} • ${x.status}</p></div>`;
+      return `<div class="glass-card p-4 border-l-4 border-blue-500 mb-2">
+                <p class="font-bold text-sm">${x.guru}</p>
+                <p class="text-[10px] text-slate-400">${x.tanggal} • ${x.status}</p>
+              </div>`;
     }).join("");
     document.getElementById("statHadir").innerText = s.Hadir;
     document.getElementById("statSakit").innerText = s.Sakit;
     document.getElementById("statIzin").innerText = s.Izin;
     document.getElementById("statAlpa").innerText = s.Alpa;
   });
+
   onValue(ref(db, "jurnal"), snap => {
     const d = snap.val() || {};
     document.getElementById("listJurnal").innerHTML = Object.values(d).reverse().map(x => `
-      <div class="glass-card p-4 border-l-4 border-indigo-500">
-        <h4 class="font-bold text-indigo-600 text-sm">${x.mapel}</h4>
-        <p class="text-[10px]">${x.guru} • ${x.tanggal}</p>
-        <p class="text-xs mt-2">${x.mengajar}</p>
+      <div class="glass-card p-4 border-l-4 border-indigo-500 mb-3">
+        <div class="flex justify-between items-start">
+            <div>
+                <h4 class="font-bold text-indigo-600 text-sm">${x.mapel}</h4>
+                <p class="text-[10px] text-slate-400">${x.guru} • ${x.tanggal}</p>
+                <p class="text-xs mt-2 text-slate-600">${x.mengajar}</p>
+            </div>
+            ${x.driveLink ? `
+                <a href="${x.driveLink}" target="_blank" class="bg-blue-100 text-blue-600 text-[10px] px-2 py-1 rounded-lg font-bold flex items-center gap-1">
+                    📁 Buka Bukti
+                </a>
+            ` : ''}
+        </div>
       </div>`).join("");
   });
 }
@@ -340,6 +349,8 @@ window.show = (e, id) => {
     document.getElementById(id).classList.remove("hidden");
     document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
     if(e) e.currentTarget.classList.add("active");
+    const titles = { dashboard: "DASHBOARD", absen: "PRESENSI GURU", jurnal: "JURNAL HARIAN", biodata: "BIODATA GURU" };
+    document.getElementById("pageTitle").innerText = titles[id];
 };
 
 window.logout = () => location.reload();
