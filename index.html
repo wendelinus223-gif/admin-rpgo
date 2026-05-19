@@ -3,171 +3,120 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RPG OELEON - Premium Admin</title>
+<title>RPG OELEON - Full Secure System</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root { --primary: #2563eb; --bg-light: #f8fafc; }
-  body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-light); color: #1e293b; overflow-x: hidden; }
-  .page { transition: all 0.3s ease; }
-  .page.hidden { display: none; }
-  .glass-card { background: white; border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border-radius: 20px; }
-  .sidebar { background: white; border-right: 1px solid #e2e8f0; }
-  .nav-btn { transition: all 0.3s; border-radius: 12px; color: #64748b; }
+  :root { --primary: #2563eb; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+  .glass-card { background: white; border: 1px solid #e2e8f0; border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
   .nav-btn.active { background: #eff6ff; color: var(--primary); font-weight: 600; }
   input, select, textarea { border: 1px solid #e2e8f0 !important; border-radius: 10px !important; padding: 10px !important; }
-  .card-blue { background: linear-gradient(135deg, #60a5fa, #2563eb); color: white; }
-  .card-purple { background: linear-gradient(135deg, #a78bfa, #7c3aed); color: white; }
-  .card-pink { background: linear-gradient(135deg, #f472b6, #db2777); color: white; }
-  .card-orange { background: linear-gradient(135deg, #fb923c, #ea580c); color: white; }
+  .disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none !important; filter: grayscale(1); }
 </style>
 </head>
 <body class="h-screen flex">
 
 <div id="loginPage" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-50">
-  <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md border border-slate-100">
-    <div class="text-center mb-8">
-      <div class="w-24 h-24 mx-auto mb-4 overflow-hidden rounded-full border-4 border-blue-100 shadow-md bg-white">
-        <img src="https://raw.githubusercontent.com/wendelinus223-gif/admin-rpgo/main/LOGO.jpg" alt="Logo" class="w-full h-full object-contain">
-      </div>
-      <h2 class="text-2xl font-bold text-slate-800">RPG OELEON</h2>
-      <p class="text-slate-500">Premium Admin System</p>
-    </div>
-    <div class="space-y-4">
+  <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md border border-slate-100 text-center">
+    <img src="https://raw.githubusercontent.com/wendelinus223-gif/admin-rpgo/main/LOGO.jpg" class="w-20 h-20 mx-auto mb-4 rounded-full shadow-md">
+    <h2 class="text-2xl font-bold">RPG OELEON</h2>
+    <div class="space-y-4 mt-6">
       <input id="name" type="text" placeholder="Nama Lengkap" class="w-full">
       <input id="pass" type="password" placeholder="Password" class="w-full">
-      <p id="error" class="text-red-500 text-sm hidden">Nama atau Password salah!</p>
-      <button onclick="login()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition shadow-lg">Masuk ke Sistem</button>
-      <p class="text-center text-[10px] text-slate-400 mt-6 tracking-widest uppercase">Aplikasi oleh : Wendelinus Christo Snae, SE</p>
+      <button onclick="login()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">Masuk</button>
     </div>
+    <p class="text-[10px] text-slate-400 mt-6 tracking-widest uppercase">Admin System by: Wendelinus Christo Snae, SE</p>
   </div>
 </div>
 
 <div id="app" class="hidden w-full flex overflow-hidden">
-  <aside class="sidebar w-72 flex flex-col p-6">
-    <div class="flex items-center gap-3 mb-10 px-2">
-      <img src="https://raw.githubusercontent.com/wendelinus223-gif/admin-rpgo/main/LOGO.jpg" alt="Logo" class="w-10 h-10 object-contain rounded-full bg-white shadow-sm">
-      <span class="font-bold text-xl tracking-tight">RPG <span class="text-blue-600 text-xs">OELEON</span></span>
+  <aside class="w-72 bg-white border-r p-6 flex flex-col">
+    <div class="font-bold text-xl mb-10 flex items-center gap-2">
+        <img src="https://raw.githubusercontent.com/wendelinus223-gif/admin-rpgo/main/LOGO.jpg" class="w-8 h-8 rounded-full"> RPG OELEON
     </div>
     <nav class="flex-1 space-y-2">
-      <button onclick="show(event,'dashboard')" class="nav-btn active w-full flex items-center gap-3 px-4 py-3"><span>🏠</span> Dashboard</button>
-      <button onclick="show(event,'absen')" class="nav-btn w-full flex items-center gap-3 px-4 py-3"><span>📅</span> Presensi Guru</button>
-      <button onclick="show(event,'jurnal')" class="nav-btn w-full flex items-center gap-3 px-4 py-3"><span>📖</span> Jurnal Harian</button>
-      <button onclick="show(event,'biodata')" class="nav-btn w-full flex items-center gap-3 px-4 py-3"><span>👤</span> Biodata Guru</button>
+      <button onclick="show(event,'dashboard')" class="nav-btn active w-full text-left px-4 py-3 rounded-xl">🏠 Dashboard</button>
+      <button onclick="show(event,'absen')" class="nav-btn w-full text-left px-4 py-3 rounded-xl">📅 Presensi Guru</button>
+      <button onclick="show(event,'jurnal')" class="nav-btn w-full text-left px-4 py-3 rounded-xl">📖 Jurnal Harian</button>
     </nav>
-    <div class="pt-6 border-t border-slate-100">
-      <button id="adminBtn" onclick="downloadLaporan()" class="hidden w-full bg-amber-500 hover:bg-amber-600 text-white rounded-xl py-3 font-semibold mb-3 flex items-center justify-center gap-2 transition-all">
-        <span id="labelDownload">📥 Unduh Laporan</span>
-      </button>
-      <button onclick="logout()" class="w-full text-slate-400 hover:text-red-500 flex items-center gap-3 px-4 py-3 transition"><span>🚪</span> Keluar</button>
-    </div>
+    <button onclick="logout()" class="text-red-500 font-bold px-4 py-3 mt-auto">🚪 Keluar</button>
   </aside>
 
-  <main class="flex-1 flex flex-col overflow-hidden bg-slate-50/50">
-    <header class="h-20 bg-white border-b border-slate-100 px-8 flex items-center justify-between">
-      <h2 id="pageTitle" class="text-xl font-bold text-slate-800 uppercase">DASHBOARD</h2>
-      <div class="flex items-center gap-4">
-        <div class="text-right">
-          <p id="userNameDisplay" class="font-semibold text-sm text-slate-700"></p>
-          <p class="text-xs text-green-500 flex items-center justify-end gap-1"><span class="w-2 h-2 bg-green-500 rounded-full"></span> Aktif</p>
-        </div>
-      </div>
+  <main class="flex-1 overflow-y-auto p-8">
+    <header class="flex justify-between items-center mb-8">
+        <h2 id="pageTitle" class="text-2xl font-bold uppercase">DASHBOARD</h2>
+        <div id="userInfo" class="text-right text-sm font-semibold"></div>
     </header>
 
-    <div class="flex-1 overflow-y-auto p-8">
-      <div id="dashboard" class="page space-y-8">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div class="glass-card card-blue p-6 rounded-3xl"><p class="text-blue-100 text-sm">Hadir</p><h3 id="statHadir" class="text-3xl font-bold">0</h3></div>
-          <div class="glass-card card-purple p-6 rounded-3xl"><p class="text-purple-100 text-sm">Sakit</p><h3 id="statSakit" class="text-3xl font-bold">0</h3></div>
-          <div class="glass-card card-pink p-6 rounded-3xl"><p class="text-pink-100 text-sm">Izin</p><h3 id="statIzin" class="text-3xl font-bold">0</h3></div>
-          <div class="glass-card card-orange p-6 rounded-3xl"><p class="text-orange-100 text-sm">Alpa</p><h3 id="statAlpa" class="text-3xl font-bold">0</h3></div>
-        </div>
-        
-        <div id="adminSection" class="glass-card p-6 border-l-4 border-amber-500 hidden">
-          <h3 class="font-bold text-lg mb-2 text-amber-700">🔐 Admin Control</h3>
-          <p class="text-sm text-slate-600">Anda masuk sebagai Administrator. Fitur unduh laporan diaktifkan.</p>
-        </div>
-      </div>
-
-      <div id="absen" class="page hidden space-y-6">
-        <div class="glass-card p-8 max-w-2xl mx-auto">
-          <h3 class="text-xl font-bold mb-6">Presensi Kehadiran</h3>
-          <div class="space-y-4">
-            <div><label class="text-xs text-slate-400">Nama Guru</label><input type="text" id="a_guru" class="w-full bg-slate-50" readonly></div>
-            <div><label class="text-xs text-slate-400">Tanggal</label><input type="date" id="tgl" class="w-full"></div>
-            <div>
-              <label class="text-xs text-slate-400">Keterangan</label>
-              <select id="status" class="w-full">
-                <option>Hadir</option><option>Sakit</option><option>Izin</option><option>Alpa</option>
-              </select>
+    <div id="dashboard" class="page space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="glass-card p-6 bg-blue-600 text-white rounded-3xl">
+                <p class="text-sm opacity-80">Presensi Hari Ini</p>
+                <h3 id="statToday" class="text-3xl font-bold">0</h3>
             </div>
-            
-            <div>
-              <label class="text-xs text-slate-400 font-semibold uppercase">Alasan Terlambat / Keterangan Tambahan</label>
-              <textarea id="alasanTerlambat" placeholder="Isi jika Anda terlambat atau ada info tambahan..." class="w-full h-20"></textarea>
-            </div>
-
-            <button onclick="saveAbsen()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold transition-all hover:bg-blue-700">Simpan Presensi</button>
-          </div>
         </div>
-        <div id="listAbsen" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-      </div>
+        <div id="gpsStatus" class="p-4 rounded-xl text-sm font-bold border bg-slate-100 text-slate-500">Memeriksa GPS...</div>
+    </div>
 
-      <div id="jurnal" class="page hidden space-y-6">
-        <div class="glass-card p-8">
-          <h3 class="text-xl font-bold mb-6 text-center text-indigo-700">Jurnal Mengajar Harian</h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="space-y-4">
-              <div><label class="text-xs text-slate-400">Nama Guru</label><input type="text" id="j_guru" class="w-full bg-slate-50" readonly></div>
-              <div><label class="text-xs text-slate-400">Tanggal</label><input type="date" id="j_tgl" class="w-full"></div>
-              <div><label class="text-xs text-slate-400">Jam Mengajar</label>
-                <select id="j_jam" class="w-full">
-                  <option>Jam Ke-1</option><option>Jam Ke-2</option><option>Jam Ke-3</option><option>Jam Ke-4</option>
-                </select>
-              </div>
-              <div><label class="text-xs text-slate-400">Mata Pelajaran</label>
-                <select id="mapel" class="w-full">
-                  <option>Pendidikan Agama</option><option>Pendidikan Pancasila</option><option>Bahasa Indonesia</option>
-                  <option>Matematika</option><option>Bahasa Inggris</option><option>IPA</option><option>IPS</option>
-                  <option>Ekonomi</option><option>Sejarah</option><option>Informatika</option><option>PJOK</option>
-                  <option>Seni Budaya</option><option>Prakarya</option><option>Sosiologi</option><option>Geografi</option>
-                  <option>Mulok</option><option>Literasi</option><option>Numerasi</option><option>Lainnya</option>
-                </select>
-              </div>
+    <div id="absen" class="page hidden space-y-6">
+        <div class="glass-card p-8 max-w-xl mx-auto border-t-4 border-blue-600">
+            <div id="limitAlert" class="hidden bg-red-100 text-red-600 p-3 rounded-lg mb-4 text-center text-sm font-bold">
+                ⚠️ SISTEM TERKUNCI: Presensi hanya dibuka pukul 06:00 - 10:00 WITA
             </div>
             <div class="space-y-4">
-              <textarea id="mengajar" placeholder="Materi yang diajarkan..." class="w-full h-24"></textarea>
-              <textarea id="tujuan" placeholder="Tujuan pembelajaran..." class="w-full h-24"></textarea>
-              <div>
-                <label class="text-xs text-slate-400 block mb-1">Bukti File (Foto/PDF/Word/Excel)</label>
-                <input type="file" id="foto" class="w-full text-sm">
-                <p class="text-[10px] text-blue-500 mt-1">*File otomatis terkirim ke Google Drive</p>
-              </div>
+                <div><label class="text-xs font-bold text-slate-400">NAMA GURU</label><input type="text" id="a_guru" class="w-full bg-slate-50" readonly></div>
+                <div><label class="text-xs font-bold text-slate-400">TANGGAL</label><input type="date" id="tgl" class="w-full bg-slate-50" readonly></div>
+                <div>
+                    <label class="text-xs font-bold text-slate-400">KETERANGAN (HADIR/SAKIT/IZIN/ALPA)</label>
+                    <input type="text" id="status_manual" placeholder="Ketik secara manual..." class="w-full uppercase font-bold text-blue-700">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-400">ALASAN TERLAMBAT / INFO TAMBAHAN</label>
+                    <textarea id="alasan" placeholder="Isi alasan jika perlu..." class="w-full h-20"></textarea>
+                </div>
+                <button id="btnAbsen" onclick="saveAbsen()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold shadow-lg">SIMPAN PRESENSI</button>
             </div>
-          </div>
-          <button id="btnJurnal" onclick="saveJurnal()" class="mt-6 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold transition shadow-lg">Posting Jurnal</button>
         </div>
-        <div id="listJurnal" class="space-y-4"></div>
-      </div>
+        <div class="max-w-xl mx-auto mt-8">
+            <h4 class="font-bold text-slate-500 mb-4 border-b pb-2 text-sm uppercase">Riwayat Presensi Anda Hari Ini</h4>
+            <div id="listAbsenToday" class="space-y-2"></div>
+        </div>
+    </div>
 
-      <div id="biodata" class="page hidden space-y-6">
-        <div class="glass-card p-8 max-w-2xl mx-auto">
-          <h3 class="text-xl font-bold mb-6">Update Biodata</h3>
-          <div class="grid grid-cols-2 gap-4">
-            <input id="b_nama" placeholder="Nama Lengkap" class="col-span-2">
-            <input id="b_nip" placeholder="NIP/NUPTK" class="col-span-2">
-          </div>
-          <button onclick="saveBiodata()" class="mt-6 w-full bg-emerald-600 text-white py-3 rounded-xl font-bold">Perbarui Biodata</button>
+    <div id="jurnal" class="page hidden space-y-6">
+        <div class="glass-card p-8 max-w-2xl mx-auto border-t-4 border-indigo-600">
+            <h3 class="text-xl font-bold mb-6 text-indigo-700">Jurnal Mengajar Harian</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-4">
+                    <div><label class="text-xs font-bold">GURU</label><input type="text" id="j_guru" class="w-full bg-slate-50" readonly></div>
+                    <div><label class="text-xs font-bold">TANGGAL</label><input type="date" id="j_tgl" class="w-full"></div>
+                    <div><label class="text-xs font-bold">MATA PELAJARAN</label>
+                        <select id="mapel" class="w-full">
+                            <option>PA & Budi Pekerti</option><option>Pendidikan Pancasila</option><option>Bahasa Indonesia</option>
+                            <option>Matematika</option><option>Bahasa Inggris</option><option>IPA</option><option>IPS</option>
+                            <option>Informatika</option><option>PJOK</option><option>Seni Budaya</option><option>Seni Musik</option>
+                            <option>Seni Rupa</option><option>Seni Teater</option><option>Seni Tari</option><option>Prakarya</option>
+                            <option>Muatan Lokal</option><option>Bimbingan Konseling</option><option>Lainnya</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <div><label class="text-xs font-bold">MATERI</label><textarea id="materi" placeholder="Uraian materi..." class="w-full h-24 text-sm"></textarea></div>
+                    <div><label class="text-xs font-bold">DOKUMENTASI</label><input type="file" id="foto" class="w-full text-xs" accept="image/*"></div>
+                    <button id="btnJurnal" onclick="saveJurnal()" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold">POSTING JURNAL</button>
+                </div>
+            </div>
         </div>
-      </div>
+        <div id="listJurnal" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
     </div>
   </main>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, push, onValue, get, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, push, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA4_3IPW8BAWmBBSwYei4A7KE1AsLP9C-8",
@@ -175,238 +124,155 @@ const firebaseConfig = {
   databaseURL: "https://guru-rpgo-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "guru-rpgo",
   storageBucket: "guru-rpgo.firebasestorage.app",
-  messagingSenderId: "475490673231",
   appId: "1:475490673231:web:a85fccf2eb86e9ace1c03a"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-const ADMIN_NAME = "Wendelinus Christo Snae, SE";
 let currentUser = "";
+let userCoords = null;
 
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxmhYd-eg_8XItke6eFcaYo8noE8QrOsuXbnXViFE-wgDcsZvvwSLAsUS9rRNdjUpmZ/exec";
+const SCHOOL_COORDS = { lat: -9.790501, lng: 124.577376 }; 
+const MAX_DISTANCE = 300;
 
-window.saveJurnal = async function() {
-  const btn = document.getElementById("btnJurnal");
-  const fileInput = document.getElementById("foto");
-  const file = fileInput.files[0];
-  const mtr = document.getElementById("mengajar").value;
-  const tgl = document.getElementById("j_tgl").value;
-  
-  if(!tgl || !mtr) return alert("Mohon lengkapi tanggal dan materi!");
-  
-  btn.innerText = "⏳ Sedang Mengunggah..."; 
-  btn.disabled = true;
-  
-  try {
-    let driveUrl = "";
-    if(file) {
-        const base64Data = await new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.readAsDataURL(file);
+function checkLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+            userCoords = pos.coords;
+            const dist = calculateDistance(pos.coords.latitude, pos.coords.longitude, SCHOOL_COORDS.lat, SCHOOL_COORDS.lng);
+            const el = document.getElementById("gpsStatus");
+            if(dist <= MAX_DISTANCE) {
+                el.innerHTML = "✅ AREA SEKOLAH: Terdeteksi ("+Math.round(dist)+"m)";
+                el.className = "p-4 rounded-xl text-sm font-bold border bg-green-100 text-green-600";
+            } else {
+                el.innerHTML = "❌ LUAR RADIUS: Anda berada "+Math.round(dist)+"m dari lokasi.";
+                el.className = "p-4 rounded-xl text-sm font-bold border bg-red-100 text-red-600";
+            }
         });
-
-        const response = await fetch(SCRIPT_URL, {
-            method: "POST",
-            body: JSON.stringify({
-                type: "jurnal",
-                file: base64Data,
-                name: file.name,
-                namaGuru: currentUser,
-                tanggal: tgl,
-                jam: document.getElementById("j_jam").value,
-                mapel: document.getElementById("mapel").value,
-                materi: mtr
-            })
-        });
-        
-        const result = await response.json();
-        if(result.result === "success") {
-          driveUrl = result.url;
-        } else {
-          throw new Error(result.error);
-        }
     }
+}
 
-    const data = { 
-        guru: currentUser, 
-        tanggal: tgl, 
-        jam: document.getElementById("j_jam").value, 
-        mapel: document.getElementById("mapel").value,
-        mengajar: mtr, 
-        tujuan: document.getElementById("tujuan").value,
-        driveLink: driveUrl,
-        fileName: file ? file.name : "Tidak ada file"
-    };
-
-    await push(ref(db, "jurnal"), data);
-    alert("✅ Jurnal & Bukti Berhasil Disimpan!");
-    
-    document.getElementById("mengajar").value = "";
-    document.getElementById("tujuan").value = "";
-    fileInput.value = "";
-    
-  } catch (e) { 
-    console.error(e);
-    alert("Gagal mengunggah ke Drive: " + e.message); 
-  } finally { 
-    btn.innerText = "Posting Jurnal"; 
-    btn.disabled = false; 
-  }
-};
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371e3;
+    const φ1 = lat1 * Math.PI/180;
+    const φ2 = lat2 * Math.PI/180;
+    const Δφ = (lat2-lat1) * Math.PI/180;
+    const Δλ = (lon2-lon1) * Math.PI/180;
+    const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2) * Math.sin(Δλ/2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
 
 window.login = async function() {
-  const nameInput = document.getElementById("name").value.trim();
-  const passInput = document.getElementById("pass").value;
-  const users = ["Wendelinus Christo Snae, SE", "Yasintha Tualaka, S.Pd", "Veronika Ngallu Bulu, S.Pd", "Angelis Soares, S.Pd", "Marci T.A Manu, S.Kom", "Esyban A. Banu, S.Pd", "Yohanis Tualaka, S.Sos"];
-  const found = users.find(u => u.toLowerCase() === nameInput.toLowerCase());
-  
-  if(!found) return alert("Nama tidak terdaftar!");
-  const userKey = btoa(found).replace(/=/g, "");
-  const snap = await get(ref(db, `users_auth/${userKey}`));
-  const dbPass = snap.val() ? snap.val().password : "sekolahrpgo";
-
-  if(passInput === dbPass) {
-    currentUser = found;
-    document.getElementById("userNameDisplay").innerText = currentUser;
-    document.getElementById("j_guru").value = currentUser;
-    document.getElementById("a_guru").value = currentUser;
-    document.getElementById("loginPage").classList.add("hidden");
-    document.getElementById("app").classList.remove("hidden");
-    
-    if(currentUser === ADMIN_NAME) {
-        document.getElementById("adminBtn").classList.remove("hidden");
-        document.getElementById("adminSection").classList.remove("hidden");
+    const n = document.getElementById("name").value.trim();
+    if(n) {
+        currentUser = n;
+        document.getElementById("userInfo").innerText = "👤 " + n;
+        document.getElementById("a_guru").value = n;
+        document.getElementById("j_guru").value = n;
+        document.getElementById("tgl").value = new Date().toISOString().split('T')[0];
+        document.getElementById("j_tgl").value = new Date().toISOString().split('T')[0];
+        document.getElementById("loginPage").classList.add("hidden");
+        document.getElementById("app").classList.remove("hidden");
+        checkLocation();
+        initAbsenSecurity();
+        loadData();
     }
-    
-    loadAll();
-  } else { document.getElementById("error").classList.remove("hidden"); }
-};
+}
+
+function initAbsenSecurity() {
+    const hour = new Date().getHours();
+    if(hour < 6 || hour >= 10) {
+        document.getElementById("btnAbsen").classList.add("disabled");
+        document.getElementById("limitAlert").classList.remove("hidden");
+    }
+}
 
 window.saveAbsen = async function() {
-  const tgl = document.getElementById("tgl").value;
-  const status = document.getElementById("status").value;
-  const alasanInput = document.getElementById("alasanTerlambat").value.trim();
-  
-  if(!tgl) return alert("Pilih tanggal!");
+    const status = document.getElementById("status_manual").value.trim();
+    const tgl = document.getElementById("tgl").value;
+    if(!status) return alert("Keterangan wajib diisi!");
+    if(!userCoords) return alert("Mencari GPS...");
+    const dist = calculateDistance(userCoords.latitude, userCoords.longitude, SCHOOL_COORDS.lat, SCHOOL_COORDS.lng);
+    if(dist > MAX_DISTANCE) return alert("Gagal! Anda diluar area sekolah.");
 
-  const sekarang = new Date();
-  const jamSekarang = sekarang.getHours();
-  const menitSekarang = sekarang.getMinutes();
-  
-  // Deteksi otomatis terlambat untuk sistem pencatatan
-  let infoWaktu = "";
-  if (status === "Hadir") {
-    if (jamSekarang > 7 || (jamSekarang === 7 && menitSekarang > 50)) {
-      infoWaktu = " (Terlambat)";
-    } else {
-      infoWaktu = " (Tepat Waktu)";
+    const snap = await get(ref(db, "absensi"));
+    if(snap.exists() && Object.values(snap.val()).some(x => x.guru === currentUser && x.tanggal === tgl)) {
+        return alert("Anda sudah absen hari ini!");
     }
-  }
 
-  // Gabungkan status dengan alasan jika diisi
-  const ketLengkap = status + infoWaktu + (alasanInput ? " - Alasan: " + alasanInput : "");
+    const payload = {
+        guru: currentUser, tanggal: tgl, keterangan: status,
+        alasan: document.getElementById("alasan").value,
+        waktu: new Date().toLocaleTimeString('id-ID'),
+        lokasi: Math.round(dist) + "m"
+    };
 
-  const data = { 
-    guru: currentUser, 
-    tanggal: tgl, 
-    status: ketLengkap, 
-    waktu: sekarang.toLocaleTimeString('id-ID')
-  };
-
-  await push(ref(db, "absensi"), data);
-
-  try {
-    await fetch(SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify({
-        type: "absensi",
-        namaGuru: currentUser,
-        tanggal: tgl,
-        keterangan: ketLengkap 
-      })
-    });
-    alert("✅ Presensi Berhasil disimpan!");
-    document.getElementById("alasanTerlambat").value = "";
-  } catch(e) { 
-    alert("Data tersimpan di sistem, namun gagal sinkron ke Excel.");
-  }
-};
-
-window.downloadLaporan = async function() {
-    const btn = document.getElementById("adminBtn");
+    await push(ref(db, "absensi"), payload);
     try {
-        btn.disabled = true;
-        const wb = XLSX.utils.book_new();
-        const snapJurnal = await get(ref(db, "jurnal"));
-        if (snapJurnal.exists()) {
-            const dataJurnal = Object.values(snapJurnal.val()).map(item => ({
-                Nama_Guru: item.guru, Tanggal: item.tanggal, Jam: item.jam, Mapel: item.mapel,
-                Materi: item.mengajar, Tujuan: item.tujuan, Link_File: item.driveLink || "-"
-            }));
-            const wsJurnal = XLSX.utils.json_to_sheet(dataJurnal);
-            XLSX.utils.book_append_sheet(wb, wsJurnal, "JURNAL");
-        }
-        const snapAbsen = await get(ref(db, "absensi"));
-        if (snapAbsen.exists()) {
-            const dataAbsen = Object.values(snapAbsen.val()).map(item => ({
-                Nama_Guru: item.guru, Tanggal: item.tanggal, Keterangan: item.status, Jam_Input: item.waktu
-            }));
-            const wsAbsen = XLSX.utils.json_to_sheet(dataAbsen);
-            XLSX.utils.book_append_sheet(wb, wsAbsen, "ABSENSI");
-        }
-        XLSX.writeFile(wb, "Laporan_Lengkap_RPGO.xlsx");
-    } catch (e) {
-        alert("Gagal mengunduh: " + e.message);
-    } finally { btn.disabled = false; }
+        await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ type: "absensi", col1: currentUser, col2: tgl, col3: status, col4: payload.alasan, col5: payload.waktu, col6: payload.lokasi }) });
+        alert("✅ Presensi Berhasil!");
+        location.reload();
+    } catch(e) { alert("Berhasil simpan aplikasi."); }
 };
 
-function loadAll() {
-  onValue(ref(db, "absensi"), snap => {
-    const data = snap.val() || {};
-    let s = { Hadir:0, Sakit:0, Izin:0, Alpa:0 };
-    document.getElementById("listAbsen").innerHTML = Object.values(data).reverse().map(x => {
-      if(x.status.includes("Hadir")) s.Hadir++;
-      else if(x.status.includes("Sakit")) s.Sakit++;
-      else if(x.status.includes("Izin")) s.Izin++;
-      else if(x.status.includes("Alpa")) s.Alpa++;
-      return `<div class="glass-card p-4 border-l-4 border-blue-500 mb-2">
-                <p class="font-bold text-sm">${x.guru}</p>
-                <p class="text-[10px] text-slate-400">${x.tanggal} • ${x.status}</p>
-              </div>`;
-    }).join("");
-    document.getElementById("statHadir").innerText = s.Hadir;
-    document.getElementById("statSakit").innerText = s.Sakit;
-    document.getElementById("statIzin").innerText = s.Izin;
-    document.getElementById("statAlpa").innerText = s.Alpa;
-  });
+window.saveJurnal = async function() {
+    const fileInput = document.getElementById("foto");
+    const file = fileInput.files[0];
+    const btn = document.getElementById("btnJurnal");
+    btn.disabled = true; btn.innerText = "⏳ Mengirim...";
 
-  onValue(ref(db, "jurnal"), snap => {
-    const d = snap.val() || {};
-    document.getElementById("listJurnal").innerHTML = Object.values(d).reverse().map(x => `
-      <div class="glass-card p-4 border-l-4 border-indigo-500 mb-3">
-        <div class="flex justify-between items-start">
-            <div>
-                <h4 class="font-bold text-indigo-600 text-sm">${x.mapel}</h4>
-                <p class="text-[10px] text-slate-400">${x.guru} • ${x.tanggal}</p>
-                <p class="text-xs mt-2 text-slate-600">${x.mengajar}</p>
-            </div>
-            ${x.driveLink && x.driveLink.startsWith('http') ? `<a href="${x.driveLink}" target="_blank" class="bg-blue-100 text-blue-600 text-[10px] px-2 py-1 rounded-lg font-bold">📁 Bukti</a>` : ''}
-        </div>
-      </div>`).join("");
-  });
+    if(file) {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = async () => {
+            const res = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ type: "jurnal", file: reader.result, name: file.name, namaGuru: currentUser }) });
+            const json = await res.json();
+            finishJurnal(json.url);
+        };
+    } else { finishJurnal("-"); }
+};
+
+async function finishJurnal(url) {
+    const data = {
+        guru: currentUser, tanggal: document.getElementById("j_tgl").value,
+        mapel: document.getElementById("mapel").value, materi: document.getElementById("materi").value, driveLink: url
+    };
+    await push(ref(db, "jurnal"), data);
+    alert("✅ Jurnal Terposting!");
+    location.reload();
+}
+
+function loadData() {
+    const today = new Date().toISOString().split('T')[0];
+    onValue(ref(db, "absensi"), snap => {
+        const d = snap.val() || {};
+        const filtered = Object.values(d).filter(x => x.tanggal === today);
+        document.getElementById("statToday").innerText = filtered.length;
+        document.getElementById("listAbsenToday").innerHTML = filtered.map(x => `
+            <div class="glass-card p-3 text-xs border-l-4 border-blue-500">
+                <div class="flex justify-between"><b>${x.guru}</b> <span>${x.waktu}</span></div>
+                <div class="text-blue-600 font-bold uppercase">${x.keterangan}</div>
+            </div>`).join("");
+    });
+    onValue(ref(db, "jurnal"), snap => {
+        const d = snap.val() || {};
+        document.getElementById("listJurnal").innerHTML = Object.values(d).reverse().slice(0,6).map(x => `
+            <div class="glass-card p-4 border-l-4 border-indigo-500">
+                <p class="font-bold text-sm">${x.mapel}</p>
+                <p class="text-[10px] text-slate-400 uppercase font-bold">${x.guru} • ${x.tanggal}</p>
+                <p class="text-xs mt-1 text-slate-600">${x.materi}</p>
+            </div>`).join("");
+    });
 }
 
 window.show = (e, id) => {
     document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
     document.getElementById(id).classList.remove("hidden");
     document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
-    if(e) e.currentTarget.classList.add("active");
-    const titles = { dashboard: "DASHBOARD", absen: "PRESENSI GURU", jurnal: "JURNAL HARIAN", biodata: "BIODATA GURU" };
-    document.getElementById("pageTitle").innerText = titles[id];
+    e.currentTarget.classList.add("active");
+    document.getElementById("pageTitle").innerText = id;
 };
-
 window.logout = () => location.reload();
 </script>
 </body>
