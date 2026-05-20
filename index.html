@@ -11,6 +11,28 @@
   .glass { background: white; border-radius: 20px; border: 1px solid #e2e8f0; }
   .hidden { display: none; }
   input, select, textarea { border: 1px solid #cbd5e1 !important; border-radius: 8px !important; padding: 10px !important; width: 100%; }
+  
+  /* Style Kamera Melayang */
+  #cam-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid #2563eb;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    z-index: 100;
+    background: #000;
+    display: none;
+  }
+  #cam-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1);
+  }
 </style>
 </head>
 <body class="min-h-screen">
@@ -47,7 +69,6 @@
     </nav>
 
     <main class="max-w-6xl mx-auto p-4 md:p-8">
-        
         <div id="sectionManajemenAkun" class="hidden mb-8">
             <div class="glass p-6 border-t-4 border-orange-500 shadow-md">
                 <h3 class="font-bold mb-4">👥 Manajemen Akun (Khusus Admin)</h3>
@@ -87,8 +108,11 @@
             <button onclick="tutupUjian()" class="mb-2 bg-slate-800 text-white px-4 py-2 rounded-lg font-bold text-xs uppercase">⬅️ Kembali ke Menu</button>
             <div id="iframeBox" class="h-full"></div>
         </div>
-
     </main>
+</div>
+
+<div id="cam-container">
+    <video id="cam-video" autoplay playsinline muted></video>
 </div>
 
 <script type="module">
@@ -106,6 +130,28 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+
+// FUNGSI KAMERA
+async function aktifkanKamera() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const video = document.getElementById('cam-video');
+        video.srcObject = stream;
+        document.getElementById('cam-container').style.display = 'block';
+        return true;
+    } catch (err) {
+        alert("⚠️ GAGAL: Kamera pengawas tidak aktif. Pastikan Anda mengklik 'ALLOW/IZINKAN' akses kamera agar bisa ujian.");
+        return false;
+    }
+}
+
+function matikanKamera() {
+    const video = document.getElementById('cam-video');
+    if (video.srcObject) {
+        video.srcObject.getTracks().forEach(track => track.stop());
+    }
+    document.getElementById('cam-container').style.display = 'none';
+}
 
 window.prosesLogin = async function() {
     const inputNama = document.getElementById("l_nama").value.trim();
@@ -147,7 +193,6 @@ function renderMenu(nama, role) {
     }
 }
 
-// LOGIKA ADMIN & GURU
 function loadAdminData() {
     onValue(ref(db, "users"), snap => {
         let h = ""; Object.entries(snap.val() || {}).forEach(([key, u]) => {
@@ -165,7 +210,7 @@ function loadAdminData() {
                 <p class="text-[10px] text-slate-400 mb-2 uppercase">Kelas ${e.kelas}</p>
                 <div class="flex gap-2">
                     <button onclick="toggleUjian('${key}', '${e.status}')" class="text-[10px] px-3 py-1 rounded font-bold ${isAktif ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-500'}">
-                        ${isAktif ? 'AKTIF (Siswa Bisa Lihat)' : 'NON-AKTIF'}
+                        ${isAktif ? 'AKTIF' : 'NON-AKTIF'}
                     </button>
                     <button onclick="delExam('${key}')" class="text-[10px] text-red-500 font-bold ml-auto">HAPUS</button>
                 </div>
@@ -175,7 +220,6 @@ function loadAdminData() {
     });
 }
 
-// OPERASI DATABASE
 window.addUser = () => push(ref(db, "users"), {nama: document.getElementById("u_nama").value.trim(), role: document.getElementById("u_role").value, password: "RPGO123"});
 window.delUser = (k) => confirm("Hapus user?") && remove(ref(db, `users/${k}`));
 
@@ -189,13 +233,12 @@ window.saveExam = () => {
         link: l, 
         status: "nonaktif" 
     });
-    alert("Berhasil disimpan! Klik tombol NON-AKTIF untuk mengaktifkan ujian.");
+    alert("Berhasil disimpan!");
 };
 
 window.toggleUjian = (key, current) => update(ref(db, `daftar_ujian/${key}`), { status: current === 'aktif' ? 'nonaktif' : 'aktif' });
 window.delExam = (k) => confirm("Hapus ujian?") && remove(ref(db, `daftar_ujian/${k}`));
 
-// LOGIKA SISWA
 function loadSiswaData() {
     onValue(ref(db, "daftar_ujian"), snap => {
         let h = ""; Object.values(snap.val() || {}).forEach(e => {
@@ -208,15 +251,25 @@ function loadSiswaData() {
                 </div>`;
             }
         });
-        document.getElementById("gridUjianSiswa").innerHTML = h || "<div class='col-span-full p-10 text-center text-slate-400 italic'>Belum ada ujian aktif untuk jam ini.</div>";
+        document.getElementById("gridUjianSiswa").innerHTML = h || "<div class='col-span-full p-10 text-center text-slate-400 italic'>Belum ada ujian aktif.</div>";
     });
 }
 
-window.bukaUjian = (url) => {
-    document.getElementById("frameUjianSiswa").classList.remove("hidden");
-    document.getElementById("iframeBox").innerHTML = `<iframe src="${url}?embedded=true" class="w-full h-[90vh] border-0"></iframe>`;
+window.bukaUjian = async (url) => {
+    // Siswa wajib aktifkan kamera dulu
+    const kameraOk = await aktifkanKamera();
+    if(kameraOk) {
+        document.getElementById("frameUjianSiswa").classList.remove("hidden");
+        document.getElementById("iframeBox").innerHTML = `<iframe src="${url}?embedded=true" class="w-full h-[90vh] border-0"></iframe>`;
+    }
 };
-window.tutupUjian = () => confirm("Pastikan sudah klik SUBMIT/KIRIM di G-Form. Keluar?") && (document.getElementById("frameUjianSiswa").classList.add("hidden"));
+
+window.tutupUjian = () => {
+    if(confirm("Pastikan sudah klik SUBMIT di G-Form. Keluar & Matikan Kamera?")) {
+        matikanKamera();
+        document.getElementById("frameUjianSiswa").classList.add("hidden");
+    }
+};
 </script>
 </body>
 </html>
