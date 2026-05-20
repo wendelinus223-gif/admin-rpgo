@@ -148,7 +148,6 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxmhYd-eg_8XItke6eFc
 const SCHOOL_COORDS = { lat: -9.790501, lng: 124.577376 }; 
 const MAX_DISTANCE = 300;
 
-// FUNGSI TANGGAL LOKAL (PERBAIKAN UTAMA)
 function getTodayDate() {
     const now = new Date();
     const offset = now.getTimezoneOffset() * 60000;
@@ -189,7 +188,7 @@ window.login = async function() {
     const n = document.getElementById("name").value.trim();
     if(n) {
         currentUser = n;
-        const today = getTodayDate(); // Ambil tanggal lokal hari ini
+        const today = getTodayDate(); 
         
         document.getElementById("userInfo").innerText = "👤 " + n;
         document.getElementById("a_guru").value = n;
@@ -326,10 +325,12 @@ function loadData() {
     });
     onValue(ref(db, "jurnal"), snap => {
         const d = snap.val() || {};
-        document.getElementById("listJurnal").innerHTML = Object.values(d).reverse().slice(0,6).map(x => `
-            <div class="glass-card p-4 border-l-4 border-indigo-500">
-                <p class="font-bold text-sm">${x.mapel} - Kelas ${x.kelas}</p>
-                <p class="text-[10px] text-slate-400 uppercase font-bold">${x.guru} • ${x.tanggal} • Jam ${x.jam || '-'}</p>
+        // Perbaikan: Riwayat jurnal sekarang difilter hanya untuk hari ini saja
+        const filteredJurnal = Object.values(d).filter(x => x.tanggal === today);
+        document.getElementById("listJurnal").innerHTML = filteredJurnal.reverse().map(x => `
+            <div class="glass-card p-4 border-l-4 border-indigo-500 shadow-sm">
+                <p class="font-bold text-sm text-indigo-700">${x.mapel} - Kelas ${x.kelas}</p>
+                <p class="text-[10px] text-slate-400 uppercase font-bold">${x.guru} • Jam ${x.jam || '-'}</p>
                 <p class="text-xs mt-1 text-slate-600 line-clamp-2">${x.materi}</p>
             </div>`).join("");
     });
