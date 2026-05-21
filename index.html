@@ -147,27 +147,41 @@ const db = getDatabase(app);
 
 // --- SISTEM LOGIN ---
 window.prosesLogin = async function() {
-    const no = document.getElementById("l_no").value.trim();
+    // .trim() menghapus spasi tak sengaja, .toUpperCase() memaksa jadi huruf besar
+    const no = document.getElementById("l_no").value.trim().toUpperCase();
     const ps = document.getElementById("l_pass").value;
 
+    if(!no || !ps) return alert("Harap isi Nomor Peserta & Password!");
+
+    // LOGIN ADMIN UTAMA
     if(no === "AMADEO" && ps === "RPGO123") {
-        renderUI("Wendelinus Christo Snae, SE", "ADMIN UTAMA", "admin");
+        renderUI("WENDELINUS CHRISTO SNAE, SE", "ADMIN UTAMA", "admin");
         return;
     }
 
-    const snap = await get(ref(db, "siswa_cbt"));
-    let found = null;
-    Object.values(snap.val() || {}).forEach(s => {
-        if(s.noPeserta === no && s.password === ps) found = s;
-    });
+    // LOGIN SISWA (SD/SMP/SMA)
+    try {
+        const snap = await get(ref(db, "siswa_cbt"));
+        let found = null;
+        const allSiswa = snap.val() || {};
+        
+        Object.values(allSiswa).forEach(s => {
+            // Kita buat login nomor peserta juga tidak peka huruf besar/kecil
+            if(s.noPeserta.toUpperCase() === no && s.password === ps) found = s;
+        });
 
-    if(found) {
-        renderUI(found.nama, found.lembaga, "siswa");
-    } else {
-        alert("Gagal! Nomor Peserta atau Password tidak ditemukan.");
+        if(found) {
+            currentSiswa = found;
+            renderUI(found.nama, found.lembaga, "siswa");
+        } else {
+            alert("Username atau Password Salah!");
+        }
+    } catch (error) {
+        console.error(error);
+        alert("Terjadi kesalahan koneksi database.");
     }
 };
-
+  
 function renderUI(nama, lembaga, role) {
     document.getElementById("loginPage").classList.add("hidden");
     document.getElementById("mainDashboard").classList.remove("hidden");
