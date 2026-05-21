@@ -3,35 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RPG OELEON - Super App CBT</title>
+<title>RPG OELEON - CBT Lintas Jenjang</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; }
   .glass { background: white; border-radius: 20px; border: 1px solid #e2e8f0; }
   .hidden { display: none; }
-  input, select, textarea { border: 1px solid #cbd5e1 !important; border-radius: 8px !important; padding: 10px !important; width: 100%; }
+  input, select, textarea { border: 1px solid #cbd5e1 !important; border-radius: 8px !important; padding: 10px !important; width: 100%; font-size: 14px; }
   
-  /* Style Kamera Melayang */
-  #cam-container {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 130px;
-    height: 130px;
-    border-radius: 50%;
-    overflow: hidden;
-    border: 4px solid #2563eb;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-    z-index: 100;
-    background: #000;
-    display: none;
-  }
-  #cam-video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transform: scaleX(-1);
+  /* Kamera Melayang */
+  #cam-container { position: fixed; bottom: 20px; right: 20px; width: 110px; height: 110px; border-radius: 50%; overflow: hidden; border: 3px solid #2563eb; z-index: 100; background: #000; display: none; }
+  #cam-video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+
+  /* Style Cetak Kartu */
+  @media print {
+    body * { visibility: hidden; }
+    #printArea, #printArea * { visibility: visible; }
+    #printArea { position: absolute; left: 0; top: 0; width: 100%; }
+    .card-print { border: 2px solid #000; padding: 12px; width: 48%; float: left; margin: 1%; height: 200px; box-sizing: border-box; position: relative; }
+    .no-print { display: none; }
   }
 </style>
 </head>
@@ -40,12 +31,12 @@
 <div id="loginPage" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900 p-4">
     <div class="glass p-8 w-full max-w-md shadow-2xl text-center">
         <img src="https://raw.githubusercontent.com/wendelinus223-gif/admin-rpgo/main/LOGO.jpg" class="w-20 h-20 mx-auto mb-4 rounded-full border-4 border-white shadow-lg">
-        <h2 class="text-2xl font-bold text-slate-800">RPG OELEON</h2>
-        <p class="text-sm text-slate-500 mb-6">Login Sistem Ujian</p>
+        <h2 class="text-2xl font-bold text-slate-800 uppercase">RPG OELEON</h2>
+        <p class="text-sm text-slate-500 mb-6 font-semibold">CBT SD • SMP • SMA</p>
         <div class="space-y-4 text-left">
-            <input type="text" id="l_nama" placeholder="Nama Lengkap">
+            <input type="text" id="l_no" placeholder="Nomor Peserta (Contoh: SD-001)">
             <input type="password" id="l_pass" placeholder="Password">
-            <button onclick="prosesLogin()" id="btnLogin" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 shadow-lg transition">MASUK</button>
+            <button onclick="prosesLogin()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 shadow-lg transition uppercase tracking-wider">Masuk Sistem</button>
         </div>
         <p class="mt-6 text-[10px] text-slate-400 uppercase font-bold tracking-widest italic">Wendelinus Christo Snae, SE</p>
     </div>
@@ -54,220 +45,277 @@
 <div id="mainDashboard" class="hidden">
     <nav class="bg-white border-b p-4 sticky top-0 z-40 shadow-sm">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2">
                 <img src="https://raw.githubusercontent.com/wendelinus223-gif/admin-rpgo/main/LOGO.jpg" class="w-8 h-8 rounded-full">
-                <span class="font-bold text-slate-800">OELEON CBT</span>
+                <span class="font-bold text-slate-800 hidden md:block">OELEON CBT SYSTEM</span>
             </div>
             <div class="flex items-center gap-4">
                 <div class="text-right">
                     <p id="userNama" class="text-xs font-bold uppercase"></p>
-                    <p id="userRole" class="text-[10px] text-blue-500 font-bold uppercase"></p>
+                    <p id="userLembaga" class="text-[10px] text-blue-600 font-bold uppercase"></p>
                 </div>
-                <button onclick="location.reload()" class="bg-red-50 text-red-500 px-3 py-1 rounded-lg text-xs font-bold">LOGOUT</button>
+                <button onclick="location.reload()" class="bg-red-100 text-red-600 px-3 py-1 rounded-lg text-xs font-bold">KELUAR</button>
             </div>
         </div>
     </nav>
 
-    <main class="max-w-6xl mx-auto p-4 md:p-8">
-        <div id="sectionManajemenAkun" class="hidden mb-8">
-            <div class="glass p-6 border-t-4 border-orange-500 shadow-md">
-                <h3 class="font-bold mb-4">👥 Manajemen Akun (Khusus Admin)</h3>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                    <input type="text" id="u_nama" placeholder="Nama Lengkap">
-                    <select id="u_role"><option value="siswa">Siswa</option><option value="guru">Guru</option></select>
-                    <input type="text" id="u_pass" value="RPGO123" readonly class="bg-slate-50">
-                    <button onclick="addUser()" class="bg-orange-500 text-white font-bold rounded-xl px-4 py-2">TAMBAH USER</button>
+    <main class="max-w-6xl mx-auto p-4">
+        
+        <div id="adminSection" class="hidden space-y-6">
+            <div class="glass p-6 border-t-4 border-blue-600 shadow-md">
+                <h3 class="font-bold mb-4 flex items-center gap-2">👥 Manajemen Biodata Peserta</h3>
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+                    <select id="s_lembaga">
+                        <option value="SD">TINGKAT SD</option>
+                        <option value="SMP">TINGKAT SMP</option>
+                        <option value="SMA">TINGKAT SMA</option>
+                    </select>
+                    <input type="text" id="s_no" placeholder="Nomor Peserta">
+                    <input type="text" id="s_nama" placeholder="Nama Lengkap">
+                    <input type="text" id="s_pass" placeholder="Password">
+                    <button onclick="addSiswa()" class="bg-blue-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 transition">SIMPAN</button>
                 </div>
-                <div class="overflow-x-auto max-h-48">
-                    <table class="w-full text-left text-xs">
-                        <tbody id="userListTable"></tbody>
+                
+                <div class="mt-8 flex justify-between items-center bg-slate-50 p-4 rounded-xl">
+                    <div>
+                        <h4 class="font-bold text-sm text-slate-700 uppercase">Daftar Seluruh Peserta</h4>
+                        <p class="text-[10px] text-slate-400">Gunakan fitur cetak untuk membagikan kartu login</p>
+                    </div>
+                    <button onclick="printKartu()" class="bg-emerald-600 text-white px-5 py-2 rounded-xl text-xs font-bold uppercase shadow-md hover:bg-emerald-700 transition">🖨️ Cetak Semua Kartu</button>
+                </div>
+                
+                <div class="overflow-x-auto mt-4 max-h-72">
+                    <table class="w-full text-xs text-left">
+                        <thead class="bg-slate-200 uppercase sticky top-0">
+                            <tr><th class="p-3">Lembaga</th><th class="p-3">No. Peserta</th><th class="p-3">Nama</th><th class="p-3">Pass</th><th class="p-3">Aksi</th></tr>
+                        </thead>
+                        <tbody id="listSiswaTable"></tbody>
                     </table>
                 </div>
             </div>
-        </div>
 
-        <div id="sectionPublikasiLink" class="hidden mb-8">
             <div class="glass p-6 border-t-4 border-purple-600 shadow-md">
-                <h3 class="font-bold mb-4 text-purple-700">🔗 Publikasi & Jadwal Ujian</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <h3 class="font-bold mb-4 flex items-center gap-2">🔗 Publikasi Link Google Form</h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                    <select id="exam_lembaga">
+                        <option value="SD">TARGET SD</option>
+                        <option value="SMP">TARGET SMP</option>
+                        <option value="SMA">TARGET SMA</option>
+                    </select>
                     <input type="text" id="exam_mapel" placeholder="Mata Pelajaran">
-                    <select id="exam_kelas"><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option></select>
-                    <input type="text" id="exam_link" placeholder="Paste Link G-Form">
+                    <input type="text" id="exam_link" placeholder="Link G-Form (https://...)">
+                    <button onclick="saveExam()" class="bg-purple-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-purple-700 transition">PUBLISH SOAL</button>
                 </div>
-                <button onclick="saveExam()" class="w-full bg-purple-600 text-white py-3 rounded-xl font-bold">SIMPAN SEBAGAI DRAFT</button>
-                <div id="examList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6"></div>
+                <div id="adminExamList" class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6"></div>
             </div>
         </div>
 
-        <div id="sectionDaftarUjian" class="hidden">
-            <h3 class="text-xl font-bold mb-6 text-slate-700">Daftar Ujian Hari Ini</h3>
+        <div id="siswaSection" class="hidden">
+            <h3 class="text-xl font-bold mb-6 text-slate-700 border-b pb-3">Daftar Ujian Tersedia</h3>
             <div id="gridUjianSiswa" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </div>
 
-        <div id="frameUjianSiswa" class="hidden fixed inset-0 z-50 bg-white p-2">
-            <button onclick="tutupUjian()" class="mb-2 bg-slate-800 text-white px-4 py-2 rounded-lg font-bold text-xs uppercase">⬅️ Kembali ke Menu</button>
+        <div id="frameUjian" class="hidden fixed inset-0 z-50 bg-white">
+            <div class="bg-slate-900 p-3 flex justify-between items-center">
+                <span class="text-white font-bold text-xs uppercase" id="mapelAktif">...</span>
+                <button onclick="tutupUjian()" class="bg-red-600 text-white px-6 py-1 rounded-full font-bold text-xs uppercase shadow-lg">Selesai Ujian</button>
+            </div>
             <div id="iframeBox" class="h-full"></div>
         </div>
     </main>
 </div>
 
-<div id="cam-container">
-    <video id="cam-video" autoplay playsinline muted></video>
-</div>
+<div id="cam-container"><video id="cam-video" autoplay playsinline muted></video></div>
+
+<div id="printArea" class="hidden"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, push, onValue, remove, get, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, push, onValue, remove, get, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.app";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA4_3IPW8BAWmBBSwYei4A7KE1AsLP9C-8",
-  authDomain: "guru-rpgo.firebaseapp.com",
-  databaseURL: "https://guru-rpgo-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "guru-rpgo",
-  storageBucket: "guru-rpgo.firebasestorage.app",
-  appId: "1:475490673231:web:a85fccf2eb86e9ace1c03a"
+    apiKey: "AIzaSyA4_3IPW8BAWmBBSwYei4A7KE1AsLP9C-8",
+    authDomain: "guru-rpgo.firebaseapp.com",
+    databaseURL: "https://guru-rpgo-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "guru-rpgo",
+    storageBucket: "guru-rpgo.firebasestorage.app",
+    appId: "1:475490673231:web:a85fccf2eb86e9ace1c03a"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// FUNGSI KAMERA
-async function aktifkanKamera() {
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        const video = document.getElementById('cam-video');
-        video.srcObject = stream;
-        document.getElementById('cam-container').style.display = 'block';
-        return true;
-    } catch (err) {
-        alert("⚠️ GAGAL: Kamera pengawas tidak aktif. Pastikan Anda mengklik 'ALLOW/IZINKAN' akses kamera agar bisa ujian.");
-        return false;
-    }
-}
-
-function matikanKamera() {
-    const video = document.getElementById('cam-video');
-    if (video.srcObject) {
-        video.srcObject.getTracks().forEach(track => track.stop());
-    }
-    document.getElementById('cam-container').style.display = 'none';
-}
-
+// --- SISTEM LOGIN ---
 window.prosesLogin = async function() {
-    const inputNama = document.getElementById("l_nama").value.trim();
-    const inputPass = document.getElementById("l_pass").value;
+    const no = document.getElementById("l_no").value.trim();
+    const ps = document.getElementById("l_pass").value;
 
-    if(!inputNama || !inputPass) return alert("Isi Nama & Password!");
-
-    if(inputNama === "Wendelinus Christo Snae, SE" && inputPass === "RPGO123") {
-        renderMenu("Wendelinus Christo Snae, SE", "admin_super");
+    if(no === "admin" && ps === "RPGO123") {
+        renderUI("ADMIN UTAMA", "LINTAS LEMBAGA", "admin");
         return;
     }
 
-    const snap = await get(ref(db, "users"));
-    const found = Object.values(snap.val() || {}).find(u => u.nama === inputNama && u.password === inputPass);
+    const snap = await get(ref(db, "siswa_cbt"));
+    let found = null;
+    Object.values(snap.val() || {}).forEach(s => {
+        if(s.noPeserta === no && s.password === ps) found = s;
+    });
 
     if(found) {
-        renderMenu(found.nama, found.role);
+        renderUI(found.nama, found.lembaga, "siswa");
     } else {
-        alert("Nama atau Password salah!");
+        alert("Gagal! Nomor Peserta atau Password tidak ditemukan.");
     }
 };
 
-function renderMenu(nama, role) {
+function renderUI(nama, lembaga, role) {
     document.getElementById("loginPage").classList.add("hidden");
     document.getElementById("mainDashboard").classList.remove("hidden");
     document.getElementById("userNama").innerText = nama;
-    document.getElementById("userRole").innerText = (role === 'admin_super') ? 'ADMIN UTAMA' : role;
+    document.getElementById("userLembaga").innerText = lembaga;
 
-    if(role === 'admin_super') {
-        document.getElementById("sectionManajemenAkun").classList.remove("hidden");
-        document.getElementById("sectionPublikasiLink").classList.remove("hidden");
+    if(role === "admin") {
+        document.getElementById("adminSection").classList.remove("hidden");
         loadAdminData();
-    } else if(role === 'guru') {
-        document.getElementById("sectionPublikasiLink").classList.remove("hidden");
-        loadAdminData();
-    } else if(role === 'siswa') {
-        document.getElementById("sectionDaftarUjian").classList.remove("hidden");
-        loadSiswaData();
+    } else {
+        document.getElementById("siswaSection").classList.remove("hidden");
+        loadSiswaData(lembaga);
     }
 }
 
+// --- FUNGSI ADMIN ---
+window.addSiswa = () => {
+    const data = {
+        lembaga: document.getElementById("s_lembaga").value,
+        noPeserta: document.getElementById("s_no").value.trim(),
+        nama: document.getElementById("s_nama").value.trim(),
+        password: document.getElementById("s_pass").value.trim()
+    };
+    if(!data.noPeserta || !data.nama) return alert("Harap isi No Peserta dan Nama!");
+    push(ref(db, "siswa_cbt"), data);
+    alert("Data berhasil disimpan!");
+};
+
 function loadAdminData() {
-    onValue(ref(db, "users"), snap => {
-        let h = ""; Object.entries(snap.val() || {}).forEach(([key, u]) => {
-            h += `<tr class="border-b"><td>${u.nama}</td><td>${u.role}</td><td><button onclick="delUser('${key}')" class="text-red-500">Hapus</button></td></tr>`;
+    onValue(ref(db, "siswa_cbt"), snap => {
+        let h = ""; 
+        const data = snap.val() || {};
+        Object.entries(data).forEach(([key, s]) => {
+            h += `<tr class="border-b hover:bg-slate-50">
+                <td class="p-3 font-bold text-blue-600">${s.lembaga}</td>
+                <td class="p-3 font-mono">${s.noPeserta}</td>
+                <td class="p-3">${s.nama}</td>
+                <td class="p-3 italic">${s.password}</td>
+                <td class="p-3"><button onclick="delSiswa('${key}')" class="text-red-500 font-bold hover:underline">Hapus</button></td>
+            </tr>`;
         });
-        document.getElementById("userListTable").innerHTML = h;
+        document.getElementById("listSiswaTable").innerHTML = h;
     });
 
-    onValue(ref(db, "daftar_ujian"), snap => {
-        let h = ""; Object.entries(snap.val() || {}).forEach(([key, e]) => {
+    onValue(ref(db, "soal_cbt"), snap => {
+        let h = "";
+        Object.entries(snap.val() || {}).forEach(([key, e]) => {
             const isAktif = e.status === 'aktif';
             h += `
-            <div class="p-4 bg-white border rounded-xl shadow-sm border-l-4 ${isAktif ? 'border-green-500' : 'border-slate-300'}">
-                <p class="font-bold text-xs text-slate-700">${e.mapel}</p>
-                <p class="text-[10px] text-slate-400 mb-2 uppercase">Kelas ${e.kelas}</p>
-                <div class="flex gap-2">
-                    <button onclick="toggleUjian('${key}', '${e.status}')" class="text-[10px] px-3 py-1 rounded font-bold ${isAktif ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-500'}">
-                        ${isAktif ? 'AKTIF' : 'NON-AKTIF'}
+            <div class="p-4 bg-white border rounded-2xl shadow-sm border-l-4 ${isAktif ? 'border-green-500' : 'border-slate-300'}">
+                <p class="text-[10px] text-slate-400 font-bold uppercase">${e.lembaga}</p>
+                <p class="font-bold text-slate-800 text-sm">${e.mapel}</p>
+                <div class="flex gap-2 mt-4">
+                    <button onclick="toggleExam('${key}', '${e.status}')" class="text-[10px] px-3 py-1 rounded-full font-bold ${isAktif ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-500'}">
+                        ${isAktif ? 'AKTIF' : 'NONAKTIF'}
                     </button>
-                    <button onclick="delExam('${key}')" class="text-[10px] text-red-500 font-bold ml-auto">HAPUS</button>
+                    <button onclick="delExam('${key}')" class="text-[10px] text-red-500 font-bold ml-auto hover:underline">HAPUS</button>
                 </div>
             </div>`;
         });
-        document.getElementById("examList").innerHTML = h;
+        document.getElementById("adminExamList").innerHTML = h;
     });
 }
 
-window.addUser = () => push(ref(db, "users"), {nama: document.getElementById("u_nama").value.trim(), role: document.getElementById("u_role").value, password: "RPGO123"});
-window.delUser = (k) => confirm("Hapus user?") && remove(ref(db, `users/${k}`));
+window.delSiswa = (k) => confirm("Yakin hapus data siswa?") && remove(ref(db, `siswa_cbt/${k}`));
+window.delExam = (k) => confirm("Yakin hapus soal?") && remove(ref(db, `soal_cbt/${k}`));
+window.toggleExam = (key, current) => update(ref(db, `soal_cbt/${key}`), { status: current === 'aktif' ? 'nonaktif' : 'aktif' });
 
 window.saveExam = () => {
-    const m = document.getElementById("exam_mapel").value;
-    const l = document.getElementById("exam_link").value;
-    if(!m || !l) return alert("Lengkapi data!");
-    push(ref(db, "daftar_ujian"), {
-        mapel: m, 
-        kelas: document.getElementById("exam_kelas").value, 
-        link: l, 
-        status: "nonaktif" 
-    });
-    alert("Berhasil disimpan!");
+    const data = {
+        lembaga: document.getElementById("exam_lembaga").value,
+        mapel: document.getElementById("exam_mapel").value,
+        link: document.getElementById("exam_link").value,
+        status: "nonaktif"
+    };
+    if(!data.mapel || !data.link) return alert("Mohon lengkapi Mapel dan Link G-Form!");
+    push(ref(db, "soal_cbt"), data);
+    alert("Soal berhasil diterbitkan!");
 };
 
-window.toggleUjian = (key, current) => update(ref(db, `daftar_ujian/${key}`), { status: current === 'aktif' ? 'nonaktif' : 'aktif' });
-window.delExam = (k) => confirm("Hapus ujian?") && remove(ref(db, `daftar_ujian/${k}`));
+// --- CETAK KARTU (LINTAS LEMBAGA) ---
+window.printKartu = async () => {
+    const snap = await get(ref(db, "siswa_cbt"));
+    let html = "";
+    Object.values(snap.val() || {}).forEach(s => {
+        html += `
+        <div class="card-print">
+            <div style="display:flex; align-items:center; border-bottom:2px solid #000; padding-bottom:8px; margin-bottom:8px;">
+                <img src="https://raw.githubusercontent.com/wendelinus223-gif/admin-rpgo/main/LOGO.jpg" style="width:40px; height:40px; margin-right:12px;">
+                <div style="line-height:1.2;">
+                    <div style="font-size:12px; font-weight:bold; uppercase">KARTU PESERTA UJIAN</div>
+                    <div style="font-size:10px; font-weight:bold; color:#2563eb;">INSTANSI: ${s.lembaga}</div>
+                </div>
+            </div>
+            <table style="font-size:11px; width:100%; font-weight:bold;">
+                <tr><td width="35%">NAMA</td><td>: ${s.nama}</td></tr>
+                <tr><td>NO. PESERTA</td><td>: ${s.noPeserta}</td></tr>
+                <tr><td>PASSWORD</td><td>: <span style="background:#eee; padding:0 5px;">${s.password}</span></td></tr>
+            </table>
+            <div style="font-size:8px; margin-top:15px; border-top:1px dashed #ccc; padding-top:5px; color:#555;">
+                URL: wendelinus223-gif.github.io/ujian-rpgo <br>
+                <i>Harap simpan kartu ini untuk login ujian berikutnya.</i>
+            </div>
+        </div>`;
+    });
+    document.getElementById("printArea").innerHTML = html;
+    window.print();
+};
 
-function loadSiswaData() {
-    onValue(ref(db, "daftar_ujian"), snap => {
-        let h = ""; Object.values(snap.val() || {}).forEach(e => {
-            if(e.status === 'aktif') {
+// --- FUNGSI SISWA (FILTER PER LEMBAGA) ---
+function loadSiswaData(lembagaSiswa) {
+    onValue(ref(db, "soal_cbt"), snap => {
+        let h = ""; 
+        Object.values(snap.val() || {}).forEach(e => {
+            if(e.status === 'aktif' && e.lembaga === lembagaSiswa) {
                 h += `
-                <div onclick="bukaUjian('${e.link}')" class="glass p-6 cursor-pointer border-l-4 border-blue-600 hover:bg-blue-50 transition">
-                    <p class="text-[10px] font-bold text-blue-500 uppercase">Ujian Aktif</p>
-                    <h4 class="text-lg font-bold text-slate-800">${e.mapel}</h4>
-                    <p class="text-xs text-slate-400 font-semibold uppercase">Kelas ${e.kelas}</p>
+                <div onclick="bukaUjian('${e.link}', '${e.mapel}')" class="glass p-6 cursor-pointer border-l-4 border-blue-600 hover:shadow-xl transition-all transform hover:-translate-y-1">
+                    <p class="text-[10px] font-bold text-blue-500 uppercase tracking-widest">Ujian Aktif • ${e.lembaga}</p>
+                    <h4 class="text-xl font-bold text-slate-800 my-1">${e.mapel}</h4>
+                    <p class="text-xs text-slate-400 font-semibold italic">Ketuk untuk mulai mengerjakan</p>
                 </div>`;
             }
         });
-        document.getElementById("gridUjianSiswa").innerHTML = h || "<div class='col-span-full p-10 text-center text-slate-400 italic'>Belum ada ujian aktif.</div>";
+        document.getElementById("gridUjianSiswa").innerHTML = h || "<div class='col-span-full p-12 text-center text-slate-400 italic bg-white rounded-3xl'>Belum ada jadwal ujian aktif untuk jenjang "+lembagaSiswa+" hari ini.</div>";
     });
 }
 
-window.bukaUjian = async (url) => {
-    // Siswa wajib aktifkan kamera dulu
-    const kameraOk = await aktifkanKamera();
-    if(kameraOk) {
-        document.getElementById("frameUjianSiswa").classList.remove("hidden");
-        document.getElementById("iframeBox").innerHTML = `<iframe src="${url}?embedded=true" class="w-full h-[90vh] border-0"></iframe>`;
+// --- KAMERA & FRAME ---
+window.bukaUjian = async (url, mapel) => {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        document.getElementById('cam-video').srcObject = stream;
+        document.getElementById('cam-container').style.display = 'block';
+        
+        document.getElementById("mapelAktif").innerText = "SEDANG UJIAN: " + mapel;
+        document.getElementById("frameUjian").classList.remove("hidden");
+        document.getElementById("iframeBox").innerHTML = `<iframe src="${url}?embedded=true" class="w-full h-full border-0"></iframe>`;
+    } catch (err) {
+        alert("PENTING: Akses Kamera ditolak! Anda wajib mengizinkan kamera sebagai pengawas ujian.");
     }
 };
 
 window.tutupUjian = () => {
-    if(confirm("Pastikan sudah klik SUBMIT di G-Form. Keluar & Matikan Kamera?")) {
-        matikanKamera();
-        document.getElementById("frameUjianSiswa").classList.add("hidden");
+    if(confirm("Apakah Anda sudah yakin sudah mengklik tombol 'KIRIM' di dalam Google Form? Keluar sekarang akan mematikan kamera pengawas.")) {
+        const video = document.getElementById('cam-video');
+        if (video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
+        document.getElementById('cam-container').style.display = 'none';
+        document.getElementById("frameUjian").classList.add("hidden");
     }
 };
 </script>
