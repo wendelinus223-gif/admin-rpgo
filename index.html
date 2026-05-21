@@ -34,7 +34,7 @@
         <h2 class="text-2xl font-bold text-slate-800 uppercase">RPG OELEON</h2>
         <p class="text-sm text-slate-500 mb-6 font-semibold">CBT SD • SMP • SMA</p>
         <div class="space-y-4 text-left">
-            <input type="text" id="l_no" placeholder="Nomor Peserta (Contoh: SD-001)">
+            <input type="text" id="l_no" placeholder="Username / No. Peserta">
             <input type="password" id="l_pass" placeholder="Password">
             <button onclick="prosesLogin()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 shadow-lg transition uppercase tracking-wider">Masuk Sistem</button>
         </div>
@@ -60,7 +60,6 @@
     </nav>
 
     <main class="max-w-6xl mx-auto p-4">
-        
         <div id="adminSection" class="hidden space-y-6">
             <div class="glass p-6 border-t-4 border-blue-600 shadow-md">
                 <h3 class="font-bold mb-4 flex items-center gap-2">👥 Manajemen Biodata Peserta</h3>
@@ -75,15 +74,10 @@
                     <input type="text" id="s_pass" placeholder="Password">
                     <button onclick="addSiswa()" class="bg-blue-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 transition">SIMPAN</button>
                 </div>
-                
                 <div class="mt-8 flex justify-between items-center bg-slate-50 p-4 rounded-xl">
-                    <div>
-                        <h4 class="font-bold text-sm text-slate-700 uppercase">Daftar Seluruh Peserta</h4>
-                        <p class="text-[10px] text-slate-400">Gunakan fitur cetak untuk membagikan kartu login</p>
-                    </div>
-                    <button onclick="printKartu()" class="bg-emerald-600 text-white px-5 py-2 rounded-xl text-xs font-bold uppercase shadow-md hover:bg-emerald-700 transition">🖨️ Cetak Semua Kartu</button>
+                    <h4 class="font-bold text-sm text-slate-700 uppercase">Daftar Seluruh Peserta</h4>
+                    <button onclick="printKartu()" class="bg-emerald-600 text-white px-5 py-2 rounded-xl text-xs font-bold uppercase shadow-md hover:bg-emerald-700 transition">🖨️ Cetak Kartu</button>
                 </div>
-                
                 <div class="overflow-x-auto mt-4 max-h-72">
                     <table class="w-full text-xs text-left">
                         <thead class="bg-slate-200 uppercase sticky top-0">
@@ -103,8 +97,8 @@
                         <option value="SMA">TARGET SMA</option>
                     </select>
                     <input type="text" id="exam_mapel" placeholder="Mata Pelajaran">
-                    <input type="text" id="exam_link" placeholder="Link G-Form (https://...)">
-                    <button onclick="saveExam()" class="bg-purple-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-purple-700 transition">PUBLISH SOAL</button>
+                    <input type="text" id="exam_link" placeholder="Link G-Form">
+                    <button onclick="saveExam()" class="bg-purple-600 text-white font-bold rounded-lg px-4 py-2">PUBLISH</button>
                 </div>
                 <div id="adminExamList" class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6"></div>
             </div>
@@ -118,7 +112,7 @@
         <div id="frameUjian" class="hidden fixed inset-0 z-50 bg-white">
             <div class="bg-slate-900 p-3 flex justify-between items-center">
                 <span class="text-white font-bold text-xs uppercase" id="mapelAktif">...</span>
-                <button onclick="tutupUjian()" class="bg-red-600 text-white px-6 py-1 rounded-full font-bold text-xs uppercase shadow-lg">Selesai Ujian</button>
+                <button onclick="tutupUjian()" class="bg-red-600 text-white px-6 py-1 rounded-full font-bold text-xs uppercase">Selesai</button>
             </div>
             <div id="iframeBox" class="h-full"></div>
         </div>
@@ -126,12 +120,11 @@
 </div>
 
 <div id="cam-container"><video id="cam-video" autoplay playsinline muted></video></div>
-
 <div id="printArea" class="hidden"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, push, onValue, remove, get, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.app";
+import { getDatabase, ref, push, onValue, remove, get, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyA4_3IPW8BAWmBBSwYei4A7KE1AsLP9C-8",
@@ -147,41 +140,29 @@ const db = getDatabase(app);
 
 // --- SISTEM LOGIN ---
 window.prosesLogin = async function() {
-    // .trim() menghapus spasi tak sengaja, .toUpperCase() memaksa jadi huruf besar
     const no = document.getElementById("l_no").value.trim().toUpperCase();
     const ps = document.getElementById("l_pass").value;
 
-    if(!no || !ps) return alert("Harap isi Nomor Peserta & Password!");
-
-    // LOGIN ADMIN UTAMA
+    // LOGIN ADMIN UTAMA (USER & PASS BARU)
     if(no === "AMADEO" && ps === "RPGO123") {
         renderUI("WENDELINUS CHRISTO SNAE, SE", "ADMIN UTAMA", "admin");
         return;
     }
 
-    // LOGIN SISWA (SD/SMP/SMA)
-    try {
-        const snap = await get(ref(db, "siswa_cbt"));
-        let found = null;
-        const allSiswa = snap.val() || {};
-        
-        Object.values(allSiswa).forEach(s => {
-            // Kita buat login nomor peserta juga tidak peka huruf besar/kecil
-            if(s.noPeserta.toUpperCase() === no && s.password === ps) found = s;
-        });
+    // LOGIN SISWA
+    const snap = await get(ref(db, "siswa_cbt"));
+    let found = null;
+    Object.values(snap.val() || {}).forEach(s => {
+        if(s.noPeserta.toUpperCase() === no && s.password === ps) found = s;
+    });
 
-        if(found) {
-            currentSiswa = found;
-            renderUI(found.nama, found.lembaga, "siswa");
-        } else {
-            alert("Username atau Password Salah!");
-        }
-    } catch (error) {
-        console.error(error);
-        alert("Terjadi kesalahan koneksi database.");
+    if(found) {
+        renderUI(found.nama, found.lembaga, "siswa");
+    } else {
+        alert("Akses Ditolak! Cek kembali Username & Password.");
     }
 };
-  
+
 function renderUI(nama, lembaga, role) {
     document.getElementById("loginPage").classList.add("hidden");
     document.getElementById("mainDashboard").classList.remove("hidden");
@@ -197,7 +178,7 @@ function renderUI(nama, lembaga, role) {
     }
 }
 
-// --- FUNGSI ADMIN ---
+// --- LOGIKA DATABASE ---
 window.addSiswa = () => {
     const data = {
         lembaga: document.getElementById("s_lembaga").value,
@@ -205,22 +186,21 @@ window.addSiswa = () => {
         nama: document.getElementById("s_nama").value.trim(),
         password: document.getElementById("s_pass").value.trim()
     };
-    if(!data.noPeserta || !data.nama) return alert("Harap isi No Peserta dan Nama!");
+    if(!data.noPeserta || !data.nama) return alert("Isi data dengan lengkap!");
     push(ref(db, "siswa_cbt"), data);
-    alert("Data berhasil disimpan!");
+    alert("Berhasil!");
 };
 
 function loadAdminData() {
     onValue(ref(db, "siswa_cbt"), snap => {
         let h = ""; 
-        const data = snap.val() || {};
-        Object.entries(data).forEach(([key, s]) => {
-            h += `<tr class="border-b hover:bg-slate-50">
+        Object.entries(snap.val() || {}).forEach(([key, s]) => {
+            h += `<tr class="border-b">
                 <td class="p-3 font-bold text-blue-600">${s.lembaga}</td>
                 <td class="p-3 font-mono">${s.noPeserta}</td>
                 <td class="p-3">${s.nama}</td>
-                <td class="p-3 italic">${s.password}</td>
-                <td class="p-3"><button onclick="delSiswa('${key}')" class="text-red-500 font-bold hover:underline">Hapus</button></td>
+                <td class="p-3">${s.password}</td>
+                <td class="p-3"><button onclick="delSiswa('${key}')" class="text-red-500">Hapus</button></td>
             </tr>`;
         });
         document.getElementById("listSiswaTable").innerHTML = h;
@@ -232,13 +212,13 @@ function loadAdminData() {
             const isAktif = e.status === 'aktif';
             h += `
             <div class="p-4 bg-white border rounded-2xl shadow-sm border-l-4 ${isAktif ? 'border-green-500' : 'border-slate-300'}">
-                <p class="text-[10px] text-slate-400 font-bold uppercase">${e.lembaga}</p>
-                <p class="font-bold text-slate-800 text-sm">${e.mapel}</p>
+                <p class="text-[10px] font-bold text-slate-400 uppercase">${e.lembaga}</p>
+                <p class="font-bold text-sm">${e.mapel}</p>
                 <div class="flex gap-2 mt-4">
                     <button onclick="toggleExam('${key}', '${e.status}')" class="text-[10px] px-3 py-1 rounded-full font-bold ${isAktif ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-500'}">
                         ${isAktif ? 'AKTIF' : 'NONAKTIF'}
                     </button>
-                    <button onclick="delExam('${key}')" class="text-[10px] text-red-500 font-bold ml-auto hover:underline">HAPUS</button>
+                    <button onclick="delExam('${key}')" class="text-[10px] text-red-500 font-bold ml-auto">HAPUS</button>
                 </div>
             </div>`;
         });
@@ -246,9 +226,9 @@ function loadAdminData() {
     });
 }
 
-window.delSiswa = (k) => confirm("Yakin hapus data siswa?") && remove(ref(db, `siswa_cbt/${k}`));
-window.delExam = (k) => confirm("Yakin hapus soal?") && remove(ref(db, `soal_cbt/${k}`));
-window.toggleExam = (key, current) => update(ref(db, `soal_cbt/${key}`), { status: current === 'aktif' ? 'nonaktif' : 'aktif' });
+window.delSiswa = (k) => confirm("Hapus?") && remove(ref(db, `siswa_cbt/${k}`));
+window.delExam = (k) => confirm("Hapus?") && remove(ref(db, `soal_cbt/${k}`));
+window.toggleExam = (key, cur) => update(ref(db, `soal_cbt/${key}`), { status: cur === 'aktif' ? 'nonaktif' : 'aktif' });
 
 window.saveExam = () => {
     const data = {
@@ -257,33 +237,23 @@ window.saveExam = () => {
         link: document.getElementById("exam_link").value,
         status: "nonaktif"
     };
-    if(!data.mapel || !data.link) return alert("Mohon lengkapi Mapel dan Link G-Form!");
     push(ref(db, "soal_cbt"), data);
-    alert("Soal berhasil diterbitkan!");
+    alert("Diterbitkan!");
 };
 
-// --- CETAK KARTU (LINTAS LEMBAGA) ---
 window.printKartu = async () => {
     const snap = await get(ref(db, "siswa_cbt"));
     let html = "";
     Object.values(snap.val() || {}).forEach(s => {
-        html += `
-        <div class="card-print">
-            <div style="display:flex; align-items:center; border-bottom:2px solid #000; padding-bottom:8px; margin-bottom:8px;">
-                <img src="https://raw.githubusercontent.com/wendelinus223-gif/admin-rpgo/main/LOGO.jpg" style="width:40px; height:40px; margin-right:12px;">
-                <div style="line-height:1.2;">
-                    <div style="font-size:12px; font-weight:bold; uppercase">KARTU PESERTA UJIAN</div>
-                    <div style="font-size:10px; font-weight:bold; color:#2563eb;">INSTANSI: ${s.lembaga}</div>
-                </div>
+        html += `<div class="card-print">
+            <div style="display:flex; align-items:center; border-bottom:1px solid #000; padding-bottom:5px; margin-bottom:5px;">
+                <img src="https://raw.githubusercontent.com/wendelinus223-gif/admin-rpgo/main/LOGO.jpg" style="width:30px; height:30px; margin-right:10px;">
+                <div style="font-size:10px; font-weight:bold;">KARTU LOGIN UJIAN - ${s.lembaga}</div>
             </div>
-            <table style="font-size:11px; width:100%; font-weight:bold;">
-                <tr><td width="35%">NAMA</td><td>: ${s.nama}</td></tr>
-                <tr><td>NO. PESERTA</td><td>: ${s.noPeserta}</td></tr>
-                <tr><td>PASSWORD</td><td>: <span style="background:#eee; padding:0 5px;">${s.password}</span></td></tr>
-            </table>
-            <div style="font-size:8px; margin-top:15px; border-top:1px dashed #ccc; padding-top:5px; color:#555;">
-                URL: wendelinus223-gif.github.io/ujian-rpgo <br>
-                <i>Harap simpan kartu ini untuk login ujian berikutnya.</i>
+            <div style="font-size:11px;">
+                NAMA: ${s.nama}<br>
+                NO: ${s.noPeserta}<br>
+                PASS: <b>${s.password}</b>
             </div>
         </div>`;
     });
@@ -291,43 +261,36 @@ window.printKartu = async () => {
     window.print();
 };
 
-// --- FUNGSI SISWA (FILTER PER LEMBAGA) ---
-function loadSiswaData(lembagaSiswa) {
+function loadSiswaData(lembSiswa) {
     onValue(ref(db, "soal_cbt"), snap => {
         let h = ""; 
         Object.values(snap.val() || {}).forEach(e => {
-            if(e.status === 'aktif' && e.lembaga === lembagaSiswa) {
-                h += `
-                <div onclick="bukaUjian('${e.link}', '${e.mapel}')" class="glass p-6 cursor-pointer border-l-4 border-blue-600 hover:shadow-xl transition-all transform hover:-translate-y-1">
-                    <p class="text-[10px] font-bold text-blue-500 uppercase tracking-widest">Ujian Aktif • ${e.lembaga}</p>
-                    <h4 class="text-xl font-bold text-slate-800 my-1">${e.mapel}</h4>
-                    <p class="text-xs text-slate-400 font-semibold italic">Ketuk untuk mulai mengerjakan</p>
+            if(e.status === 'aktif' && e.lembaga === lembSiswa) {
+                h += `<div onclick="bukaUjian('${e.link}', '${e.mapel}')" class="glass p-6 cursor-pointer border-l-4 border-blue-600">
+                    <p class="text-[10px] font-bold text-blue-500 uppercase">${e.lembaga}</p>
+                    <h4 class="text-xl font-bold">${e.mapel}</h4>
                 </div>`;
             }
         });
-        document.getElementById("gridUjianSiswa").innerHTML = h || "<div class='col-span-full p-12 text-center text-slate-400 italic bg-white rounded-3xl'>Belum ada jadwal ujian aktif untuk jenjang "+lembagaSiswa+" hari ini.</div>";
+        document.getElementById("gridUjianSiswa").innerHTML = h || "<p class='p-8 text-slate-400'>Belum ada ujian.</p>";
     });
 }
 
-// --- KAMERA & FRAME ---
 window.bukaUjian = async (url, mapel) => {
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         document.getElementById('cam-video').srcObject = stream;
         document.getElementById('cam-container').style.display = 'block';
-        
-        document.getElementById("mapelAktif").innerText = "SEDANG UJIAN: " + mapel;
+        document.getElementById("mapelAktif").innerText = mapel;
         document.getElementById("frameUjian").classList.remove("hidden");
         document.getElementById("iframeBox").innerHTML = `<iframe src="${url}?embedded=true" class="w-full h-full border-0"></iframe>`;
-    } catch (err) {
-        alert("PENTING: Akses Kamera ditolak! Anda wajib mengizinkan kamera sebagai pengawas ujian.");
-    }
+    } catch (e) { alert("Wajib izin kamera!"); }
 };
 
 window.tutupUjian = () => {
-    if(confirm("Apakah Anda sudah yakin sudah mengklik tombol 'KIRIM' di dalam Google Form? Keluar sekarang akan mematikan kamera pengawas.")) {
-        const video = document.getElementById('cam-video');
-        if (video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
+    if(confirm("Keluar?")) {
+        const v = document.getElementById('cam-video');
+        if(v.srcObject) v.srcObject.getTracks().forEach(t => t.stop());
         document.getElementById('cam-container').style.display = 'none';
         document.getElementById("frameUjian").classList.add("hidden");
     }
