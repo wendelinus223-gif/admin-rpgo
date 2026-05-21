@@ -94,12 +94,13 @@
 
             <div class="glass p-6 border-t-4 border-purple-600 shadow-md">
                 <h3 class="font-bold mb-4 flex items-center gap-2">🔗 Publikasi Link Google Form</h3>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
                     <select id="exam_lembaga">
                         <option value="SD">TARGET SD</option>
                         <option value="SMP">TARGET SMP</option>
                         <option value="SMA">TARGET SMA</option>
                     </select>
+                    <input type="text" id="exam_kelas" placeholder="Kelas (Contoh: 6, 9, atau 12)">
                     <input type="text" id="exam_mapel" placeholder="Mata Pelajaran">
                     <input type="text" id="exam_link" placeholder="Link G-Form">
                     <button onclick="saveExam()" class="bg-purple-600 text-white font-bold rounded-lg px-4 py-2">PUBLISH</button>
@@ -209,7 +210,7 @@ function loadAdminData() {
         Object.entries(snap.val() || {}).forEach(([key, e]) => {
             const isAktif = e.status === 'aktif';
             h += `<div class="p-4 bg-white border rounded-2xl shadow-sm border-l-4 ${isAktif ? 'border-green-500' : 'border-slate-300'}">
-                <p class="text-[10px] font-bold text-slate-400 uppercase">${e.lembaga}</p>
+                <p class="text-[10px] font-bold text-slate-400 uppercase">${e.lembaga} - KELAS ${e.kelas || '-'}</p>
                 <p class="font-bold text-sm">${e.mapel}</p>
                 <div class="flex gap-2 mt-4">
                     <button onclick="toggleExam('${key}', '${e.status}')" class="text-[10px] px-3 py-1 rounded-full font-bold ${isAktif ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-500'}">
@@ -230,12 +231,17 @@ window.toggleExam = (key, cur) => update(ref(db, `soal_cbt/${key}`), { status: c
 window.saveExam = () => {
     const data = {
         lembaga: document.getElementById("exam_lembaga").value,
+        kelas: document.getElementById("exam_kelas").value.trim(), // Data Kelas Baru
         mapel: document.getElementById("exam_mapel").value,
         link: document.getElementById("exam_link").value,
         status: "nonaktif"
     };
+    if(!data.mapel || !data.link) return alert("Lengkapi data ujian!");
     push(ref(db, "soal_cbt"), data);
     alert("Diterbitkan!");
+    document.getElementById("exam_kelas").value = "";
+    document.getElementById("exam_mapel").value = "";
+    document.getElementById("exam_link").value = "";
 };
 
 // --- FUNGSI CETAK KARTU (DENGAN FOTO) ---
@@ -288,14 +294,16 @@ function loadSiswaData(lembSiswa) {
     onValue(ref(db, "soal_cbt"), snap => {
         let h = ""; 
         Object.values(snap.val() || {}).forEach(e => {
+            // Filter: Hanya tampilkan soal yang statusnya 'aktif' DAN lembaganya cocok dengan siswa
             if(e.status === 'aktif' && e.lembaga === lembSiswa) {
                 h += `<div onclick="bukaUjian('${e.link}', '${e.mapel}')" class="glass p-6 cursor-pointer border-l-4 border-blue-600">
-                    <p class="text-[10px] font-bold text-blue-500 uppercase">${e.lembaga}</p>
+                    <p class="text-[10px] font-bold text-blue-500 uppercase">${e.lembaga} - KELAS ${e.kelas || ''}</p>
                     <h4 class="text-xl font-bold">${e.mapel}</h4>
+                    <p class="text-xs text-slate-400 mt-1">Klik untuk mulai ujian</p>
                 </div>`;
             }
         });
-        document.getElementById("gridUjianSiswa").innerHTML = h || "<p class='p-8 text-slate-400'>Belum ada ujian.</p>";
+        document.getElementById("gridUjianSiswa").innerHTML = h || "<p class='p-8 text-slate-400'>Belum ada ujian aktif untuk lembaga Anda.</p>";
     });
 }
 
@@ -307,11 +315,11 @@ window.bukaUjian = async (url, mapel) => {
         document.getElementById("mapelAktif").innerText = mapel;
         document.getElementById("frameUjian").classList.remove("hidden");
         document.getElementById("iframeBox").innerHTML = `<iframe src="${url}?embedded=true" class="w-full h-full border-0"></iframe>`;
-    } catch (e) { alert("Wajib izin kamera!"); }
+    } catch (e) { alert("Wajib izin kamera untuk memulai ujian!"); }
 };
 
 window.tutupUjian = () => {
-    if(confirm("Keluar?")) {
+    if(confirm("Apakah Anda yakin telah menyelesaikan ujian ini?")) {
         const v = document.getElementById('cam-video');
         if(v.srcObject) v.srcObject.getTracks().forEach(t => t.stop());
         document.getElementById('cam-container').style.display = 'none';
