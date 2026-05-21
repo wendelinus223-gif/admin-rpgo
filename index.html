@@ -116,7 +116,10 @@
 
         <div id="frameUjian" class="hidden fixed inset-0 z-50 bg-white">
             <div class="bg-slate-900 p-3 flex justify-between items-center">
-                <span class="text-white font-bold text-xs uppercase" id="mapelAktif">...</span>
+                <div class="flex items-center gap-4">
+                    <span class="text-white font-bold text-xs uppercase" id="mapelAktif">...</span>
+                    <span id="timerDisplay" class="bg-red-600 text-white px-3 py-1 rounded font-mono text-xs font-bold animate-pulse">01:45:00</span>
+                </div>
                 <button onclick="tutupUjian()" class="bg-red-600 text-white px-6 py-1 rounded-full font-bold text-xs uppercase">Selesai</button>
             </div>
             <div id="iframeBox" class="h-full"></div>
@@ -142,6 +145,9 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+
+// Variabel Global Timer
+let examInterval;
 
 window.prosesLogin = async function() {
     const no = document.getElementById("l_no").value.trim().toUpperCase();
@@ -231,7 +237,7 @@ window.toggleExam = (key, cur) => update(ref(db, `soal_cbt/${key}`), { status: c
 window.saveExam = () => {
     const data = {
         lembaga: document.getElementById("exam_lembaga").value,
-        kelas: document.getElementById("exam_kelas").value.trim(), // Data Kelas Baru
+        kelas: document.getElementById("exam_kelas").value.trim(),
         mapel: document.getElementById("exam_mapel").value,
         link: document.getElementById("exam_link").value,
         status: "nonaktif"
@@ -244,7 +250,6 @@ window.saveExam = () => {
     document.getElementById("exam_link").value = "";
 };
 
-// --- FUNGSI CETAK KARTU (DENGAN FOTO) ---
 window.printKartu = async () => {
     const snap = await get(ref(db, "siswa_cbt"));
     let html = "";
@@ -294,7 +299,6 @@ function loadSiswaData(lembSiswa) {
     onValue(ref(db, "soal_cbt"), snap => {
         let h = ""; 
         Object.values(snap.val() || {}).forEach(e => {
-            // Filter: Hanya tampilkan soal yang statusnya 'aktif' DAN lembaganya cocok dengan siswa
             if(e.status === 'aktif' && e.lembaga === lembSiswa) {
                 h += `<div onclick="bukaUjian('${e.link}', '${e.mapel}')" class="glass p-6 cursor-pointer border-l-4 border-blue-600">
                     <p class="text-[10px] font-bold text-blue-500 uppercase">${e.lembaga} - KELAS ${e.kelas || ''}</p>
@@ -315,17 +319,51 @@ window.bukaUjian = async (url, mapel) => {
         document.getElementById("mapelAktif").innerText = mapel;
         document.getElementById("frameUjian").classList.remove("hidden");
         document.getElementById("iframeBox").innerHTML = `<iframe src="${url}?embedded=true" class="w-full h-full border-0"></iframe>`;
+        
+        // Logika Timer 1 Jam 45 Menit (105 Menit)
+        let totalDetik = 105 * 60; 
+        clearInterval(examInterval);
+        
+        examInterval = setInterval(() => {
+            totalDetik--;
+            let jam = Math.floor(totalDetik / 3600);
+            let menit = Math.floor((totalDetik % 3600) / 60);
+            let detik = totalDetik % 60;
+            
+            document.getElementById("timerDisplay").innerText = 
+                `${String(jam).padStart(2,'0')}:${String(menit).padStart(2,'0')}:${String(detik).padStart(2,'0')}`;
+            
+            if(totalDetik <= 300) { // Sisa 5 menit warna merah pekat
+                document.getElementById("timerDisplay").classList.replace("bg-red-600", "bg-red-800");
+            }
+
+            if(totalDetik <= 0) {
+                clearInterval(examInterval);
+                alert("WAKTU HABIS! Ujian akan ditutup otomatis.");
+                forceTutupUjian();
+            }
+        }, 1000);
+
     } catch (e) { alert("Wajib izin kamera untuk memulai ujian!"); }
 };
 
+// Fungsi tutup manual dengan konfirmasi
 window.tutupUjian = () => {
-    if(confirm("Apakah Anda yakin telah menyelesaikan ujian ini?")) {
-        const v = document.getElementById('cam-video');
-        if(v.srcObject) v.srcObject.getTracks().forEach(t => t.stop());
-        document.getElementById('cam-container').style.display = 'none';
-        document.getElementById("frameUjian").classList.add("hidden");
+    if(confirm("Apakah Anda yakin telah mengirim jawaban dan ingin keluar?")) {
+        forceTutupUjian();
     }
 };
+
+// Fungsi tutup paksa saat waktu habis atau konfirmasi OK
+function forceTutupUjian() {
+    clearInterval(examInterval);
+    const v = document.getElementById('cam-video');
+    if(v.srcObject) v.srcObject.getTracks().forEach(t => t.stop());
+    document.getElementById('cam-container').style.display = 'none';
+    document.getElementById("frameUjian").classList.add("hidden");
+    document.getElementById("iframeBox").innerHTML = "";
+}
+
 </script>
 </body>
 </html>
