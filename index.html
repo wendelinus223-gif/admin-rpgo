@@ -16,13 +16,16 @@
   #cam-container { position: fixed; bottom: 20px; right: 20px; width: 110px; height: 110px; border-radius: 50%; overflow: hidden; border: 3px solid #2563eb; z-index: 100; background: #000; display: none; }
   #cam-video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
 
-  /* Style Cetak Kartu */
+  /* Perbaikan Style Cetak */
   @media print {
     body * { visibility: hidden; }
     #printArea, #printArea * { visibility: visible; }
-    #printArea { position: absolute; left: 0; top: 0; width: 100%; }
-    .card-print { border: 2px solid #000; padding: 12px; width: 48%; float: left; margin: 1%; height: 200px; box-sizing: border-box; position: relative; }
-    .no-print { display: none; }
+    #printArea { position: absolute; left: 0; top: 0; width: 100%; display: block !important; }
+    .card-print { 
+        page-break-inside: avoid; 
+        box-shadow: none !important;
+        margin-bottom: 20px !important;
+    }
   }
 </style>
 </head>
@@ -138,29 +141,20 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// --- SISTEM LOGIN ---
 window.prosesLogin = async function() {
     const no = document.getElementById("l_no").value.trim().toUpperCase();
     const ps = document.getElementById("l_pass").value;
-
-    // LOGIN ADMIN UTAMA (USER & PASS BARU)
     if(no === "AMADEO" && ps === "RPGO123") {
         renderUI("WENDELINUS CHRISTO SNAE, SE", "ADMIN UTAMA", "admin");
         return;
     }
-
-    // LOGIN SISWA
     const snap = await get(ref(db, "siswa_cbt"));
     let found = null;
     Object.values(snap.val() || {}).forEach(s => {
         if(s.noPeserta.toUpperCase() === no && s.password === ps) found = s;
     });
-
-    if(found) {
-        renderUI(found.nama, found.lembaga, "siswa");
-    } else {
-        alert("Akses Ditolak! Cek kembali Username & Password.");
-    }
+    if(found) { renderUI(found.nama, found.lembaga, "siswa"); } 
+    else { alert("Akses Ditolak!"); }
 };
 
 function renderUI(nama, lembaga, role) {
@@ -168,7 +162,6 @@ function renderUI(nama, lembaga, role) {
     document.getElementById("mainDashboard").classList.remove("hidden");
     document.getElementById("userNama").innerText = nama;
     document.getElementById("userLembaga").innerText = lembaga;
-
     if(role === "admin") {
         document.getElementById("adminSection").classList.remove("hidden");
         loadAdminData();
@@ -178,7 +171,6 @@ function renderUI(nama, lembaga, role) {
     }
 }
 
-// --- LOGIKA DATABASE ---
 window.addSiswa = () => {
     const data = {
         lembaga: document.getElementById("s_lembaga").value,
@@ -186,7 +178,7 @@ window.addSiswa = () => {
         nama: document.getElementById("s_nama").value.trim(),
         password: document.getElementById("s_pass").value.trim()
     };
-    if(!data.noPeserta || !data.nama) return alert("Isi data dengan lengkap!");
+    if(!data.noPeserta || !data.nama) return alert("Isi lengkap!");
     push(ref(db, "siswa_cbt"), data);
     alert("Berhasil!");
 };
@@ -205,13 +197,11 @@ function loadAdminData() {
         });
         document.getElementById("listSiswaTable").innerHTML = h;
     });
-
     onValue(ref(db, "soal_cbt"), snap => {
         let h = "";
         Object.entries(snap.val() || {}).forEach(([key, e]) => {
             const isAktif = e.status === 'aktif';
-            h += `
-            <div class="p-4 bg-white border rounded-2xl shadow-sm border-l-4 ${isAktif ? 'border-green-500' : 'border-slate-300'}">
+            h += `<div class="p-4 bg-white border rounded-2xl shadow-sm border-l-4 ${isAktif ? 'border-green-500' : 'border-slate-300'}">
                 <p class="text-[10px] font-bold text-slate-400 uppercase">${e.lembaga}</p>
                 <p class="font-bold text-sm">${e.mapel}</p>
                 <div class="flex gap-2 mt-4">
@@ -241,24 +231,47 @@ window.saveExam = () => {
     alert("Diterbitkan!");
 };
 
+// --- FUNGSI CETAK KARTU (DESAIN PSAJ) ---
 window.printKartu = async () => {
     const snap = await get(ref(db, "siswa_cbt"));
     let html = "";
     Object.values(snap.val() || {}).forEach(s => {
-        html += `<div class="card-print">
-            <div style="display:flex; align-items:center; border-bottom:1px solid #000; padding-bottom:5px; margin-bottom:5px;">
-                <img src="https://raw.githubusercontent.com/wendelinus223-gif/admin-rpgo/main/LOGO.jpg" style="width:30px; height:30px; margin-right:10px;">
-                <div style="font-size:10px; font-weight:bold;">KARTU LOGIN UJIAN - ${s.lembaga}</div>
+        html += `
+        <div class="card-print" style="border: 2px solid #000; padding: 10px; width: 48%; float: left; margin: 1%; height: 280px; box-sizing: border-box; position: relative; font-family: Arial, sans-serif; background: #fff; margin-bottom: 20px;">
+            <div style="display: flex; align-items: center; justify-content: center; border-bottom: 4px double #000; padding-bottom: 5px; margin-bottom: 10px;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/9/9c/Logo_Tut_Wuri_Handayani.png" style="width: 45px; position: absolute; left: 10px; top: 10px;">
+                <div style="text-align: center; margin-left: 40px;">
+                    <div style="font-size: 12px; font-weight: bold; letter-spacing: 1px;">KARTU PESERTA PSAJ</div>
+                    <div style="font-size: 11px; font-weight: bold;">TAHUN PELAJARAN 2025/2026</div>
+                </div>
             </div>
-            <div style="font-size:11px;">
-                NAMA: ${s.nama}<br>
-                NO: ${s.noPeserta}<br>
-                PASS: <b>${s.password}</b>
+            <table style="font-size: 10px; width: 100%; border-collapse: collapse; font-weight: bold;">
+                <tr><td width="35%" style="padding:3px 0;">NO. PESERTA</td><td width="5%">:</td><td>${s.noPeserta}</td></tr>
+                <tr><td style="padding:3px 0;">NAMA</td><td>:</td><td style="text-transform: uppercase;">${s.nama}</td></tr>
+                <tr><td style="padding:3px 0;">LEMBAGA</td><td>:</td><td>${s.lembaga} RPG OELEON</td></tr>
+                <tr><td style="padding:3px 0;">PASSWORD</td><td>:</td><td style="background: #eee; padding: 2px;">${s.password}</td></tr>
+            </table>
+            <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: flex-start;">
+                <div style="width: 65px; height: 85px; border: 1px solid #000; display: flex; align-items: center; justify-content: center; font-size: 8px; text-align: center; color: #000; font-weight:bold;">
+                    FOTO<br>3x4
+                </div>
+                <div style="text-align: center; width: 160px;">
+                    <div style="font-size: 9px; font-weight: bold;">OELEON, 21 MEI 2026</div>
+                    <div style="font-size: 9px; font-weight: bold; margin-bottom: 35px;">KEPALA SEKOLAH</div>
+                    <div style="font-size: 9px; font-weight: bold; text-decoration: underline;">YASINTHA TUALAKA, S.Pd</div>
+                    <div style="font-size: 9px; font-weight: bold;">Nip. -</div>
+                </div>
+            </div>
+            <div style="position: absolute; bottom: 5px; right: 10px; font-size: 7px; color: #666; font-style: italic;">
+                RPG OELEON CBT SYSTEM
             </div>
         </div>`;
     });
-    document.getElementById("printArea").innerHTML = html;
+    const printArea = document.getElementById("printArea");
+    printArea.innerHTML = html;
+    printArea.classList.remove("hidden");
     window.print();
+    printArea.classList.add("hidden");
 };
 
 function loadSiswaData(lembSiswa) {
