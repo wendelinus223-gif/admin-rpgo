@@ -66,15 +66,16 @@
         <div id="adminSection" class="hidden space-y-6">
             <div class="glass p-6 border-t-4 border-blue-600 shadow-md">
                 <h3 class="font-bold mb-4 flex items-center gap-2">👥 Manajemen Biodata Peserta</h3>
-                <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-3">
                     <select id="s_lembaga">
                         <option value="SD">TINGKAT SD</option>
                         <option value="SMP">TINGKAT SMP</option>
                         <option value="SMA">TINGKAT SMA</option>
                     </select>
-                    <input type="text" id="s_no" placeholder="Nomor Peserta">
+                    <input type="text" id="s_no" placeholder="No. Peserta">
                     <input type="text" id="s_nama" placeholder="Nama Lengkap">
                     <input type="text" id="s_pass" placeholder="Password">
+                    <input type="text" id="s_foto" placeholder="Link Foto (Opsional)">
                     <button onclick="addSiswa()" class="bg-blue-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 transition">SIMPAN</button>
                 </div>
                 <div class="mt-8 flex justify-between items-center bg-slate-50 p-4 rounded-xl">
@@ -84,7 +85,7 @@
                 <div class="overflow-x-auto mt-4 max-h-72">
                     <table class="w-full text-xs text-left">
                         <thead class="bg-slate-200 uppercase sticky top-0">
-                            <tr><th class="p-3">Lembaga</th><th class="p-3">No. Peserta</th><th class="p-3">Nama</th><th class="p-3">Pass</th><th class="p-3">Aksi</th></tr>
+                            <tr><th class="p-3">Lembaga</th><th class="p-3">No. Peserta</th><th class="p-3">Nama</th><th class="p-3">Pass</th><th class="p-3">Foto</th><th class="p-3">Aksi</th></tr>
                         </thead>
                         <tbody id="listSiswaTable"></tbody>
                     </table>
@@ -176,11 +177,16 @@ window.addSiswa = () => {
         lembaga: document.getElementById("s_lembaga").value,
         noPeserta: document.getElementById("s_no").value.trim(),
         nama: document.getElementById("s_nama").value.trim(),
-        password: document.getElementById("s_pass").value.trim()
+        password: document.getElementById("s_pass").value.trim(),
+        foto: document.getElementById("s_foto").value.trim() || ""
     };
     if(!data.noPeserta || !data.nama) return alert("Isi lengkap!");
     push(ref(db, "siswa_cbt"), data);
     alert("Berhasil!");
+    document.getElementById("s_no").value = "";
+    document.getElementById("s_nama").value = "";
+    document.getElementById("s_pass").value = "";
+    document.getElementById("s_foto").value = "";
 };
 
 function loadAdminData() {
@@ -192,6 +198,7 @@ function loadAdminData() {
                 <td class="p-3 font-mono">${s.noPeserta}</td>
                 <td class="p-3">${s.nama}</td>
                 <td class="p-3">${s.password}</td>
+                <td class="p-3 text-[10px] truncate max-w-[100px]">${s.foto ? 'Ada Foto' : '-'}</td>
                 <td class="p-3"><button onclick="delSiswa('${key}')" class="text-red-500">Hapus</button></td>
             </tr>`;
         });
@@ -231,7 +238,7 @@ window.saveExam = () => {
     alert("Diterbitkan!");
 };
 
-// --- FUNGSI CETAK KARTU (DESAIN PSAJ) ---
+// --- FUNGSI CETAK KARTU (DENGAN FOTO) ---
 window.printKartu = async () => {
     const snap = await get(ref(db, "siswa_cbt"));
     let html = "";
@@ -252,8 +259,11 @@ window.printKartu = async () => {
                 <tr><td style="padding:3px 0;">PASSWORD</td><td>:</td><td style="background: #eee; padding: 2px;">${s.password}</td></tr>
             </table>
             <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: flex-start;">
-                <div style="width: 65px; height: 85px; border: 1px solid #000; display: flex; align-items: center; justify-content: center; font-size: 8px; text-align: center; color: #000; font-weight:bold;">
-                    FOTO<br>3x4
+                <div style="width: 65px; height: 85px; border: 1px solid #000; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #fafafa;">
+                    ${s.foto ? 
+                        `<img src="${s.foto}" style="width: 100%; height: 100%; object-fit: cover;">` : 
+                        `<div style="font-size: 8px; text-align: center; color: #000; font-weight:bold;">FOTO<br>3x4</div>`
+                    }
                 </div>
                 <div style="text-align: center; width: 160px;">
                     <div style="font-size: 9px; font-weight: bold;">OELEON, 21 MEI 2026</div>
