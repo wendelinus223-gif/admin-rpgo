@@ -12,20 +12,14 @@
   .hidden { display: none; }
   input, select, textarea { border: 1px solid #cbd5e1 !important; border-radius: 8px !important; padding: 10px !important; width: 100%; font-size: 14px; }
   
-  /* Kamera Melayang */
   #cam-container { position: fixed; bottom: 20px; right: 20px; width: 110px; height: 110px; border-radius: 50%; overflow: hidden; border: 3px solid #2563eb; z-index: 100; background: #000; display: none; }
   #cam-video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
 
-  /* Perbaikan Style Cetak */
   @media print {
     body * { visibility: hidden; }
     #printArea, #printArea * { visibility: visible; }
     #printArea { position: absolute; left: 0; top: 0; width: 100%; display: block !important; }
-    .card-print { 
-        page-break-inside: avoid; 
-        box-shadow: none !important;
-        margin-bottom: 20px !important;
-    }
+    .card-print { page-break-inside: avoid; box-shadow: none !important; margin-bottom: 20px !important; }
   }
 </style>
 </head>
@@ -81,6 +75,14 @@
 
     <main class="max-w-6xl mx-auto p-4">
         <div id="adminSection" class="hidden space-y-6">
+            <div class="glass p-6 border-t-4 border-emerald-600 shadow-md">
+                <h3 class="font-bold mb-4 flex items-center gap-2 text-slate-700">🖼️ Pengaturan Folder Foto (Otomatis per No. Peserta)</h3>
+                <div class="flex gap-3">
+                    <input type="text" id="config_folder_foto" placeholder="Masukkan Link Folder (G-Drive/Hosting)">
+                    <button onclick="saveConfig()" class="bg-emerald-600 text-white font-bold rounded-lg px-6 py-2 whitespace-nowrap">SIMPAN LINK</button>
+                </div>
+            </div>
+
             <div class="glass p-6 border-t-4 border-blue-600 shadow-md">
                 <h3 class="font-bold mb-4 flex items-center gap-2 text-slate-700">👥 Manajemen Biodata Peserta</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -150,7 +152,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, push, onValue, remove, get, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, push, onValue, remove, get, update, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyA4_3IPW8BAWmBBSwYei4A7KE1AsLP9C-8",
@@ -165,7 +167,20 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 let examInterval;
-let pendingExam = null; // Menyimpan data ujian sementara sebelum token diverifikasi
+let pendingExam = null;
+let currentFolderFoto = "";
+
+// LOAD CONFIG
+onValue(ref(db, "config/folderFoto"), snap => {
+    currentFolderFoto = snap.val() || "";
+    document.getElementById("config_folder_foto").value = currentFolderFoto;
+});
+
+window.saveConfig = () => {
+    const link = document.getElementById("config_folder_foto").value.trim();
+    set(ref(db, "config/folderFoto"), link);
+    alert("Link Folder Berhasil Disimpan!");
+};
 
 window.prosesLogin = async function() {
     const no = document.getElementById("l_no").value.trim().toUpperCase();
@@ -208,7 +223,7 @@ function loadAdminData() {
                 <td class="p-3 font-mono">${s.noPeserta}</td>
                 <td class="p-3 uppercase">${s.nama}</td>
                 <td class="p-3">${s.password}</td>
-                <td class="p-3 text-[10px]">${s.foto ? '✅' : '-'}</td>
+                <td class="p-3 text-[10px]">${s.foto ? '✅' : 'Auto'}</td>
                 <td class="p-3"><button onclick="delSiswa('${key}')" class="text-red-500">Hapus</button></td>
             </tr>`;
         });
@@ -247,7 +262,7 @@ window.saveExam = () => {
         token: document.getElementById("exam_token").value.trim().toUpperCase(),
         status: "nonaktif"
     };
-    if(!data.mapel || !data.link || !data.token) return alert("Lengkapi data dan Token!");
+    if(!data.mapel || !data.link || !data.token) return alert("Lengkapi data!");
     push(ref(db, "soal_cbt"), data); alert("Diterbitkan!");
     ["exam_kelas", "exam_mapel", "exam_link", "exam_token"].forEach(id => document.getElementById(id).value = "");
 };
@@ -260,7 +275,7 @@ function loadSiswaData(lembSiswa) {
                 h += `<div onclick="siapkanUjian('${e.link}', '${e.mapel}', '${e.token}')" class="glass p-6 cursor-pointer border-l-4 border-blue-600 hover:bg-blue-50 transition">
                     <p class="text-[10px] font-bold text-blue-500 uppercase">${e.lembaga} - KELAS ${e.kelas || ''}</p>
                     <h4 class="text-xl font-bold">${e.mapel}</h4>
-                    <p class="text-xs text-slate-400 mt-1 italic">Butuh token untuk memulai</p>
+                    <p class="text-xs text-slate-400 mt-1">Masukkan token untuk memulai</p>
                 </div>`;
             }
         });
@@ -268,7 +283,6 @@ function loadSiswaData(lembSiswa) {
     });
 }
 
-// FUNGSI TOKEN BARU
 window.siapkanUjian = (url, mapel, token) => {
     pendingExam = { url, mapel, token };
     document.getElementById("tokenMapelTitle").innerText = mapel;
@@ -286,9 +300,7 @@ window.verifikasiToken = () => {
     if(input === pendingExam.token) {
         document.getElementById("modalToken").classList.add("hidden");
         jalankanUjian(pendingExam.url, pendingExam.mapel);
-    } else {
-        alert("TOKEN SALAH!");
-    }
+    } else { alert("TOKEN SALAH!"); }
 };
 
 async function jalankanUjian(url, mapel) {
@@ -299,15 +311,13 @@ async function jalankanUjian(url, mapel) {
         document.getElementById("mapelAktif").innerText = mapel;
         document.getElementById("frameUjian").classList.remove("hidden");
         document.getElementById("iframeBox").innerHTML = `<iframe src="${url}?embedded=true" class="w-full h-full border-0"></iframe>`;
-        
         let totalDetik = 105 * 60; 
         clearInterval(examInterval);
         examInterval = setInterval(() => {
             totalDetik--;
             let jam = Math.floor(totalDetik / 3600), menit = Math.floor((totalDetik % 3600) / 60), detik = totalDetik % 60;
             document.getElementById("timerDisplay").innerText = `${String(jam).padStart(2,'0')}:${String(menit).padStart(2,'0')}:${String(detik).padStart(2,'0')}`;
-            if(totalDetik <= 300) document.getElementById("timerDisplay").classList.replace("bg-red-600", "bg-red-800");
-            if(totalDetik <= 0) { clearInterval(examInterval); alert("Waktu Habis!"); forceTutupUjian(); }
+            if(totalDetik <= 0) { clearInterval(examInterval); forceTutupUjian(); }
         }, 1000);
     } catch (e) { alert("Wajib izin kamera!"); }
 }
@@ -327,6 +337,13 @@ window.printKartu = async () => {
     const snap = await get(ref(db, "siswa_cbt"));
     let html = "";
     Object.values(snap.val() || {}).forEach(s => {
+        let linkFotoFinal = s.foto;
+        // JIKA LINK FOTO KOSONG DAN CONFIG FOLDER ADA, GUNAKAN AUTO-NAME
+        if(!linkFotoFinal && currentFolderFoto) {
+            let base = currentFolderFoto.endsWith('/') ? currentFolderFoto : currentFolderFoto + '/';
+            linkFotoFinal = base + s.noPeserta + ".jpg";
+        }
+
         html += `<div class="card-print" style="border: 2px solid #000; padding: 10px; width: 48%; float: left; margin: 1%; height: 280px; box-sizing: border-box; position: relative; font-family: Arial; background: #fff; margin-bottom: 20px;">
             <div style="display: flex; align-items: center; justify-content: center; border-bottom: 4px double #000; padding-bottom: 5px; margin-bottom: 10px;">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/9/9c/Logo_Tut_Wuri_Handayani.png" style="width: 45px; position: absolute; left: 10px; top: 10px;">
@@ -342,8 +359,8 @@ window.printKartu = async () => {
                 <tr><td>PASSWORD</td><td>: ${s.password}</td></tr>
             </table>
             <div style="margin-top: 15px; display: flex; justify-content: space-between;">
-                <div style="width: 65px; height: 85px; border: 1px solid #000; overflow: hidden; background: #fafafa;">
-                    ${s.foto ? `<img src="${s.foto}" style="width: 100%; height: 100%; object-fit: cover;">` : `<div style="font-size: 8px; text-align: center; margin-top: 30px;">FOTO</div>`}
+                <div style="width: 65px; height: 85px; border: 1px solid #000; overflow: hidden; background: #fafafa; display: flex; align-items: center; justify-content: center;">
+                    <img src="${linkFotoFinal}" onerror="this.parentElement.innerHTML='<div style=\'font-size:8px\'>FOTO</div>'" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
                 <div style="text-align: center; width: 160px;">
                     <div style="font-size: 9px; font-weight: bold;">OELEON, 21 MEI 2026</div>
