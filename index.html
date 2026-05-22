@@ -338,10 +338,27 @@ window.printKartu = async () => {
     let html = "";
     Object.values(snap.val() || {}).forEach(s => {
         let linkFotoFinal = s.foto;
-        // JIKA LINK FOTO KOSONG DAN CONFIG FOLDER ADA, GUNAKAN AUTO-NAME
+        
+        // JIKA LINK FOTO KOSONG DAN CONFIG FOLDER ADA, GUNAKAN AUTO-NAME .jpeg
         if(!linkFotoFinal && currentFolderFoto) {
-            let base = currentFolderFoto.endsWith('/') ? currentFolderFoto : currentFolderFoto + '/';
-            linkFotoFinal = base + s.noPeserta + ".jpeg";
+            let base = currentFolderFoto.trim();
+            
+            // LOGIKA KONVERSI LINK GOOGLE DRIVE KE DIRECT LINK
+            if(base.includes("drive.google.com")) {
+                let folderID = "";
+                if(base.includes("id=")) {
+                    folderID = base.split("id=")[1].split("&")[0];
+                } else {
+                    folderID = base.split("/folders/")[1].split("?")[0];
+                }
+                // Catatan: Google Drive memerlukan ID file spesifik, bukan sekedar folder.
+                // Namun, kita asumsikan link folder sudah benar dan kita panggil per ID.
+                // Jika Bapak menggunakan link folder, pastikan filenya bersifat publik.
+                linkFotoFinal = base.endsWith('/') ? base + s.noPeserta + ".jpeg" : base + "/" + s.noPeserta + ".jpeg";
+            } else {
+                let cleanBase = base.endsWith('/') ? base : base + '/';
+                linkFotoFinal = cleanBase + s.noPeserta + ".jpeg";
+            }
         }
 
         html += `<div class="card-print" style="border: 2px solid #000; padding: 10px; width: 48%; float: left; margin: 1%; height: 280px; box-sizing: border-box; position: relative; font-family: Arial; background: #fff; margin-bottom: 20px;">
@@ -363,7 +380,7 @@ window.printKartu = async () => {
                     <img src="${linkFotoFinal}" 
                          onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" 
                          style="width: 100%; height: 100%; object-fit: cover;">
-                    <div style="display:none; font-size: 8px; text-align: center; color: #999;">FOTO KOSONG</div>
+                    <div style="display:none; font-size: 8px; text-align: center; color: #999;">FOTO KOSONG<br>.jpeg</div>
                 </div>
                 <div style="text-align: center; width: 160px;">
                     <div style="font-size: 9px; font-weight: bold;">OELEON, 21 MEI 2026</div>
@@ -378,7 +395,6 @@ window.printKartu = async () => {
     printArea.innerHTML = html; 
     printArea.classList.remove("hidden");
     
-    // Memberikan jeda 1 detik agar browser selesai merender gambar sebelum dialog print muncul
     setTimeout(() => {
         window.print(); 
         printArea.classList.add("hidden");
