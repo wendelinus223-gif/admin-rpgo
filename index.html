@@ -31,6 +31,23 @@
 </head>
 <body class="min-h-screen">
 
+<div id="modalToken" class="hidden fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/80 p-4 backdrop-blur-sm">
+    <div class="glass p-6 w-full max-w-sm text-center shadow-2xl">
+        <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+            </svg>
+        </div>
+        <h3 class="text-lg font-bold text-slate-800 uppercase mb-1">Verifikasi Token</h3>
+        <p class="text-[11px] text-slate-500 mb-4">Silahkan masukkan token untuk mata pelajaran:<br><span id="tokenMapelTitle" class="font-bold text-blue-600"></span></p>
+        <input type="text" id="inputTokenSiswa" class="text-center text-xl font-bold tracking-widest uppercase mb-4" placeholder="******">
+        <div class="flex gap-2">
+            <button onclick="batalBukaUjian()" class="w-1/2 bg-slate-200 text-slate-600 py-3 rounded-xl font-bold text-sm">BATAL</button>
+            <button onclick="verifikasiToken()" class="w-1/2 bg-blue-600 text-white py-3 rounded-xl font-bold text-sm shadow-lg shadow-blue-200">MULAI</button>
+        </div>
+    </div>
+</div>
+
 <div id="loginPage" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900 p-4">
     <div class="glass p-8 w-full max-w-md shadow-2xl text-center">
         <img src="https://raw.githubusercontent.com/wendelinus223-gif/admin-rpgo/main/LOGO.jpg" class="w-20 h-20 mx-auto mb-4 rounded-full border-4 border-white shadow-lg">
@@ -65,7 +82,7 @@
     <main class="max-w-6xl mx-auto p-4">
         <div id="adminSection" class="hidden space-y-6">
             <div class="glass p-6 border-t-4 border-blue-600 shadow-md">
-                <h3 class="font-bold mb-4 flex items-center gap-2">👥 Manajemen Biodata Peserta</h3>
+                <h3 class="font-bold mb-4 flex items-center gap-2 text-slate-700">👥 Manajemen Biodata Peserta</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-3">
                     <select id="s_lembaga">
                         <option value="SD">TINGKAT SD</option>
@@ -93,16 +110,17 @@
             </div>
 
             <div class="glass p-6 border-t-4 border-purple-600 shadow-md">
-                <h3 class="font-bold mb-4 flex items-center gap-2">🔗 Publikasi Link Google Form</h3>
-                <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+                <h3 class="font-bold mb-4 flex items-center gap-2 text-slate-700">🔗 Publikasi Link Google Form</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-3">
                     <select id="exam_lembaga">
                         <option value="SD">TARGET SD</option>
                         <option value="SMP">TARGET SMP</option>
                         <option value="SMA">TARGET SMA</option>
                     </select>
-                    <input type="text" id="exam_kelas" placeholder="Kelas (Contoh: 6, 9, atau 12)">
+                    <input type="text" id="exam_kelas" placeholder="Kelas">
                     <input type="text" id="exam_mapel" placeholder="Mata Pelajaran">
                     <input type="text" id="exam_link" placeholder="Link G-Form">
+                    <input type="text" id="exam_token" placeholder="Token Ujian">
                     <button onclick="saveExam()" class="bg-purple-600 text-white font-bold rounded-lg px-4 py-2">PUBLISH</button>
                 </div>
                 <div id="adminExamList" class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6"></div>
@@ -110,7 +128,7 @@
         </div>
 
         <div id="siswaSection" class="hidden">
-            <h3 class="text-xl font-bold mb-6 text-slate-700 border-b pb-3">Daftar Ujian Tersedia</h3>
+            <h3 class="text-xl font-bold mb-6 text-slate-700 border-b pb-3 uppercase tracking-wide">Ujian Aktif</h3>
             <div id="gridUjianSiswa" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </div>
 
@@ -146,23 +164,17 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// Variabel Global Timer
 let examInterval;
+let pendingExam = null; // Menyimpan data ujian sementara sebelum token diverifikasi
 
 window.prosesLogin = async function() {
     const no = document.getElementById("l_no").value.trim().toUpperCase();
     const ps = document.getElementById("l_pass").value;
-    if(no === "AMADEO" && ps === "RPGO123") {
-        renderUI("WENDELINUS CHRISTO SNAE, SE", "ADMIN UTAMA", "admin");
-        return;
-    }
+    if(no === "AMADEO" && ps === "RPGO123") { renderUI("WENDELINUS CHRISTO SNAE, SE", "ADMIN UTAMA", "admin"); return; }
     const snap = await get(ref(db, "siswa_cbt"));
     let found = null;
-    Object.values(snap.val() || {}).forEach(s => {
-        if(s.noPeserta.toUpperCase() === no && s.password === ps) found = s;
-    });
-    if(found) { renderUI(found.nama, found.lembaga, "siswa"); } 
-    else { alert("Akses Ditolak!"); }
+    Object.values(snap.val() || {}).forEach(s => { if(s.noPeserta.toUpperCase() === no && s.password === ps) found = s; });
+    if(found) { renderUI(found.nama, found.lembaga, "siswa"); } else { alert("Akses Ditolak!"); }
 };
 
 function renderUI(nama, lembaga, role) {
@@ -170,13 +182,8 @@ function renderUI(nama, lembaga, role) {
     document.getElementById("mainDashboard").classList.remove("hidden");
     document.getElementById("userNama").innerText = nama;
     document.getElementById("userLembaga").innerText = lembaga;
-    if(role === "admin") {
-        document.getElementById("adminSection").classList.remove("hidden");
-        loadAdminData();
-    } else {
-        document.getElementById("siswaSection").classList.remove("hidden");
-        loadSiswaData(lembaga);
-    }
+    if(role === "admin") { document.getElementById("adminSection").classList.remove("hidden"); loadAdminData(); } 
+    else { document.getElementById("siswaSection").classList.remove("hidden"); loadSiswaData(lembaga); }
 }
 
 window.addSiswa = () => {
@@ -188,12 +195,8 @@ window.addSiswa = () => {
         foto: document.getElementById("s_foto").value.trim() || ""
     };
     if(!data.noPeserta || !data.nama) return alert("Isi lengkap!");
-    push(ref(db, "siswa_cbt"), data);
-    alert("Berhasil!");
-    document.getElementById("s_no").value = "";
-    document.getElementById("s_nama").value = "";
-    document.getElementById("s_pass").value = "";
-    document.getElementById("s_foto").value = "";
+    push(ref(db, "siswa_cbt"), data); alert("Berhasil!");
+    ["s_no", "s_nama", "s_pass", "s_foto"].forEach(id => document.getElementById(id).value = "");
 };
 
 function loadAdminData() {
@@ -203,9 +206,9 @@ function loadAdminData() {
             h += `<tr class="border-b">
                 <td class="p-3 font-bold text-blue-600">${s.lembaga}</td>
                 <td class="p-3 font-mono">${s.noPeserta}</td>
-                <td class="p-3">${s.nama}</td>
+                <td class="p-3 uppercase">${s.nama}</td>
                 <td class="p-3">${s.password}</td>
-                <td class="p-3 text-[10px] truncate max-w-[100px]">${s.foto ? 'Ada Foto' : '-'}</td>
+                <td class="p-3 text-[10px]">${s.foto ? '✅' : '-'}</td>
                 <td class="p-3"><button onclick="delSiswa('${key}')" class="text-red-500">Hapus</button></td>
             </tr>`;
         });
@@ -216,12 +219,13 @@ function loadAdminData() {
         Object.entries(snap.val() || {}).forEach(([key, e]) => {
             const isAktif = e.status === 'aktif';
             h += `<div class="p-4 bg-white border rounded-2xl shadow-sm border-l-4 ${isAktif ? 'border-green-500' : 'border-slate-300'}">
-                <p class="text-[10px] font-bold text-slate-400 uppercase">${e.lembaga} - KELAS ${e.kelas || '-'}</p>
-                <p class="font-bold text-sm">${e.mapel}</p>
+                <div class="flex justify-between">
+                   <p class="text-[10px] font-bold text-slate-400 uppercase">${e.lembaga} - KLAS ${e.kelas || ''}</p>
+                   <span class="text-[9px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold">TKN: ${e.token || '-'}</span>
+                </div>
+                <p class="font-bold text-sm mt-1">${e.mapel}</p>
                 <div class="flex gap-2 mt-4">
-                    <button onclick="toggleExam('${key}', '${e.status}')" class="text-[10px] px-3 py-1 rounded-full font-bold ${isAktif ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-500'}">
-                        ${isAktif ? 'AKTIF' : 'NONAKTIF'}
-                    </button>
+                    <button onclick="toggleExam('${key}', '${e.status}')" class="text-[10px] px-3 py-1 rounded-full font-bold ${isAktif ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-500'}">${isAktif ? 'AKTIF' : 'NONAKTIF'}</button>
                     <button onclick="delExam('${key}')" class="text-[10px] text-red-500 font-bold ml-auto">HAPUS</button>
                 </div>
             </div>`;
@@ -238,61 +242,14 @@ window.saveExam = () => {
     const data = {
         lembaga: document.getElementById("exam_lembaga").value,
         kelas: document.getElementById("exam_kelas").value.trim(),
-        mapel: document.getElementById("exam_mapel").value,
-        link: document.getElementById("exam_link").value,
+        mapel: document.getElementById("exam_mapel").value.trim(),
+        link: document.getElementById("exam_link").value.trim(),
+        token: document.getElementById("exam_token").value.trim().toUpperCase(),
         status: "nonaktif"
     };
-    if(!data.mapel || !data.link) return alert("Lengkapi data ujian!");
-    push(ref(db, "soal_cbt"), data);
-    alert("Diterbitkan!");
-    document.getElementById("exam_kelas").value = "";
-    document.getElementById("exam_mapel").value = "";
-    document.getElementById("exam_link").value = "";
-};
-
-window.printKartu = async () => {
-    const snap = await get(ref(db, "siswa_cbt"));
-    let html = "";
-    Object.values(snap.val() || {}).forEach(s => {
-        html += `
-        <div class="card-print" style="border: 2px solid #000; padding: 10px; width: 48%; float: left; margin: 1%; height: 280px; box-sizing: border-box; position: relative; font-family: Arial, sans-serif; background: #fff; margin-bottom: 20px;">
-            <div style="display: flex; align-items: center; justify-content: center; border-bottom: 4px double #000; padding-bottom: 5px; margin-bottom: 10px;">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/9/9c/Logo_Tut_Wuri_Handayani.png" style="width: 45px; position: absolute; left: 10px; top: 10px;">
-                <div style="text-align: center; margin-left: 40px;">
-                    <div style="font-size: 12px; font-weight: bold; letter-spacing: 1px;">KARTU PESERTA PSAJ</div>
-                    <div style="font-size: 11px; font-weight: bold;">TAHUN PELAJARAN 2025/2026</div>
-                </div>
-            </div>
-            <table style="font-size: 10px; width: 100%; border-collapse: collapse; font-weight: bold;">
-                <tr><td width="35%" style="padding:3px 0;">NO. PESERTA</td><td width="5%">:</td><td>${s.noPeserta}</td></tr>
-                <tr><td style="padding:3px 0;">NAMA</td><td>:</td><td style="text-transform: uppercase;">${s.nama}</td></tr>
-                <tr><td style="padding:3px 0;">LEMBAGA</td><td>:</td><td>${s.lembaga} RPG OELEON</td></tr>
-                <tr><td style="padding:3px 0;">PASSWORD</td><td>:</td><td style="background: #eee; padding: 2px;">${s.password}</td></tr>
-            </table>
-            <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: flex-start;">
-                <div style="width: 65px; height: 85px; border: 1px solid #000; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #fafafa;">
-                    ${s.foto ? 
-                        `<img src="${s.foto}" style="width: 100%; height: 100%; object-fit: cover;">` : 
-                        `<div style="font-size: 8px; text-align: center; color: #000; font-weight:bold;">FOTO<br>3x4</div>`
-                    }
-                </div>
-                <div style="text-align: center; width: 160px;">
-                    <div style="font-size: 9px; font-weight: bold;">OELEON, 21 MEI 2026</div>
-                    <div style="font-size: 9px; font-weight: bold; margin-bottom: 35px;">KEPALA SEKOLAH</div>
-                    <div style="font-size: 9px; font-weight: bold; text-decoration: underline;">YASINTHA TUALAKA, S.Pd</div>
-                    <div style="font-size: 9px; font-weight: bold;">Nip. -</div>
-                </div>
-            </div>
-            <div style="position: absolute; bottom: 5px; right: 10px; font-size: 7px; color: #666; font-style: italic;">
-                RPG OELEON CBT SYSTEM
-            </div>
-        </div>`;
-    });
-    const printArea = document.getElementById("printArea");
-    printArea.innerHTML = html;
-    printArea.classList.remove("hidden");
-    window.print();
-    printArea.classList.add("hidden");
+    if(!data.mapel || !data.link || !data.token) return alert("Lengkapi data dan Token!");
+    push(ref(db, "soal_cbt"), data); alert("Diterbitkan!");
+    ["exam_kelas", "exam_mapel", "exam_link", "exam_token"].forEach(id => document.getElementById(id).value = "");
 };
 
 function loadSiswaData(lembSiswa) {
@@ -300,18 +257,41 @@ function loadSiswaData(lembSiswa) {
         let h = ""; 
         Object.values(snap.val() || {}).forEach(e => {
             if(e.status === 'aktif' && e.lembaga === lembSiswa) {
-                h += `<div onclick="bukaUjian('${e.link}', '${e.mapel}')" class="glass p-6 cursor-pointer border-l-4 border-blue-600">
+                h += `<div onclick="siapkanUjian('${e.link}', '${e.mapel}', '${e.token}')" class="glass p-6 cursor-pointer border-l-4 border-blue-600 hover:bg-blue-50 transition">
                     <p class="text-[10px] font-bold text-blue-500 uppercase">${e.lembaga} - KELAS ${e.kelas || ''}</p>
                     <h4 class="text-xl font-bold">${e.mapel}</h4>
-                    <p class="text-xs text-slate-400 mt-1">Klik untuk mulai ujian</p>
+                    <p class="text-xs text-slate-400 mt-1 italic">Butuh token untuk memulai</p>
                 </div>`;
             }
         });
-        document.getElementById("gridUjianSiswa").innerHTML = h || "<p class='p-8 text-slate-400'>Belum ada ujian aktif untuk lembaga Anda.</p>";
+        document.getElementById("gridUjianSiswa").innerHTML = h || "<p class='p-8 text-slate-400'>Belum ada ujian aktif.</p>";
     });
 }
 
-window.bukaUjian = async (url, mapel) => {
+// FUNGSI TOKEN BARU
+window.siapkanUjian = (url, mapel, token) => {
+    pendingExam = { url, mapel, token };
+    document.getElementById("tokenMapelTitle").innerText = mapel;
+    document.getElementById("inputTokenSiswa").value = "";
+    document.getElementById("modalToken").classList.remove("hidden");
+};
+
+window.batalBukaUjian = () => {
+    document.getElementById("modalToken").classList.add("hidden");
+    pendingExam = null;
+};
+
+window.verifikasiToken = () => {
+    const input = document.getElementById("inputTokenSiswa").value.trim().toUpperCase();
+    if(input === pendingExam.token) {
+        document.getElementById("modalToken").classList.add("hidden");
+        jalankanUjian(pendingExam.url, pendingExam.mapel);
+    } else {
+        alert("TOKEN SALAH!");
+    }
+};
+
+async function jalankanUjian(url, mapel) {
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         document.getElementById('cam-video').srcObject = stream;
@@ -320,41 +300,20 @@ window.bukaUjian = async (url, mapel) => {
         document.getElementById("frameUjian").classList.remove("hidden");
         document.getElementById("iframeBox").innerHTML = `<iframe src="${url}?embedded=true" class="w-full h-full border-0"></iframe>`;
         
-        // Logika Timer 1 Jam 45 Menit (105 Menit)
         let totalDetik = 105 * 60; 
         clearInterval(examInterval);
-        
         examInterval = setInterval(() => {
             totalDetik--;
-            let jam = Math.floor(totalDetik / 3600);
-            let menit = Math.floor((totalDetik % 3600) / 60);
-            let detik = totalDetik % 60;
-            
-            document.getElementById("timerDisplay").innerText = 
-                `${String(jam).padStart(2,'0')}:${String(menit).padStart(2,'0')}:${String(detik).padStart(2,'0')}`;
-            
-            if(totalDetik <= 300) { // Sisa 5 menit warna merah pekat
-                document.getElementById("timerDisplay").classList.replace("bg-red-600", "bg-red-800");
-            }
-
-            if(totalDetik <= 0) {
-                clearInterval(examInterval);
-                alert("WAKTU HABIS! Ujian akan ditutup otomatis.");
-                forceTutupUjian();
-            }
+            let jam = Math.floor(totalDetik / 3600), menit = Math.floor((totalDetik % 3600) / 60), detik = totalDetik % 60;
+            document.getElementById("timerDisplay").innerText = `${String(jam).padStart(2,'0')}:${String(menit).padStart(2,'0')}:${String(detik).padStart(2,'0')}`;
+            if(totalDetik <= 300) document.getElementById("timerDisplay").classList.replace("bg-red-600", "bg-red-800");
+            if(totalDetik <= 0) { clearInterval(examInterval); alert("Waktu Habis!"); forceTutupUjian(); }
         }, 1000);
+    } catch (e) { alert("Wajib izin kamera!"); }
+}
 
-    } catch (e) { alert("Wajib izin kamera untuk memulai ujian!"); }
-};
+window.tutupUjian = () => { if(confirm("Keluar?")) forceTutupUjian(); };
 
-// Fungsi tutup manual dengan konfirmasi
-window.tutupUjian = () => {
-    if(confirm("Apakah Anda yakin telah mengirim jawaban dan ingin keluar?")) {
-        forceTutupUjian();
-    }
-};
-
-// Fungsi tutup paksa saat waktu habis atau konfirmasi OK
 function forceTutupUjian() {
     clearInterval(examInterval);
     const v = document.getElementById('cam-video');
@@ -364,6 +323,40 @@ function forceTutupUjian() {
     document.getElementById("iframeBox").innerHTML = "";
 }
 
+window.printKartu = async () => {
+    const snap = await get(ref(db, "siswa_cbt"));
+    let html = "";
+    Object.values(snap.val() || {}).forEach(s => {
+        html += `<div class="card-print" style="border: 2px solid #000; padding: 10px; width: 48%; float: left; margin: 1%; height: 280px; box-sizing: border-box; position: relative; font-family: Arial; background: #fff; margin-bottom: 20px;">
+            <div style="display: flex; align-items: center; justify-content: center; border-bottom: 4px double #000; padding-bottom: 5px; margin-bottom: 10px;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/9/9c/Logo_Tut_Wuri_Handayani.png" style="width: 45px; position: absolute; left: 10px; top: 10px;">
+                <div style="text-align: center; margin-left: 40px;">
+                    <div style="font-size: 12px; font-weight: bold;">KARTU PESERTA PSAJ</div>
+                    <div style="font-size: 11px; font-weight: bold;">TAHUN PELAJARAN 2025/2026</div>
+                </div>
+            </div>
+            <table style="font-size: 10px; width: 100%; font-weight: bold;">
+                <tr><td width="35%">NO. PESERTA</td><td>: ${s.noPeserta}</td></tr>
+                <tr><td>NAMA</td><td style="text-transform: uppercase;">: ${s.nama}</td></tr>
+                <tr><td>LEMBAGA</td><td>: ${s.lembaga} RPG OELEON</td></tr>
+                <tr><td>PASSWORD</td><td>: ${s.password}</td></tr>
+            </table>
+            <div style="margin-top: 15px; display: flex; justify-content: space-between;">
+                <div style="width: 65px; height: 85px; border: 1px solid #000; overflow: hidden; background: #fafafa;">
+                    ${s.foto ? `<img src="${s.foto}" style="width: 100%; height: 100%; object-fit: cover;">` : `<div style="font-size: 8px; text-align: center; margin-top: 30px;">FOTO</div>`}
+                </div>
+                <div style="text-align: center; width: 160px;">
+                    <div style="font-size: 9px; font-weight: bold;">OELEON, 21 MEI 2026</div>
+                    <div style="font-size: 9px; font-weight: bold; margin-bottom: 35px;">KEPALA SEKOLAH</div>
+                    <div style="font-size: 9px; font-weight: bold; text-decoration: underline;">YASINTHA TUALAKA, S.Pd</div>
+                </div>
+            </div>
+        </div>`;
+    });
+    const printArea = document.getElementById("printArea");
+    printArea.innerHTML = html; printArea.classList.remove("hidden");
+    window.print(); printArea.classList.add("hidden");
+};
 </script>
 </body>
 </html>
