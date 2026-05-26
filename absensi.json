@@ -1,7 +1,12 @@
 {
-  "id": "absensi-rpgo-v1",
+  "id": "rpgo-absensi-final",
   "short_name": "ABSENSI RPGO",
-  "name": "ABSENSI RPGO - Full Secure System",
+  "name": "ABSENSI RPGO System",
+  "start_url": "absensi.html",
+  "scope": "/admin-rpgo/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
   "icons": [
     {
       "src": "LOGO.jpg",
@@ -13,9 +18,5 @@
       "sizes": "512x512",
       "type": "image/jpeg"
     }
-  ],
-  "start_url": "index.html?v=absensi_fix",
-  "display": "standalone",
-  "theme_color": "#2563eb",
-  "background_color": "#ffffff"
+  ]
 }
