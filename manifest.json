@@ -1,0 +1,20 @@
+{
+  "short_name": "RPG Oeleon",
+  "name": "RPG OELEON - CBT Lintas Jenjang",
+  "icons": [
+    {
+      "src": "LOGO.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "LOGO.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#2563eb",
+  "background_color": "#ffffff"
+}
