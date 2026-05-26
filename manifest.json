@@ -1,6 +1,7 @@
 {
-  "short_name": "RPG Oeleon",
-  "name": "RPG OELEON - CBT Lintas Jenjang",
+  "id": "rpgo-cbt-lintas-jenjang",
+  "short_name": "RPGO UJIAN",
+  "name": "RPGO - CBT UJIAN",
   "icons": [
     {
       "src": "LOGO.jpg",
@@ -13,7 +14,7 @@
       "type": "image/jpeg"
     }
   ],
-  "start_url": ".",
+  "start_url": "./index.html",
   "display": "standalone",
   "theme_color": "#2563eb",
   "background_color": "#ffffff"
