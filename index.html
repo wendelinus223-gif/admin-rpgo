@@ -703,6 +703,26 @@ window.printKartu = async () => {
     printArea.classList.remove("hidden");
     setTimeout(() => { window.print(); printArea.classList.add("hidden"); }, 1000);
 };
+// 1. Ambil memori "Nomor Ruang" yang tersimpan di Chromebook ini
+let nomorRuang = localStorage.getItem("nomor_ruang_ujian");
+
+// 2. Cek apakah di link atasnya sudah ada tanda tanya (?siswa)
+let urlSekarang = window.location.href;
+
+if (!urlSekarang.includes("?")) {
+    // Jika BELUM ada nomor ruang tersimpan di Chromebook ini, minta guru/siswa isi sekali saja
+    if (!nomorRuang) {
+        nomorRuang = prompt("Masukkan Nomor Meja / Nomor Chromebook ini (Contoh: 1, 2, 3):");
+        if (nomorRuang) {
+            localStorage.setItem("nomor_ruang_ujian", nomorRuang);
+        } else {
+            nomorRuang = "default"; // Antisipasi jika dikosongkan
+        }
+    }
+    
+    // Alihkan halaman secara otomatis ke ruang masing-masing sesuai nomornya
+    window.location.href = urlSekarang + "?" + nomorRuang;
+}
 </script>
 </body>
 </html>
