@@ -202,6 +202,7 @@
                 <thead class="bg-slate-100 uppercase sticky top-0">
                     <tr>
                         <th class="p-3">Nama Siswa</th>
+                        <th class="p-3">No. Meja</th>
                         <th class="p-3">Mapel</th>
                         <th class="p-3">Mulai</th>
                         <th class="p-3">Selesai</th>
@@ -290,6 +291,24 @@ let currentFolderFoto = "";
 let isExamRunning = false; // Flag status ujian
 let currentUserData = null; // Menyimpan data user yang login
 
+// Ambil memori "Nomor Ruang / Meja" yang tersimpan di Chromebook ini secara lokal
+let nomorRuang = localStorage.getItem("nomor_ruang_ujian");
+let urlSekarang = window.location.href;
+
+if (!urlSekarang.includes("?")) {
+    if (!nomorRuang) {
+        nomorRuang = prompt("Masukkan Nomor Meja / Nomor Chromebook ini (Contoh: 1, 2, 3):");
+        if (nomorRuang) {
+            localStorage.setItem("nomor_ruang_ujian", nomorRuang);
+        } else {
+            nomorRuang = "default";
+        }
+    }
+    window.location.href = urlSekarang + "?" + nomorRuang;
+} else {
+    nomorRuang = urlSekarang.split("?")[1] || "default";
+}
+
 // --- FITUR KEAMANAN FULLSCREEN & DETEKSI ---
 
 function mntFull() {
@@ -319,6 +338,7 @@ async function catatPelanggaran(jenis) {
         nama: currentUserData.nama,
         noPeserta: currentUserData.noPeserta,
         lembaga: currentUserData.lembaga,
+        meja: nomorRuang,
         mapel: document.getElementById("mapelAktif").innerText,
         pelanggaran: jenis,
         waktu: new Date().toLocaleString('id-ID')
@@ -334,7 +354,6 @@ window.showTab = (tabId) => {
     document.getElementById(tabId).classList.remove('hidden');
     document.getElementById('btn-' + tabId).classList.add('active');
     
-    // Jika admin buka tab biodata, tambahkan monitoring log di bawah tabel (Opsional tapi berguna)
     if(tabId === 'tab-biodata') { loadLogPelanggaran(); }
 };
 
@@ -395,7 +414,6 @@ window.addSiswa = () => {
 };
 
 function loadAdminData() {
-    // 1. Memuat Data Biodata Siswa
     onValue(ref(db, "siswa_cbt"), snap => {
         let h = ""; 
         Object.entries(snap.val() || {}).forEach(([key, s]) => {
@@ -411,7 +429,6 @@ function loadAdminData() {
         document.getElementById("listSiswaTable").innerHTML = h;
     });
     
-    // 2. Memuat Daftar Ujian/Soal
     onValue(ref(db, "soal_cbt"), snap => {
         let h = "";
         Object.entries(snap.val() || {}).forEach(([key, e]) => {
@@ -432,32 +449,16 @@ function loadAdminData() {
         document.getElementById("adminExamList").innerHTML = h;
     });
 
-    // 3. Memuat Monitoring Aktivitas (Sedang Mengerjakan/Selesai)
     loadMonitoringData();
 }
 
-// Fungsi tambahan untuk memantau siapa yang curang (Pindah Tab/Keluar Fullscreen)
 function loadLogPelanggaran() {
     onValue(ref(db, "log_pelanggaran"), snap => {
-        if(!snap.exists()) {
-            console.log("Belum ada data pelanggaran.");
-            return;
-        }
-        
-        // Opsional: Jika Anda ingin menampilkan log ini di Console Admin untuk debugging cepat
+        if(!snap.exists()) return;
         console.table(snap.val());
-
-        // Tip: Jika Anda ingin menampilkan log ini di TAB UI, 
-        // Anda bisa membuat elemen table baru di HTML dengan id "logTable"
-        // let h = "";
-        // Object.values(snap.val()).forEach(log => {
-        //    h += `<tr class="text-red-600"><td>${log.nama}</td><td>${log.pelanggaran}</td><td>${log.waktu}</td></tr>`;
-        // });
-        // document.getElementById("logTable").innerHTML = h;
     });
 }
 
-// Fungsi bantu untuk memproses data monitoring secara Real-time
 function loadMonitoringData() {
     const monitorRef = ref(db, "monitoring");
     onValue(monitorRef, snap => {
@@ -467,6 +468,7 @@ function loadMonitoringData() {
                 const isSelesai = m.status === "SELESAI";
                 h += `<tr class="border-b hover:bg-slate-50 transition">
                     <td class="p-3 font-bold text-slate-700">${m.nama}</td>
+                    <td class="p-3 font-mono font-bold text-blue-600">Meja ${m.meja || '-'}</td>
                     <td class="p-3 text-slate-600">${m.mapel}</td>
                     <td class="p-3 text-blue-600 font-mono font-bold">${m.mulai}</td>
                     <td class="p-3 text-emerald-600 font-mono font-bold">${m.selesai}</td>
@@ -479,7 +481,7 @@ function loadMonitoringData() {
             });
         }
         const container = document.getElementById("monitoringTable");
-        if(container) container.innerHTML = h || "<tr><td colspan='5' class='p-4 text-center text-slate-400'>Belum ada aktivitas hari ini</td></tr>";
+        if(container) container.innerHTML = h || "<tr><td colspan='6' class='p-4 text-center text-slate-400'>Belum ada aktivitas hari ini</td></tr>";
     });
 }
 
@@ -583,7 +585,7 @@ window.verifikasiToken = () => {
     const input = document.getElementById("inputTokenSiswa").value.trim().toUpperCase();
     if(input === pendingExam.token) {
         document.getElementById("modalToken").classList.add("hidden");
-        mntFull(); // Aktifkan Fullscreen
+        mntFull(); 
         jalankanUjian(pendingExam.url, pendingExam.mapel);
     } else { alert("TOKEN SALAH!"); }
 };
@@ -595,21 +597,33 @@ async function jalankanUjian(url, mapel) {
         document.getElementById('cam-container').style.display = 'block';
         document.getElementById("mapelAktif").innerText = mapel;
         document.getElementById("frameUjian").classList.remove("hidden");
-        document.getElementById("iframeBox").innerHTML = `<iframe src="${url}?embedded=true" class="w-full h-full border-0"></iframe>`;
         
-        isExamRunning = true; // Tandai ujian dimulai untuk monitoring
+        // --- TRIK ISOLASI ANTI SINKRONISASI MASSAL ---
+        // Bersihkan link jika ada spasi bawaan
+        let cleanUrl = url.trim();
+        // Cek format, jika link biasa ubah ujungnya agar terdeteksi sebagai form isian bersih
+        if (cleanUrl.includes("/viewform")) {
+            cleanUrl = cleanUrl.split("/viewform")[0] + "/viewform";
+        }
+        
+        // Gabungkan parameter embedded, nomor meja, dan bilangan acak (Math.random)
+        let linkIsolasi = cleanUrl + "?embedded=true&entry.0=" + nomorRuang + "&rand=" + Math.random();
+        
+        // Muat Google Form yang sudah terisolasi ke dalam iframe
+        document.getElementById("iframeBox").innerHTML = `<iframe src="${linkIsolasi}" class="w-full h-full border-0"></iframe>`;
+        
+        isExamRunning = true; 
 
-        // --- TAMBAHAN POIN A: Update Monitoring ke Firebase ---
         if(currentUserData) {
             set(ref(db, `monitoring/${currentUserData.noPeserta}`), {
                 nama: currentUserData.nama,
+                meja: nomorRuang, // Input nomor meja otomatis ke Firebase Dashboard Guru
                 mapel: mapel,
                 mulai: new Date().toLocaleTimeString('id-ID'),
                 selesai: "-",
                 status: "SEDANG MENGERJAKAN"
             });
         }
-        // --- AKHIR TAMBAHAN ---
 
         let totalDetik = 105 * 60; 
         clearInterval(examInterval);
@@ -629,18 +643,15 @@ window.tutupUjian = () => {
 };
 
 function forceTutupUjian() {
-    // --- TAMBAHAN POIN B: Update Monitoring menjadi SELESAI ---
     if(currentUserData && isExamRunning) {
         update(ref(db, `monitoring/${currentUserData.noPeserta}`), {
             selesai: new Date().toLocaleTimeString('id-ID'),
             status: "SELESAI"
         });
     }
-    // --- AKHIR TAMBAHAN ---
 
     isExamRunning = false;
     
-    // Keluar dari mode Fullscreen jika sedang aktif
     if (document.fullscreenElement || document.webkitFullscreenElement) {
         if (document.exitFullscreen) { 
             document.exitFullscreen().catch(() => {}); 
@@ -651,11 +662,9 @@ function forceTutupUjian() {
 
     clearInterval(examInterval);
     
-    // Matikan Kamera
     const v = document.getElementById('cam-video');
     if(v.srcObject) v.srcObject.getTracks().forEach(t => t.stop());
     
-    // Sembunyikan UI Ujian
     document.getElementById('cam-container').style.display = 'none';
     document.getElementById("frameUjian").classList.add("hidden");
     document.getElementById("iframeBox").innerHTML = "";
@@ -703,26 +712,6 @@ window.printKartu = async () => {
     printArea.classList.remove("hidden");
     setTimeout(() => { window.print(); printArea.classList.add("hidden"); }, 1000);
 };
-// 1. Ambil memori "Nomor Ruang" yang tersimpan di Chromebook ini
-let nomorRuang = localStorage.getItem("nomor_ruang_ujian");
-
-// 2. Cek apakah di link atasnya sudah ada tanda tanya (?siswa)
-let urlSekarang = window.location.href;
-
-if (!urlSekarang.includes("?")) {
-    // Jika BELUM ada nomor ruang tersimpan di Chromebook ini, minta guru/siswa isi sekali saja
-    if (!nomorRuang) {
-        nomorRuang = prompt("Masukkan Nomor Meja / Nomor Chromebook ini (Contoh: 1, 2, 3):");
-        if (nomorRuang) {
-            localStorage.setItem("nomor_ruang_ujian", nomorRuang);
-        } else {
-            nomorRuang = "default"; // Antisipasi jika dikosongkan
-        }
-    }
-    
-    // Alihkan halaman secara otomatis ke ruang masing-masing sesuai nomornya
-    window.location.href = urlSekarang + "?" + nomorRuang;
-}
 </script>
 </body>
 </html>
