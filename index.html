@@ -3,80 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RPGO - CBT UJIAN</title>
+  <title>CBT MULTI_SEKOLAH FAUTMOLO - VERSION PRO 2026</title>
 
-  <link rel="icon" type="image/png" href="LOGO.jpg">
-  <link rel="apple-touch-icon" href="LOGO.jpg">
+  <link class="rounded-full" rel="icon" type="image/png" href="https://i.ibb.co.com/mFgXrSxR/White-and-Blue-Illustrative-Class-Logo.jpg">
+  <link rel="apple-touch-icon" href="https://i.ibb.co.com/mFgXrSxR/White-and-Blue-Illustrative-Class-Logo.jpg">
   <link rel="manifest" href="manifest.json">
 
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="RPGO UJIAN">
   <meta name="theme-color" content="#2563eb">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   
   <style>
-    body { 
-      font-family: 'Plus Jakarta Sans', sans-serif; 
-      background: #f1f5f9; 
-    }
-    .glass { 
-      background: white; 
-      border-radius: 20px; 
-      border: 1px solid #e2e8f0; 
-    }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; }
+    .glass { background: white; border-radius: 16px; border: 1px solid #e2e8f0; }
     .hidden { display: none; }
-    input, select, textarea { 
-      border: 1px solid #cbd5e1 !important; 
-      border-radius: 8px !important; 
-      padding: 10px !important; 
-      width: 100%; 
-      font-size: 14px; 
-    }
+    input, select, textarea { border: 1px solid #cbd5e1 !important; border-radius: 8px !important; padding: 10px !important; width: 100%; font-size: 14px; background-color: #ffffff; }
+    input:focus, select:focus, textarea:focus { border-color: #2563eb !important; outline: none; }
     
-    /* Sidebar Style */
-    .nav-link { 
-      display: flex; 
-      align-items: center; 
-      gap: 12px; 
-      padding: 12px 20px; 
-      border-radius: 12px; 
-      color: #64748b; 
-      font-weight: 600; 
-      transition: all 0.3s; 
-      cursor: pointer; 
-      margin-bottom: 5px; 
-      font-size: 14px; 
-    }
+    .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-radius: 12px; color: #64748b; font-weight: 600; transition: all 0.3s; cursor: pointer; margin-bottom: 5px; font-size: 14px; }
     .nav-link:hover { background: #eff6ff; color: #2563eb; }
-    .nav-link.active { 
-      background: #2563eb; 
-      color: white; 
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); 
-    }
+    .nav-link.active { background: #2563eb; color: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); }
 
-    #cam-container { 
-      position: fixed; 
-      bottom: 20px; 
-      right: 20px; 
-      width: 110px; 
-      height: 110px; 
-      border-radius: 50%; 
-      overflow: hidden; 
-      border: 3px solid #2563eb; 
-      z-index: 100; 
-      background: #000; 
-      display: none; 
-    }
-    #cam-video { 
-      width: 100%; 
-      height: 100%; 
-      object-fit: cover; 
-      transform: scaleX(-1); 
-    }
+    #cam-container { position: fixed; bottom: 20px; right: 20px; width: 110px; height: 110px; border-radius: 50%; overflow: hidden; border: 3px solid #2563eb; z-index: 100; background: #000; display: none; }
+    #cam-video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
 
     @media print {
       body * { visibility: hidden; }
@@ -88,12 +41,11 @@
 </head>
 <body class="min-h-screen">
 
+<!-- MODAL TOKEN -->
 <div id="modalToken" class="hidden fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/80 p-4 backdrop-blur-sm">
     <div class="glass p-6 w-full max-w-sm text-center shadow-2xl">
         <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" /></svg>
         </div>
         <h3 class="text-lg font-bold text-slate-800 uppercase mb-1">Verifikasi Token</h3>
         <p class="text-[11px] text-slate-500 mb-4">Silahkan masukkan token untuk mata pelajaran:<br><span id="tokenMapelTitle" class="font-bold text-blue-600"></span></p>
@@ -105,26 +57,44 @@
     </div>
 </div>
 
-<div id="loginPage" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900 p-4">
-    <div class="glass p-8 w-full max-w-md shadow-2xl text-center">
-        <img src="https://raw.githubusercontent.com/wendelinus223-gif/admin-rpgo/main/LOGO.jpg" class="w-20 h-20 mx-auto mb-4 rounded-full border-4 border-white shadow-lg">
-        <h2 class="text-2xl font-bold text-slate-800 uppercase">RPG OELEON</h2>
-        <p class="text-sm text-slate-500 mb-6 font-semibold">CBT SD • SMP • SMA</p>
-        <div class="space-y-4 text-left">
-            <input type="text" id="l_no" placeholder="Username / No. Peserta">
-            <input type="password" id="l_pass" placeholder="Password">
-            <button onclick="prosesLogin()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 shadow-lg transition uppercase tracking-wider">Masuk Sistem</button>
+<!-- LOGIN PAGE (NEW: GRADIENT COLOR STYLE - MENARIK & COCOK) -->
+<div id="loginPage" class="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-tr from-slate-100 via-slate-50 to-blue-50 p-4">
+    <div class="bg-white/90 backdrop-blur-md border border-slate-200/80 p-8 w-full max-w-md rounded-3xl shadow-2xl text-center relative overflow-hidden">
+        
+        <!-- Ornamen estetik di latar belakang card login -->
+        <div class="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/5 rounded-full blur-xl"></div>
+        <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-indigo-500/5 rounded-full blur-xl"></div>
+
+        <!-- Wadah Logo dengan Kontras Bayangan Tinggi -->
+        <div class="relative w-24 h-24 mx-auto mb-5 rounded-full p-1 bg-white shadow-lg border-2 border-blue-500/20">
+            <img src="https://i.ibb.co.com/mFgXrSxR/White-and-Blue-Illustrative-Class-Logo.jpg" class="w-full h-full rounded-full object-cover">
         </div>
-        <p class="mt-6 text-[10px] text-slate-400 uppercase font-bold tracking-widest italic">Wendelinus Christo Snae, SE</p>
+        
+        <h2 class="text-2xl font-bold text-slate-800 uppercase tracking-wide">CBT FAUTMOLO</h2>
+        <p class="text-xs text-blue-600 mb-6 font-bold tracking-widest uppercase">DISTRICT MANAGEMENT SYSTEM</p>
+        
+        <div class="space-y-4 text-left relative z-10">
+            <div>
+                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1 tracking-wider">Username / No. Peserta</label>
+                <input type="text" id="l_no" placeholder="Masukkan ID Anda" class="bg-slate-50/50 focus:bg-white transition-all">
+            </div>
+            <div>
+                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1 tracking-wider">Password Akses</label>
+                <input type="password" id="l_pass" placeholder="••••••••" class="bg-slate-50/50 focus:bg-white transition-all">
+            </div>
+            <button onclick="prosesLogin()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-xl font-bold hover:opacity-95 shadow-xl shadow-blue-200 transition uppercase tracking-wider text-sm mt-2">Masuk Sistem</button>
+        </div>
+        <p class="mt-8 text-[10px] text-slate-400 uppercase font-bold tracking-widest italic border-t pt-4 border-slate-100">Wendelinus Christo Snae, SE</p>
     </div>
 </div>
 
+<!-- DASHBOARD UTAMA -->
 <div id="mainDashboard" class="hidden">
     <nav class="bg-white border-b p-4 sticky top-0 z-40 shadow-sm">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-2">
-                <img src="https://raw.githubusercontent.com/wendelinus223-gif/admin-rpgo/main/LOGO.jpg" class="w-8 h-8 rounded-full">
-                <span class="font-bold text-slate-800">OELEON CBT SYSTEM</span>
+                <img src="https://i.ibb.co.com/mFgXrSxR/White-and-Blue-Illustrative-Class-Logo.jpg" class="w-8 h-8 rounded-full border border-slate-200">
+                <span class="font-bold text-slate-800 tracking-wide text-sm">CBT MULTI_SEKOLAH FAUTMOLO</span>
             </div>
             <div class="flex items-center gap-4">
                 <div class="text-right hidden md:block">
@@ -138,120 +108,239 @@
 
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row min-h-[calc(100vh-73px)]">
         
-        <aside id="sidebarAdmin" class="hidden w-full md:w-72 bg-white border-r p-6 space-y-2">
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 px-4">Menu Administrator</p>
-            <div onclick="showTab('tab-biodata')" class="nav-link active" id="btn-tab-biodata">
+        <!-- SIDEBAR NAVIGATION -->
+        <aside id="sidebarMenu" class="w-full md:w-72 bg-white border-r p-6 space-y-2">
+            <p id="labelRoleAdmin" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 px-4">Menu Navigasi</p>
+            
+            <!-- Menu Khusus Super Admin -->
+            <div id="menu-sa-dashboard" onclick="showTab('tab-sa-dashboard')" class="nav-link hidden">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.003 9.003 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+                Panel Utama
+            </div>
+            <div id="menu-sa-proktor" onclick="showTab('tab-sa-proktor')" class="nav-link hidden">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                Kelola Akun Proktor
+            </div>
+            <div id="menu-sa-kesiapan" onclick="showTab('tab-sa-kesiapan')" class="nav-link hidden">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Kesiapan Sekolah
+            </div>
+            <div id="menu-sa-monitoring" onclick="showTab('tab-sa-monitoring')" class="nav-link hidden">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                Monitoring Live
+            </div>
+            <div id="menu-sa-foto" onclick="showTab('tab-sa-foto')" class="nav-link hidden">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                Konfigurasi Foto
+            </div>
+
+            <!-- Menu Khusus Proktor -->
+            <div id="menu-pr-biodata" onclick="showTab('tab-pr-biodata')" class="nav-link hidden">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                 Biodata Siswa
             </div>
-            <div onclick="showTab('tab-monitoring')" class="nav-link" id="btn-tab-monitoring">
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-    Pemantauan Ujian
-</div>
-            <div onclick="showTab('tab-foto')" class="nav-link" id="btn-tab-foto">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                Folder Foto
-            </div>
-            <div onclick="showTab('tab-ujian')" class="nav-link" id="btn-tab-ujian">
+            <div id="menu-pr-ujian" onclick="showTab('tab-pr-ujian')" class="nav-link hidden">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.828a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-                Link G-Form
+                Link G-Form (Soal)
+            </div>
+            <div id="menu-pr-monitoring" onclick="showTab('tab-pr-monitoring')" class="nav-link hidden">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                Monitoring Lokal
+            </div>
+            <div id="menu-pr-pengaturan" onclick="showTab('tab-pr-pengaturan')" class="nav-link hidden">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
+                Pengaturan Sekolah
             </div>
         </aside>
 
+        <!-- MAIN DISPLAY PANELS -->
         <main class="flex-grow p-4 md:p-8">
             
-            <div id="adminSection" class="hidden">
-                
-                <div id="tab-biodata" class="tab-content space-y-6">
-                    <div class="glass p-6 border-t-4 border-blue-600 shadow-md">
-                        <h3 class="font-bold mb-4 flex items-center gap-2 text-slate-700 uppercase text-sm">👥 Input Biodata Peserta</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-3">
-                            <select id="s_lembaga">
-                                <option value="SD">TINGKAT SD</option>
-                                <option value="SMP">TINGKAT SMP</option>
-                                <option value="SMA">TINGKAT SMA</option>
-                            </select>
-                            <input type="text" id="s_no" placeholder="No. Peserta">
-                            <input type="text" id="s_nama" placeholder="Nama Lengkap">
-                            <input type="text" id="s_pass" placeholder="Password">
-                            <input type="text" id="s_foto" placeholder="Link Foto (Opsional)">
-                            <button onclick="addSiswa()" class="bg-blue-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 transition">SIMPAN</button>
-                        </div>
-                        <div class="mt-8 flex justify-between items-center bg-slate-50 p-4 rounded-xl">
-                            <h4 class="font-bold text-xs text-slate-700 uppercase">Database Seluruh Peserta</h4>
-                            <button onclick="printKartu()" class="bg-emerald-600 text-white px-5 py-2 rounded-xl text-[10px] font-bold uppercase shadow-md hover:bg-emerald-700 transition">🖨️ Cetak Kartu</button>
-                        </div>
-                        <div class="overflow-x-auto mt-4 max-h-[500px]">
-                            <table class="w-full text-xs text-left">
-                                <thead class="bg-slate-200 uppercase sticky top-0">
-                                    <tr><th class="p-3">Lembaga</th><th class="p-3">No. Peserta</th><th class="p-3">Nama</th><th class="p-3">Pass</th><th class="p-3">Foto</th><th class="p-3">Aksi</th></tr>
-                                </thead>
-                                <tbody id="listSiswaTable"></tbody>
-                            </table>
-                        </div>
+            <!-- TAB: SA DASHBOARD -->
+            <div id="tab-sa-dashboard" class="tab-content hidden space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-gradient-to-br from-blue-600 to-blue-700 text-white p-6 rounded-2xl shadow">
+                        <p class="text-xs font-bold uppercase tracking-widest opacity-80">Total Sekolah Terdata</p>
+                        <h2 class="text-4xl font-bold mt-2">3 <span class="text-xs font-normal">Unit (SD/SMP/SMA)</span></h2>
+                    </div>
+                    <div class="bg-gradient-to-br from-indigo-600 to-indigo-700 text-white p-6 rounded-2xl shadow">
+                        <p class="text-xs font-bold uppercase tracking-widest opacity-80">Akun Proktor Aktif</p>
+                        <h2 id="widget-total-proktor" class="text-4xl font-bold mt-2">0</h2>
+                    </div>
+                    <div class="bg-gradient-to-br from-purple-600 to-purple-700 text-white p-6 rounded-2xl shadow">
+                        <p class="text-xs font-bold uppercase tracking-widest opacity-80">Total Siswa Terdaftar</p>
+                        <h2 id="widget-total-siswa" class="text-4xl font-bold mt-2">0</h2>
+                    </div>
+                    <div class="bg-gradient-to-br from-emerald-600 to-emerald-700 text-white p-6 rounded-2xl shadow animate-pulse">
+                        <p class="text-xs font-bold uppercase tracking-widest opacity-80">Siswa Ujian (Live)</p>
+                        <h2 id="widget-siswa-aktif" class="text-4xl font-bold mt-2">0</h2>
                     </div>
                 </div>
-                <div id="tab-monitoring" class="tab-content hidden">
-    <div class="glass p-6 border-t-4 border-orange-500 shadow-md">
-        <div class="flex justify-between items-center mb-6">
-            <h3 class="font-bold text-slate-700 uppercase text-sm">📊 Pemantauan Aktivitas Siswa</h3>
-            <span class="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-[10px] font-bold animate-pulse">LIVE UPDATE</span>
-        </div>
-        <div class="overflow-x-auto">
-            <table class="w-full text-xs text-left">
-                <thead class="bg-slate-100 uppercase sticky top-0">
-                    <tr>
-                        <th class="p-3">Nama Siswa</th>
-                        <th class="p-3">No. Meja</th>
-                        <th class="p-3">Mapel</th>
-                        <th class="p-3">Mulai</th>
-                        <th class="p-3">Selesai</th>
-                        <th class="p-3">Status</th>
-                    </tr>
-                </thead>
-                <tbody id="monitoringTable"></tbody>
-            </table>
-        </div>
-    </div>
-</div>
-                <div id="tab-foto" class="tab-content hidden">
-                    <div class="glass p-6 border-t-4 border-emerald-600 shadow-md max-w-2xl">
-                        <h3 class="font-bold mb-2 text-slate-700 uppercase text-sm">🖼️ Pengaturan Folder Foto</h3>
-                        <p class="text-xs text-slate-500 mb-6 italic">Sistem akan mencari foto otomatis di folder ini berdasarkan (No_Peserta.jpeg)</p>
-                        <div class="flex flex-col gap-3">
-                            <input type="text" id="config_folder_foto" placeholder="Contoh: https://hosting.com/foto-siswa/">
-                            <button onclick="saveConfig()" class="bg-emerald-600 text-white font-bold rounded-lg px-6 py-3 shadow-lg shadow-emerald-100">SIMPAN KONFIGURASI</button>
-                        </div>
-                    </div>
+                <div class="glass p-6 border-t-4 border-blue-600">
+                    <h3 class="font-bold text-slate-800 text-sm uppercase mb-2">Selamat Datang Master Administrator</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed">Melalui panel ini Anda memegang kontrol penuh konfigurasi database, pemantauan integritas siswa, serta validasi berkas administrasi ujian di seluruh instansi binaan Fautmolo.</p>
                 </div>
-
-                <div id="tab-ujian" class="tab-content hidden">
-                    <div class="glass p-6 border-t-4 border-purple-600 shadow-md">
-                        <h3 class="font-bold mb-4 text-slate-700 uppercase text-sm">🔗 Publikasi Ujian Google Form</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-3 mb-8">
-                            <select id="exam_lembaga">
-                                <option value="SD">TARGET SD</option>
-                                <option value="SMP">TARGET SMP</option>
-                                <option value="SMA">TARGET SMA</option>
-                            </select>
-                            <input type="text" id="exam_kelas" placeholder="Kelas">
-                            <input type="text" id="exam_mapel" placeholder="Mata Pelajaran">
-                            <input type="text" id="exam_link" placeholder="Link G-Form">
-                            <input type="text" id="exam_token" placeholder="Token Ujian">
-                            <button onclick="saveExam()" class="bg-purple-600 text-white font-bold rounded-lg px-4 py-2">PUBLISH</button>
-                        </div>
-                        <h4 class="text-xs font-bold text-slate-400 uppercase mb-4 tracking-widest">Daftar Link Ujian Aktif & Nonaktif</h4>
-                        <div id="adminExamList" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
-                    </div>
-                </div>
-
             </div>
 
+            <!-- TAB: SA KELOLA PROKTOR -->
+            <div id="tab-sa-proktor" class="tab-content hidden space-y-6">
+                <div class="glass p-6 border-t-4 border-indigo-600">
+                    <h3 class="font-bold mb-4 text-slate-700 uppercase text-sm">🏢 Pendaftaran Akun Proktor Sekolah</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-6">
+                        <input type="text" id="p_user" placeholder="Username Proktor">
+                        <input type="text" id="p_pass" placeholder="Password Proktor">
+                        <select id="p_lembaga"><option value="SD">TINGKAT SD</option><option value="SMP">TINGKAT SMP</option><option value="SMA">TINGKAT SMA</option></select>
+                        <button onclick="addProktor()" class="bg-indigo-600 text-white font-bold rounded-lg text-xs uppercase tracking-wider">TAMBAH PROKTOR</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-left">
+                            <thead class="bg-slate-100 uppercase"><tr><th class="p-3">Username</th><th class="p-3">Password</th><th class="p-3">Otoritas Lembaga</th><th class="p-3">Aksi</th></tr></thead>
+                            <tbody id="listProktorTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: SA KESIAPAN SEKOLAH -->
+            <div id="tab-sa-kesiapan" class="tab-content hidden space-y-6">
+                <div class="glass p-6 border-t-4 border-emerald-600">
+                    <h3 class="font-bold text-slate-700 uppercase text-sm mb-2">📋 Status Kelengkapan Pengaturan Sekolah</h3>
+                    <p class="text-xs text-slate-400 mb-4">Memastikan seluruh proktor sudah mengisi profil administrasi cetak (Kepala Sekolah, Pengawas, dll) sebelum ujian dimulai.</p>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-left">
+                            <thead class="bg-slate-100 uppercase">
+                                <tr>
+                                    <th class="p-3">Lembaga / Jenjang</th>
+                                    <th class="p-3">Nama Instansi di CBT</th>
+                                    <th class="p-3">Kepala Sekolah</th>
+                                    <th class="p-3">Pengawas Ruang</th>
+                                    <th class="p-3">Status Profil</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableKesiapanSekolah" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: SA MONITORING LIVE -->
+            <div id="tab-sa-monitoring" class="tab-content hidden space-y-6">
+                <div class="glass p-6 border-t-4 border-orange-500">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                        <div>
+                            <h3 class="font-bold text-slate-700 uppercase text-sm">📊 Pemantauan Aktivitas Kecamatan</h3>
+                            <p class="text-xs text-slate-400">Gunakan filter untuk mengisolasi pantauan ke sekolah tertentu.</p>
+                        </div>
+                        <div class="w-full md:w-64">
+                            <select id="filterSekolahMonitoring" onchange="loadMonitoringDataSA()">
+                                <option value="SEMUA">🌐 TAMPILKAN SEMUA SEKOLAH</option>
+                                <option value="SD">🏫 KHUSUS TINGKAT SD</option>
+                                <option value="SMP">🏫 KHUSUS TINGKAT SMP</option>
+                                <option value="SMA">🏫 KHUSUS TINGKAT SMA</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-left">
+                            <thead class="bg-slate-100 uppercase">
+                                <tr><th class="p-3">Nama Siswa</th><th class="p-3">Lembaga</th><th class="p-3">No. Meja</th><th class="p-3">Mapel</th><th class="p-3">Mulai</th><th class="p-3">Selesai</th><th class="p-3">Status</th></tr>
+                            </thead>
+                            <tbody id="monitoringTableSA"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: SA KONFIGURASI FOTO -->
+            <div id="tab-sa-foto" class="tab-content hidden space-y-6">
+                <div class="glass p-6 border-t-4 border-slate-700 max-w-2xl">
+                    <h3 class="font-bold mb-2 text-slate-700 uppercase text-sm">🖼️ Pengaturan Folder Foto Utama (Terpusat)</h3>
+                    <p class="text-xs text-slate-500 mb-6 italic">Semua gambar kartu ujian akan merujuk ke server penyimpanan hosting ini secara otomatis.</p>
+                    <div class="flex flex-col gap-3">
+                        <input type="text" id="config_folder_foto" placeholder="Contoh: https://hosting.com/foto-siswa/">
+                        <button onclick="saveConfig()" class="bg-slate-800 text-white font-bold rounded-lg text-xs uppercase py-3 tracking-wider">SIMPAN JALUR SERVER FOTO</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: PR BIODATA -->
+            <div id="tab-pr-biodata" class="tab-content hidden space-y-6">
+                <div class="glass p-6 border-t-4 border-blue-600">
+                    <h3 class="font-bold mb-4 text-slate-700 uppercase text-sm">👥 Pengelolaan Pas Foto & Biodata Peserta</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-3 mb-6">
+                        <input type="text" id="s_no" placeholder="No. Peserta">
+                        <input type="text" id="s_nama" placeholder="Nama Lengkap">
+                        <input type="text" id="s_pass" placeholder="Password">
+                        <input type="text" id="s_foto" placeholder="Link Foto (Opsional)">
+                        <button onclick="addSiswa()" class="bg-blue-600 text-white font-bold rounded-lg text-xs uppercase">SIMPAN</button>
+                    </div>
+                    <div class="flex justify-between items-center bg-slate-50 p-4 rounded-xl mb-4">
+                        <h4 class="font-bold text-xs text-slate-700 uppercase">Daftar Siswa Terdaftar Terverifikasi</h4>
+                        <button onclick="printKartu()" class="bg-emerald-600 text-white px-5 py-2 rounded-xl text-[10px] font-bold uppercase">🖨️ Cetak Kartu Massal</button>
+                    </div>
+                    <div class="overflow-x-auto max-h-[400px]">
+                        <table class="w-full text-xs text-left">
+                            <thead class="bg-slate-100 uppercase sticky top-0"><tr><th class="p-3">Lembaga</th><th class="p-3">No. Peserta</th><th class="p-3">Nama</th><th class="p-3">Pass</th><th class="p-3">Foto</th><th class="p-3">Aksi</th></tr></thead>
+                            <tbody id="listSiswaTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: PR LINK UJIAN -->
+            <div id="tab-pr-ujian" class="tab-content hidden space-y-6">
+                <div class="glass p-6 border-t-4 border-purple-600">
+                    <h3 class="font-bold mb-4 text-slate-700 uppercase text-sm">🔗 Publikasi Google Form & Aktivasi Token</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-3 mb-6">
+                        <input type="text" id="exam_kelas" placeholder="Kelas">
+                        <input type="text" id="exam_mapel" placeholder="Mata Pelajaran">
+                        <input type="text" id="exam_link" placeholder="Link G-Form">
+                        <input type="text" id="exam_token" placeholder="Token Ujian">
+                        <button onclick="saveExam()" class="bg-purple-600 text-white font-bold rounded-lg text-xs uppercase">PUBLISH</button>
+                    </div>
+                    <div id="adminExamList" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+                </div>
+            </div>
+
+            <!-- TAB: PR MONITORING LOKAL -->
+            <div id="tab-pr-monitoring" class="tab-content hidden space-y-6">
+                <div class="glass p-6 border-t-4 border-orange-500">
+                    <h3 class="font-bold text-slate-700 uppercase text-sm mb-4">📊 Pemantauan Siswa Ruang Ujian Lokal</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-left">
+                            <thead class="bg-slate-100 uppercase"><tr><th class="p-3">Nama Siswa</th><th class="p-3">No. Meja</th><th class="p-3">Mapel</th><th class="p-3">Mulai</th><th class="p-3">Selesai</th><th class="p-3">Status</th></tr></thead>
+                            <tbody id="monitoringTableProktor"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: PR PENGATURAN SEKOLAH -->
+            <div id="tab-pr-pengaturan" class="tab-content hidden space-y-6">
+                <div class="glass p-6 border-t-4 border-blue-500">
+                    <h3 class="font-bold mb-4 text-slate-700 uppercase text-sm">🛠️ Sinkronisasi Identitas Cetak Sekolah</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">NAMA INSTANSI RESMI</label><input type="text" id="adm_nama_sekolah" placeholder="SMA REFORMASI PLUS FAUTMOLO"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">TITIK LOKASI TANDA TANGAN</label><input type="text" id="adm_lokasi" placeholder="FAUTMOLO"></div>
+                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">ALAMAT KOP SURAT</label><input type="text" id="adm_alamat" placeholder="Jln. Kayu Putih, No. 1..."></div>
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">NAMA KEPALA SEKOLAH & GELAR</label><input type="text" id="adm_kepsek" placeholder="Nama Kepala Sekolah"></div>
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">NAMA PROKTOR PELAKSANA</label><input type="text" id="adm_proktor" placeholder="Nama Proktor"></div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-slate-500 mb-1">NAMA PENGAWAS RUANG (BISA LEBIH DARI SATU)</label>
+                            <textarea id="adm_pengawas" rows="3" placeholder="Contoh jika lebih dari satu:&#10;1. Jhon Doe, S.Pd&#10;2. Marry Jane, S.Pd"></textarea>
+                        </div>
+                    </div>
+                    <button onclick="saveAdministrasi()" class="bg-blue-600 text-white font-bold text-xs uppercase px-6 py-3 rounded-lg shadow-md">SIMPAN PENGATURAN</button>
+                </div>
+            </div>
+
+            <!-- KONTEN SISWA PESERTA -->
             <div id="siswaSection" class="hidden">
                 <h3 class="text-xl font-bold mb-6 text-slate-700 border-b pb-3 uppercase tracking-wide">Ujian Aktif Tersedia</h3>
                 <div id="gridUjianSiswa" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </div>
 
+            <!-- FRAME EMBEDDED INTENSIF GOOGLE FORM -->
             <div id="frameUjian" class="hidden fixed inset-0 z-50 bg-white">
                 <div class="bg-slate-900 p-3 flex justify-between items-center">
                     <div class="flex items-center gap-4">
@@ -262,6 +351,7 @@
                 </div>
                 <div id="iframeBox" class="h-full"></div>
             </div>
+
         </main>
     </div>
 </div>
@@ -269,9 +359,10 @@
 <div id="cam-container"><video id="cam-video" autoplay playsinline muted></video></div>
 <div id="printArea" class="hidden"></div>
 
+<!-- INTEGRASI SCRIPT ENGINE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, push, onValue, remove, get, update, set, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, push, onValue, remove, get, update, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyA4_3IPW8BAWmBBSwYei4A7KE1AsLP9C-8",
@@ -288,53 +379,47 @@ const db = getDatabase(app);
 let examInterval;
 let pendingExam = null;
 let currentFolderFoto = "";
-let isExamRunning = false; // Flag status ujian
-let currentUserData = null; // Menyimpan data user yang login
-
-// Ambil memori "Nomor Ruang / Meja" yang tersimpan di Chromebook ini secara lokal
+let isExamRunning = false;
+let currentUserData = null; 
 let nomorRuang = localStorage.getItem("nomor_ruang_ujian");
 let urlSekarang = window.location.href;
 
 if (!urlSekarang.includes("?")) {
     if (!nomorRuang) {
-        nomorRuang = prompt("Masukkan Nomor Meja / Nomor Chromebook ini (Contoh: 1, 2, 3):");
-        if (nomorRuang) {
-            localStorage.setItem("nomor_ruang_ujian", nomorRuang);
-        } else {
-            nomorRuang = "default";
-        }
+        nomorRuang = prompt("Masukkan Nomor Meja / Nomor Chromebook ini:");
+        if (nomorRuang) { localStorage.setItem("nomor_ruang_ujian", nomorRuang); } 
+        else { nomorRuang = "default"; }
     }
     window.location.href = urlSekarang + "?" + nomorRuang;
 } else {
     nomorRuang = urlSekarang.split("?")[1] || "default";
 }
 
-// --- FITUR KEAMANAN FULLSCREEN & DETEKSI ---
+window.showTab = function(tabId) {
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+    document.getElementById(tabId).classList.remove('hidden');
+    document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+    
+    const elem = document.querySelector(`[onclick="showTab('${tabId}')"]`);
+    if(elem) elem.classList.add('active');
+}
 
 function mntFull() {
     const elem = document.documentElement;
     if (elem.requestFullscreen) { elem.requestFullscreen(); }
-    else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); }
-    else if (elem.msRequestFullscreen) { elem.msRequestFullscreen(); }
 }
 
-// Deteksi jika siswa meninggalkan tab atau meminimalkan browser
 document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === 'hidden' && isExamRunning) {
-        catatPelanggaran("MENINGGALKAN HALAMAN UJIAN (PINDAH TAB/APP)");
-    }
+    if (document.visibilityState === 'hidden' && isExamRunning) { catatPelanggaran("PINDAH TAB/APLIKASI"); }
 });
 
 window.addEventListener("blur", () => {
-    if (isExamRunning) {
-        catatPelanggaran("MENCOBA KELUAR DARI JENDELA UJIAN (ALT+TAB/KLIK LUAR)");
-    }
+    if (isExamRunning) { catatPelanggaran("ALT+TAB / KLIK LUAR JENDELA"); }
 });
 
 async function catatPelanggaran(jenis) {
     if(!currentUserData) return;
-    const logRef = ref(db, "log_pelanggaran");
-    await push(logRef, {
+    push(ref(db, "log_pelanggaran"), {
         nama: currentUserData.nama,
         noPeserta: currentUserData.noPeserta,
         lembaga: currentUserData.lembaga,
@@ -343,46 +428,52 @@ async function catatPelanggaran(jenis) {
         pelanggaran: jenis,
         waktu: new Date().toLocaleString('id-ID')
     });
-    alert("PERINGATAN: Pelanggaran terdeteksi! Tindakan Anda dicatat oleh sistem Admin.");
+    alert("PERINGATAN: Tindakan mencurigakan terdeteksi dan dilaporkan!");
 }
-
-// --- AKHIR FITUR KEAMANAN ---
-
-window.showTab = (tabId) => {
-    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
-    document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
-    document.getElementById(tabId).classList.remove('hidden');
-    document.getElementById('btn-' + tabId).classList.add('active');
-    
-    if(tabId === 'tab-biodata') { loadLogPelanggaran(); }
-};
 
 onValue(ref(db, "config/folderFoto"), snap => {
     currentFolderFoto = snap.val() || "";
-    document.getElementById("config_folder_foto").value = currentFolderFoto;
+    const el = document.getElementById("config_folder_foto");
+    if(el) el.value = currentFolderFoto;
 });
 
 window.saveConfig = () => {
-    const link = document.getElementById("config_folder_foto").value.trim();
-    set(ref(db, "config/folderFoto"), link);
-    alert("Konfigurasi Folder Berhasil Disimpan!");
+    set(ref(db, "config/folderFoto"), document.getElementById("config_folder_foto").value.trim());
+    alert("Konfigurasi Server Foto Diperbarui Terpusat!");
 };
 
 window.prosesLogin = async function() {
     const no = document.getElementById("l_no").value.trim().toUpperCase();
     const ps = document.getElementById("l_pass").value;
+    
     if(no === "AMADEO" && ps === "RPGO123") { 
-        currentUserData = {nama: "ADMIN UTAMA", role: "admin"};
-        renderUI("WENDELINUS CHRISTO SNAE, SE", "ADMIN UTAMA", "admin"); 
+        currentUserData = { nama: "WENDELINUS C. SNAE, SE", role: "super_admin", lembaga: "PUSAT KONTROL" };
+        renderUI("WENDELINUS CHRISTO SNAE, SE", "SUPER MASTER ADMIN", "super_admin"); 
         return; 
     }
-    const snap = await get(ref(db, "siswa_cbt"));
-    let found = null;
-    Object.values(snap.val() || {}).forEach(s => { if(s.noPeserta.toUpperCase() === no && s.password === ps) found = s; });
-    if(found) { 
-        currentUserData = found;
-        renderUI(found.nama, found.lembaga, "siswa"); 
-    } else { alert("Akses Ditolak!"); }
+
+    const snapProktor = await get(ref(db, "proktor_cbt"));
+    let foundProktor = null;
+    Object.entries(snapProktor.val() || {}).forEach(([key, p]) => {
+        if(p.username.toUpperCase() === no && p.password === ps) { foundProktor = p; }
+    });
+
+    if(foundProktor) {
+        currentUserData = { nama: foundProktor.username, role: "proktor", lembaga: foundProktor.lembaga };
+        renderUI(foundProktor.username, "PROKTOR - " + (foundProktor.textLembaga || foundProktor.lembaga), "proktor");
+        return;
+    }
+    
+    const snapSiswa = await get(ref(db, "siswa_cbt"));
+    let foundSiswa = null;
+    Object.values(snapSiswa.val() || {}).forEach(s => { if(s.noPeserta.toUpperCase() === no && s.password === ps) foundSiswa = s; });
+    
+    if(foundSiswa) { 
+        currentUserData = foundSiswa; currentUserData.role = "siswa";
+        renderUI(foundSiswa.nama, foundSiswa.lembaga, "siswa"); 
+    } else { 
+        alert("Otoritas akun tidak valid!"); 
+    }
 };
 
 function renderUI(nama, lembaga, role) {
@@ -390,54 +481,156 @@ function renderUI(nama, lembaga, role) {
     document.getElementById("mainDashboard").classList.remove("hidden");
     document.getElementById("userNama").innerText = nama;
     document.getElementById("userLembaga").innerText = lembaga;
-    if(role === "admin") { 
-        document.getElementById("adminSection").classList.remove("hidden"); 
-        document.getElementById("sidebarAdmin").classList.remove("hidden");
-        loadAdminData(); 
-    } else { 
-        document.getElementById("siswaSection").classList.remove("hidden"); 
-        loadSiswaData(lembaga); 
+    
+    if(role === "super_admin") {
+        document.getElementById("menu-sa-dashboard").classList.remove("hidden");
+        document.getElementById("menu-sa-proktor").classList.remove("hidden");
+        document.getElementById("menu-sa-kesiapan").classList.remove("hidden");
+        document.getElementById("menu-sa-monitoring").classList.remove("hidden");
+        document.getElementById("menu-sa-foto").classList.remove("hidden");
+        showTab('tab-sa-dashboard');
+        initSuperAdminEngine();
+    } else if(role === "proktor") {
+        document.getElementById("menu-pr-biodata").classList.remove("hidden");
+        document.getElementById("menu-pr-ujian").classList.remove("hidden");
+        document.getElementById("menu-pr-monitoring").classList.remove("hidden");
+        document.getElementById("menu-pr-pengaturan").classList.remove("hidden");
+        showTab('tab-pr-biodata');
+        initProktorEngine();
+    } else {
+        document.getElementById("siswaSection").classList.remove("hidden");
+        document.getElementById("sidebarMenu").classList.add("hidden");
+        loadSiswaData(lembaga);
     }
 }
 
-window.addSiswa = () => {
-    const data = {
-        lembaga: document.getElementById("s_lembaga").value,
-        noPeserta: document.getElementById("s_no").value.trim(),
-        nama: document.getElementById("s_nama").value.trim(),
-        password: document.getElementById("s_pass").value.trim(),
-        foto: document.getElementById("s_foto").value.trim() || ""
-    };
-    if(!data.noPeserta || !data.nama) return alert("Isi lengkap!");
-    push(ref(db, "siswa_cbt"), data); alert("Siswa Berhasil Ditambahkan!");
-    ["s_no", "s_nama", "s_pass", "s_foto"].forEach(id => document.getElementById(id).value = "");
+function initSuperAdminEngine() {
+    onValue(ref(db, "proktor_cbt"), snap => {
+        const count = snap.exists() ? Object.keys(snap.val()).length : 0;
+        document.getElementById("widget-total-proktor").innerText = count;
+        let h = "";
+        Object.entries(snap.val() || {}).forEach(([key, p]) => {
+            h += `<tr class="border-b">
+                <td class="p-3 font-bold text-slate-700">${p.username}</td>
+                <td class="p-3 font-mono">${p.password}</td>
+                <td class="p-3 text-indigo-600 font-bold">TINGKAT ${p.lembaga}</td>
+                <td class="p-3"><button onclick="delProktor('${key}')" class="text-red-500 font-bold">Hapus</button></td>
+            </tr>`;
+        });
+        document.getElementById("listProktorTable").innerHTML = h;
+    });
+
+    onValue(ref(db, "siswa_cbt"), snap => {
+        document.getElementById("widget-total-siswa").innerText = snap.exists() ? Object.keys(snap.val()).length : 0;
+    });
+
+    onValue(ref(db, "monitoring"), snap => {
+        let liveCount = 0;
+        if(snap.exists()) {
+            Object.values(snap.val()).forEach(m => { if(m.status === "SEDANG MENGERJAKAN") liveCount++; });
+        }
+        document.getElementById("widget-siswa-aktif").innerText = liveCount;
+        loadMonitoringDataSA();
+    });
+
+    onValue(ref(db, "administrasi_sekolah"), snap => {
+        const data = snap.val() || {};
+        const listLembaga = ["SD", "SMP", "SMA"];
+        let h = "";
+        listLembaga.forEach(lemb => {
+            const conf = data[lemb];
+            if(conf && conf.namaSekolah && conf.kepalaSekolah && conf.pengawas) {
+                let namaPengawasTabel = conf.pengawas.replace(/\n/g, " | ");
+                h += `<tr class="border-b bg-white hover:bg-slate-50">
+                    <td class="p-3 font-bold text-slate-700">TINGKAT ${lemb}</td>
+                    <td class="p-3 font-medium text-slate-600">${conf.namaSekolah}</td>
+                    <td class="p-3 text-slate-500">${conf.kepalaSekolah}</td>
+                    <td class="p-3 text-slate-500 max-w-xs truncate" title="${conf.pengawas}">${namaPengawasTabel}</td>
+                    <td class="p-3"><span class="bg-emerald-100 text-emerald-600 px-3 py-1 rounded-full text-[10px] font-bold">🟢 PROFILE LENGKAP</span></td>
+                </tr>`;
+            } else {
+                h += `<tr class="border-b bg-white hover:bg-slate-50">
+                    <td class="p-3 font-bold text-red-500">TINGKAT ${lemb}</td>
+                    <td class="p-3 text-slate-400 italic">Belum setting nama resmi</td>
+                    <td class="p-3 text-slate-400 italic">-</td>
+                    <td class="p-3 text-slate-400 italic">-</td>
+                    <td class="p-3"><span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-[10px] font-bold">🔴 BELUM LENGKAP</span></td>
+                </tr>`;
+            }
+        });
+        document.getElementById("tableKesiapanSekolah").innerHTML = h;
+    });
+}
+
+window.loadMonitoringDataSA = () => {
+    const filter = document.getElementById("filterSekolahMonitoring").value;
+    get(ref(db, "monitoring")).then(snap => {
+        let h = "";
+        Object.values(snap.val() || {}).forEach(m => {
+            if(filter !== "SEMUA" && m.lembaga !== filter) return;
+            const isSelesai = m.status === "SELESAI";
+            h += `<tr class="border-b">
+                <td class="p-3 font-bold text-slate-700">${m.nama}</td>
+                <td class="p-3 text-blue-600 font-bold">${m.lembaga}</td>
+                <td class="p-3 font-mono font-bold text-slate-500">Meja ${m.meja}</td>
+                <td class="p-3 text-slate-600">${m.mapel}</td>
+                <td class="p-3 font-mono text-blue-600">${m.mulai}</td>
+                <td class="p-3 font-mono text-emerald-600">${m.selesai}</td>
+                <td class="p-3"><span class="px-2 py-1 rounded-full font-bold text-[9px] ${isSelesai ? 'bg-emerald-100 text-emerald-600' : 'bg-orange-100 text-orange-600 animate-pulse'}">${m.status}</span></td>
+            </tr>`;
+        });
+        document.getElementById("monitoringTableSA").innerHTML = h || "<tr><td colspan='7' class='p-4 text-center text-slate-400'>Tidak ditemukan data ujian aktif.</td></tr>";
+    });
 };
 
-function loadAdminData() {
+window.addProktor = () => {
+    const user = document.getElementById("p_user").value.trim();
+    const pass = document.getElementById("p_pass").value.trim();
+    const lemb = document.getElementById("p_lembaga").value;
+    if(!user || !pass) return alert("Form wajib terisi!");
+    push(ref(db, "proktor_cbt"), { username: user, password: pass, lembaga: lemb });
+    document.getElementById("p_user").value = ""; document.getElementById("p_pass").value = "";
+    alert("Akun Proktor Tersimpan!");
+};
+window.delProktor = (k) => confirm("Hapus akun proktor?") && remove(ref(db, `proktor_cbt/${k}`));
+
+function initProktorEngine() {
+    const lemb = currentUserData.lembaga;
+    get(ref(db, "administrasi_sekolah/" + lemb)).then(snap => {
+        if(snap.exists()){
+            const d = snap.val();
+            document.getElementById("adm_nama_sekolah").value = d.namaSekolah || "";
+            document.getElementById("adm_lokasi").value = d.lokasi || "";
+            document.getElementById("adm_alamat").value = d.alamat || "";
+            document.getElementById("adm_kepsek").value = d.kepalaSekolah || "";
+            document.getElementById("adm_pengawas").value = d.pengawas || "";
+            document.getElementById("adm_proktor").value = d.proktor || "";
+        }
+    });
+
     onValue(ref(db, "siswa_cbt"), snap => {
-        let h = ""; 
+        let h = "";
         Object.entries(snap.val() || {}).forEach(([key, s]) => {
+            if(s.lembaga !== lemb) return;
             h += `<tr class="border-b">
                 <td class="p-3 font-bold text-blue-600">${s.lembaga}</td>
                 <td class="p-3 font-mono">${s.noPeserta}</td>
                 <td class="p-3 uppercase">${s.nama}</td>
                 <td class="p-3">${s.password}</td>
-                <td class="p-3 text-[10px]">${s.foto ? '✅' : 'Auto'}</td>
-                <td class="p-3"><button onclick="delSiswa('${key}')" class="text-red-500 font-bold hover:underline">Hapus</button></td>
+                <td class="p-3">${s.foto ? '✅ Link' : '📸 Auto'}</td>
+                <td class="p-3"><button onclick="delSiswa('${key}')" class="text-red-500 font-bold">Hapus</button></td>
             </tr>`;
         });
         document.getElementById("listSiswaTable").innerHTML = h;
     });
-    
+
     onValue(ref(db, "soal_cbt"), snap => {
         let h = "";
         Object.entries(snap.val() || {}).forEach(([key, e]) => {
+            if(e.lembaga !== lemb) return;
             const isAktif = e.status === 'aktif';
             h += `<div class="p-4 bg-white border rounded-2xl shadow-sm border-l-4 ${isAktif ? 'border-green-500' : 'border-slate-300'}">
-                <div class="flex justify-between">
-                   <p class="text-[10px] font-bold text-slate-400 uppercase">${e.lembaga} - KELAS ${e.kelas || ''}</p>
-                   <span class="text-[9px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold">TKN: ${e.token || '-'}</span>
-                </div>
+                <div class="flex justify-between"><p class="text-[10px] font-bold text-slate-400 uppercase">KELAS ${e.kelas}</p><span class="text-[9px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold">TKN: ${e.token}</span></div>
                 <p class="font-bold text-sm mt-1">${e.mapel}</p>
                 <div class="flex gap-2 mt-4">
                     <button onclick="toggleExam('${key}', '${e.status}')" class="text-[10px] px-3 py-1 rounded-full font-bold ${isAktif ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-500'}">${isAktif ? 'AKTIF' : 'NONAKTIF'}</button>
@@ -449,109 +642,67 @@ function loadAdminData() {
         document.getElementById("adminExamList").innerHTML = h;
     });
 
-    loadMonitoringData();
-}
-
-function loadLogPelanggaran() {
-    onValue(ref(db, "log_pelanggaran"), snap => {
-        if(!snap.exists()) return;
-        console.table(snap.val());
-    });
-}
-
-function loadMonitoringData() {
-    const monitorRef = ref(db, "monitoring");
-    onValue(monitorRef, snap => {
+    onValue(ref(db, "monitoring"), snap => {
         let h = "";
-        if(snap.exists()) {
-            Object.values(snap.val()).forEach(m => {
-                const isSelesai = m.status === "SELESAI";
-                h += `<tr class="border-b hover:bg-slate-50 transition">
-                    <td class="p-3 font-bold text-slate-700">${m.nama}</td>
-                    <td class="p-3 font-mono font-bold text-blue-600">Meja ${m.meja || '-'}</td>
-                    <td class="p-3 text-slate-600">${m.mapel}</td>
-                    <td class="p-3 text-blue-600 font-mono font-bold">${m.mulai}</td>
-                    <td class="p-3 text-emerald-600 font-mono font-bold">${m.selesai}</td>
-                    <td class="p-3">
-                        <span class="px-2 py-1 rounded-full font-bold text-[9px] ${isSelesai ? 'bg-emerald-100 text-emerald-600' : 'bg-orange-100 text-orange-600 animate-pulse'}">
-                            ${m.status}
-                        </span>
-                    </td>
-                </tr>`;
-            });
-        }
-        const container = document.getElementById("monitoringTable");
-        if(container) container.innerHTML = h || "<tr><td colspan='6' class='p-4 text-center text-slate-400'>Belum ada aktivitas hari ini</td></tr>";
+        Object.values(snap.val() || {}).forEach(m => {
+            if(m.lembaga !== lemb) return;
+            const isSelesai = m.status === "SELESAI";
+            h += `<tr class="border-b">
+                <td class="p-3 font-bold text-slate-700">${m.nama}</td>
+                <td class="p-3 font-mono text-slate-500">Meja ${m.meja}</td>
+                <td class="p-3">${m.mapel}</td>
+                <td class="p-3 font-mono text-blue-600">${m.mulai}</td>
+                <td class="p-3 font-mono text-emerald-600">${m.selesai}</td>
+                <td class="p-3"><span class="px-2 py-1 rounded-full font-bold text-[9px] ${isSelesai ? 'bg-emerald-100 text-emerald-600' : 'bg-orange-100 text-orange-600 animate-pulse'}">${m.status}</span></td>
+            </tr>`;
+        });
+        document.getElementById("monitoringTableProktor").innerHTML = h || "<tr><td colspan='6' class='p-4 text-center text-slate-400'>Belum ada siswa memulai ujian.</td></tr>";
     });
 }
 
-window.printBA_Mapel = async (mapel, lembaga) => {
-    let namaSekolah = lembaga === "SMA" ? "SMA REFORMASI PLUS GERANDI OELEON" : (lembaga === "SMP" ? "SMP REFORMASI PLUS GERANDI OELEON" : "REFORMASI PLUS GERANDI OELEON");
-    const proktor = prompt("Masukkan Nama Proktor:", "WENDELINUS C. SNAE, SE");
-    if (proktor === null) return;
-    const pengawas = prompt("Masukkan Nama Pengawas:", "............................");
-    if (pengawas === null) return;
-    const penanggungJawab = prompt("Masukkan Nama Penanggung Jawab:", "YASINTHA TUALAKA, S.Pd");
-    if (penanggungJawab === null) return;
-
-    const snapSiswa = await get(ref(db, "siswa_cbt"));
-    const dataSiswa = Object.values(snapSiswa.val() || {}).filter(s => s.lembaga === lembaga);
-    
-    let html = `
-    <div style="padding: 40px; font-family: 'Times New Roman', Times, serif; background: white; color: black; line-height: 1.5;">
-        <div style="display: flex; align-items: center; border-bottom: 4px double #000; padding-bottom: 10px; margin-bottom: 20px;">
-            <img src="https://raw.githubusercontent.com/wendelinus223-gif/admin-rpgo/main/LOGO.jpg" style="width: 80px; height: 80px; margin-right: 20px;">
-            <div style="text-align: center; flex-grow: 1;">
-                <h2 style="margin: 0; font-size: 16px; text-transform: uppercase;">Yayasan Pendidikan Reformasi Noelbaki</h2>
-                <h1 style="margin: 0; font-size: 18px; text-transform: uppercase;">${namaSekolah}</h1>
-                <p style="margin: 0; font-size: 11px; font-style: italic;">Alamat: Jln. Kayu Putih, No. 1, Desa Oeleon, Kec. Fautmolo, Kab. TTS</p>
-            </div>
-        </div>
-        <center>
-            <h3 style="margin: 10px 0 5px 0; text-decoration: underline; text-transform: uppercase; font-size: 16px;">BERITA ACARA PELAKSANAAN UJIAN SEMESTER</h3>
-            <p style="margin: 0 0 20px 0; font-weight: bold;">NOMOR: ...... / CBT-RPGO / V / 2026</p>
-        </center>
-        <p style="text-align: justify; font-size: 14px;">Pada hari ini <b>....................</b> Tanggal <b>.......</b> Bulan <b>....................</b> Tahun <b>2026</b>, telah dilaksanakan Ujian berbasis Komputer (CBT) semester II Tahun Pelajaran 2025/2026, dengan rincian sebagai berikut:</p>
-        <table style="width: 100%; margin: 15px 20px; font-size: 14px;">
-            <tr><td width="220">Mata Pelajaran</td><td>: <b>${mapel}</b></td></tr>
-            <tr><td>Satuan Pendidikan</td><td>: ${namaSekolah}</td></tr>
-            <tr><td>Jumlah Peserta Seharusnya</td><td>: ${dataSiswa.length} Orang</td></tr>
-            <tr><td>Jumlah Peserta Hadir</td><td>: ........... Orang</td></tr>
-            <tr><td>Jumlah Peserta Tidak Hadir</td><td>: ........... Orang</td></tr>
-        </table>
-        <p style="font-size: 14px;">Catatan selama pelaksanaan ujian:</p>
-        <div style="border: 1px solid #000; min-height: 60px; padding: 10px; margin-bottom: 20px; font-style: italic; font-size: 12px; color: #555;">(Tuliskan kejadian penting jika ada)</div>
-        <p style="text-align: right; margin-right: 20px; font-size: 14px;">Oeleon, .................... 2026</p>
-        <div style="display: flex; justify-content: space-between; margin-top: 10px; text-align: center; font-size: 14px;">
-            <div style="width: 30%;">Pengawas,<br><br><br><br><b>( ${pengawas} )</b><br>NIP. ....................</div>
-            <div style="width: 30%;">Proktor,<br><br><br><br><b>( ${proktor} )</b><br>NIP. ....................</div>
-        </div>
-        <div style="margin-top: 30px; text-align: center; font-size: 14px;">Mengetahui,<br>Penanggung Jawab / Kepala Sekolah<br><br><br><br><br><b style="text-decoration: underline;">${penanggungJawab}</b><br>NIP. ....................</div>
-    </div>`;
-
-    const printArea = document.getElementById("printArea");
-    printArea.innerHTML = html;
-    printArea.classList.remove("hidden");
-    setTimeout(() => { window.print(); printArea.classList.add("hidden"); }, 500);
+window.saveAdministrasi = () => {
+    const dataAdmin = {
+        namaSekolah: document.getElementById("adm_nama_sekolah").value.trim(),
+        lokasi: document.getElementById("adm_lokasi").value.trim(),
+        alamat: document.getElementById("adm_alamat").value.trim(),
+        kepalaSekolah: document.getElementById("adm_kepsek").value.trim(),
+        pengawas: document.getElementById("adm_pengawas").value.trim(),
+        proktor: document.getElementById("adm_proktor").value.trim()
+    };
+    set(ref(db, "administrasi_sekolah/" + currentUserData.lembaga), dataAdmin).then(() => alert("Profil cetak sekolah disinkronkan!"));
 };
 
-window.delSiswa = (k) => confirm("Hapus?") && remove(ref(db, `siswa_cbt/${k}`));
-window.delExam = (k) => confirm("Hapus?") && remove(ref(db, `soal_cbt/${k}`));
-window.toggleExam = (key, cur) => update(ref(db, `soal_cbt/${key}`), { status: cur === 'aktif' ? 'nonaktif' : 'aktif' });
+window.addSiswa = () => {
+    const data = {
+        lembaga: currentUserData.lembaga,
+        noPeserta: document.getElementById("s_no").value.trim(),
+        nama: document.getElementById("s_nama").value.trim(),
+        password: document.getElementById("s_pass").value.trim(),
+        foto: document.getElementById("s_foto").value.trim() || ""
+    };
+    if(!data.noPeserta || !data.nama) return alert("Lengkapi!");
+    push(ref(db, "siswa_cbt"), data);
+    ["s_no", "s_nama", "s_pass", "s_foto"].forEach(id => document.getElementById(id).value = "");
+    alert("Siswa didaftarkan!");
+};
 
 window.saveExam = () => {
     const data = {
-        lembaga: document.getElementById("exam_lembaga").value,
+        lembaga: currentUserData.lembaga,
         kelas: document.getElementById("exam_kelas").value.trim(),
         mapel: document.getElementById("exam_mapel").value.trim(),
         link: document.getElementById("exam_link").value.trim(),
         token: document.getElementById("exam_token").value.trim().toUpperCase(),
         status: "nonaktif"
     };
-    if(!data.mapel || !data.link || !data.token) return alert("Lengkapi data!");
-    push(ref(db, "soal_cbt"), data); alert("Ujian Diterbitkan!");
+    push(ref(db, "soal_cbt"), data);
     ["exam_kelas", "exam_mapel", "exam_link", "exam_token"].forEach(id => document.getElementById(id).value = "");
+    alert("Soal diterbitkan!");
 };
+
+window.delSiswa = (k) => confirm("Hapus?") && remove(ref(db, `siswa_cbt/${k}`));
+window.delExam = (k) => confirm("Hapus?") && remove(ref(db, `soal_cbt/${k}`));
+window.toggleExam = (key, cur) => update(ref(db, `soal_cbt/${key}`), { status: cur === 'aktif' ? 'nonaktif' : 'aktif' });
 
 function loadSiswaData(lembSiswa) {
     onValue(ref(db, "soal_cbt"), snap => {
@@ -559,13 +710,13 @@ function loadSiswaData(lembSiswa) {
         Object.values(snap.val() || {}).forEach(e => {
             if(e.status === 'aktif' && e.lembaga === lembSiswa) {
                 h += `<div onclick="siapkanUjian('${e.link}', '${e.mapel}', '${e.token}')" class="glass p-6 cursor-pointer border-l-4 border-blue-600 hover:bg-blue-50 transition">
-                    <p class="text-[10px] font-bold text-blue-500 uppercase">${e.lembaga} - KELAS ${e.kelas || ''}</p>
+                    <p class="text-[10px] font-bold text-blue-500 uppercase">${e.lembaga} - KELAS ${e.kelas}</p>
                     <h4 class="text-xl font-bold">${e.mapel}</h4>
-                    <p class="text-xs text-slate-400 mt-1">Masukkan token untuk memulai</p>
+                    <p class="text-xs text-slate-400 mt-1">Gunakan token proktor</p>
                 </div>`;
             }
         });
-        document.getElementById("gridUjianSiswa").innerHTML = h || "<p class='p-8 text-slate-400'>Belum ada ujian aktif.</p>";
+        document.getElementById("gridUjianSiswa").innerHTML = h || "<p class='p-8 text-slate-400 text-center col-span-full'>Tidak ada jadwal ujian aktif.</p>";
     });
 }
 
@@ -576,18 +727,12 @@ window.siapkanUjian = (url, mapel, token) => {
     document.getElementById("modalToken").classList.remove("hidden");
 };
 
-window.batalBukaUjian = () => {
-    document.getElementById("modalToken").classList.add("hidden");
-    pendingExam = null;
-};
+window.batalBukaUjian = () => { document.getElementById("modalToken").classList.add("hidden"); pendingExam = null; };
 
 window.verifikasiToken = () => {
-    const input = document.getElementById("inputTokenSiswa").value.trim().toUpperCase();
-    if(input === pendingExam.token) {
-        document.getElementById("modalToken").classList.add("hidden");
-        mntFull(); 
-        jalankanUjian(pendingExam.url, pendingExam.mapel);
-    } else { alert("TOKEN SALAH!"); }
+    if(document.getElementById("inputTokenSiswa").value.trim().toUpperCase() === pendingExam.token) {
+        document.getElementById("modalToken").classList.add("hidden"); mntFull(); jalankanUjian(pendingExam.url, pendingExam.mapel);
+    } else { alert("Token Ruang Salah!"); }
 };
 
 async function jalankanUjian(url, mapel) {
@@ -598,119 +743,90 @@ async function jalankanUjian(url, mapel) {
         document.getElementById("mapelAktif").innerText = mapel;
         document.getElementById("frameUjian").classList.remove("hidden");
         
-        // --- TRIK ISOLASI ANTI SINKRONISASI MASSAL ---
-        // Bersihkan link jika ada spasi bawaan
         let cleanUrl = url.trim();
-        // Cek format, jika link biasa ubah ujungnya agar terdeteksi sebagai form isian bersih
-        if (cleanUrl.includes("/viewform")) {
-            cleanUrl = cleanUrl.split("/viewform")[0] + "/viewform";
-        }
-        
-        // Gabungkan parameter embedded, nomor meja, dan bilangan acak (Math.random)
+        if (cleanUrl.includes("/viewform")) { cleanUrl = cleanUrl.split("/viewform")[0] + "/viewform"; }
         let linkIsolasi = cleanUrl + "?embedded=true&entry.0=" + nomorRuang + "&rand=" + Math.random();
         
-        // Muat Google Form yang sudah terisolasi ke dalam iframe
         document.getElementById("iframeBox").innerHTML = `<iframe src="${linkIsolasi}" class="w-full h-full border-0"></iframe>`;
-        
         isExamRunning = true; 
 
-        if(currentUserData) {
-            set(ref(db, `monitoring/${currentUserData.noPeserta}`), {
-                nama: currentUserData.nama,
-                meja: nomorRuang, // Input nomor meja otomatis ke Firebase Dashboard Guru
-                mapel: mapel,
-                mulai: new Date().toLocaleTimeString('id-ID'),
-                selesai: "-",
-                status: "SEDANG MENGERJAKAN"
-            });
-        }
+        set(ref(db, `monitoring/${currentUserData.noPeserta}`), {
+            nama: currentUserData.nama, lembaga: currentUserData.lembaga, meja: nomorRuang, mapel: mapel,
+            mulai: new Date().toLocaleTimeString('id-ID'), selesai: "-", status: "SEDANG MENGERJAKAN"
+        });
 
-        let totalDetik = 105 * 60; 
-        clearInterval(examInterval);
+        let totalDetik = 105 * 60; clearInterval(examInterval);
         examInterval = setInterval(() => {
             totalDetik--;
             let jam = Math.floor(totalDetik / 3600), menit = Math.floor((totalDetik % 3600) / 60), detik = totalDetik % 60;
             document.getElementById("timerDisplay").innerText = `${String(jam).padStart(2,'0')}:${String(menit).padStart(2,'0')}:${String(detik).padStart(2,'0')}`;
-            if(totalDetik <= 0) { clearInterval(examInterval); forceTutupUjian(); }
+            if(totalDetik <= 0) forceTutupUjian();
         }, 1000);
-    } catch (e) { alert("Wajib izin kamera!"); }
+    } catch (e) { alert("Sistem mendeteksi pemblokiran kamera pengawas!"); }
 }
 
-window.tutupUjian = () => { 
-    if(confirm("Apakah Anda yakin telah selesai? Keluar akan mengakhiri sesi ujian ini.")) {
-        forceTutupUjian(); 
-    }
-};
+window.tutupUjian = () => confirm("Akhiri sesi pengerjaan?") && forceTutupUjian();
 
 function forceTutupUjian() {
-    if(currentUserData && isExamRunning) {
-        update(ref(db, `monitoring/${currentUserData.noPeserta}`), {
-            selesai: new Date().toLocaleTimeString('id-ID'),
-            status: "SELESAI"
-        });
-    }
-
-    isExamRunning = false;
-    
-    if (document.fullscreenElement || document.webkitFullscreenElement) {
-        if (document.exitFullscreen) { 
-            document.exitFullscreen().catch(() => {}); 
-        } else if (document.webkitExitFullscreen) { 
-            document.webkitExitFullscreen().catch(() => {}); 
-        }
-    }
-
-    clearInterval(examInterval);
-    
-    const v = document.getElementById('cam-video');
-    if(v.srcObject) v.srcObject.getTracks().forEach(t => t.stop());
-    
+    if(isExamRunning) { update(ref(db, `monitoring/${currentUserData.noPeserta}`), { selesai: new Date().toLocaleTimeString('id-ID'), status: "SELESAI" }); }
+    isExamRunning = false; clearInterval(examInterval);
+    const v = document.getElementById('cam-video'); if(v.srcObject) v.srcObject.getTracks().forEach(t => t.stop());
     document.getElementById('cam-container').style.display = 'none';
-    document.getElementById("frameUjian").classList.add("hidden");
-    document.getElementById("iframeBox").innerHTML = "";
+    document.getElementById("frameUjian").classList.add("hidden"); document.getElementById("iframeBox").innerHTML = "";
 }
 
-window.printKartu = async () => {
-    const snap = await get(ref(db, "siswa_cbt"));
-    let html = "";
-    Object.values(snap.val() || {}).forEach(s => {
-        let linkFotoFinal = s.foto;
-        if(!linkFotoFinal && currentFolderFoto) {
-            let base = currentFolderFoto.trim();
-            let cleanBase = base.endsWith('/') ? base : base + '/';
-            linkFotoFinal = cleanBase + s.noPeserta + ".jpeg";
-        }
-        html += `<div class="card-print" style="border: 2px solid #000; padding: 10px; width: 48%; float: left; margin: 1%; height: 280px; box-sizing: border-box; position: relative; font-family: Arial; background: #fff; margin-bottom: 20px;">
-            <div style="display: flex; align-items: center; justify-content: center; border-bottom: 4px double #000; padding-bottom: 5px; margin-bottom: 10px;">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/9/9c/Logo_Tut_Wuri_Handayani.png" style="width: 45px; position: absolute; left: 10px; top: 10px;">
-                <div style="text-align: center; margin-left: 40px;">
-                    <div style="font-size: 12px; font-weight: bold;">KARTU PESERTA PSAJ</div>
-                    <div style="font-size: 11px; font-weight: bold;">TAHUN PELAJARAN 2025/2026</div>
-                </div>
+window.printBA_Mapel = async (mapel, lembaga) => {
+    let d = {}; const snap = await get(ref(db, "administrasi_sekolah/" + lembaga)); if(snap.exists()) d = snap.val();
+    const snapS = await get(ref(db, "siswa_cbt")); const dataSiswa = Object.values(snapS.val() || {}).filter(s => s.lembaga === lembaga);
+    let pengawasFormatCetak = d.pengawas ? d.pengawas.replace(/\n/g, "<br>") : "......................";
+
+    let html = `<div style="padding:40px; font-family:'Times New Roman'; background:white; color:black;">
+        <div style="display:flex; align-items:center; border-bottom:4px double #000; padding-bottom:10px; margin-bottom:20px;">
+            <img src="https://i.ibb.co.com/mFgXrSxR/White-and-Blue-Illustrative-Class-Logo.jpg" style="width:70px; height:70px; border-radius:50%; margin-right:20px; border:1px solid #cbd5e1;">
+            <div style="text-align:center; flex-grow:1;">
+                <h2 style="margin:0; font-size:14px;">YAYASAN PENDIDIKAN REFORMASI NOELBAKI</h2>
+                <h1 style="margin:0; font-size:16px; font-weight:bold;">${d.namaSekolah || (lembaga + ' REFORMASI PLUS FAUTMOLO')}</h1>
+                <p style="margin:0; font-size:11px;">${d.alamat || 'Kecamatan Fautmolo, Kabupaten TTS'}</p>
             </div>
-            <table style="font-size: 10px; width: 100%; font-weight: bold;">
-                <tr><td width="35%">NO. PESERTA</td><td>: ${s.noPeserta}</td></tr>
-                <tr><td>NAMA</td><td style="text-transform: uppercase;">: ${s.nama}</td></tr>
-                <tr><td>LEMBAGA</td><td>: ${s.lembaga} RPG OELEON</td></tr>
-                <tr><td>PASSWORD</td><td>: ${s.password}</td></tr>
+        </div>
+        <center><h3 style="text-decoration:underline; font-size:15px; font-weight:bold; margin-top:10px;">BERITA ACARA PELAKSANAAN UJIAN CBT</h3></center>
+        <p style="font-size:13px; text-align:justify; margin-top:20px;">Pada hari ini telah diselenggarakan ujian online mata pelajaran <b>${mapel}</b> pada tingkat ${lembaga} dengan rincian total daftar peserta terverifikasi sistem sejumlah <b>${dataSiswa.length}</b> siswa.</p>
+        <div style="display:flex; justify-content:space-between; margin-top:80px; font-size:13px; text-align:left;">
+            <div style="width:40%;">Pengawas Ruang:<br><br><b style="line-height:1.6;">${pengawasFormatCetak}</b></div>
+            <div style="width:40%; text-align:center;">Proktor Pelaksana,<br><br><br><br><b>( ${d.proktor || '......................'} )</b></div>
+        </div>
+    </div>`;
+    document.getElementById("printArea").innerHTML = html; document.getElementById("printArea").classList.remove("hidden");
+    setTimeout(() => { window.print(); document.getElementById("printArea").classList.add("hidden"); }, 500);
+};
+
+window.printKartu = async () => {
+    const snap = await get(ref(db, "siswa_cbt")); const snapAdmin = await get(ref(db, "administrasi_sekolah"));
+    const listAdm = snapAdmin.val() || {}; let html = "";
+    Object.values(snap.val() || {}).forEach(s => {
+        if(s.lembaga !== currentUserData.lembaga) return;
+        let linkFotoFinal = s.foto; if(!linkFotoFinal && currentFolderFoto) linkFotoFinal = (currentFolderFoto.endsWith('/') ? currentFolderFoto : currentFolderFoto + '/') + s.noPeserta + ".jpeg";
+        const config = listAdm[s.lembaga] || {};
+        html += `<div class="card-print" style="border:2px solid #000; padding:10px; width:48%; float:left; margin:1%; height:260px; box-sizing:border-box; font-family:Arial; background:#fff; position:relative;">
+            <div style="display:flex; align-items:center; border-bottom:3px double #000; padding-bottom:5px; margin-bottom:10px;">
+                <img src="https://i.ibb.co.com/mFgXrSxR/White-and-Blue-Illustrative-Class-Logo.jpg" style="width:40px; height:40px; border-radius:50%; border:1px solid #cbd5e1;">
+                <div style="text-align:center; flex-grow:1; font-size:10px; font-weight:bold;">KARTU PESERTA CBT<br><span style="font-size:9px;">${config.namaSekolah || 'REFORMASI PLUS'}</span></div>
+            </div>
+            <table style="font-size:10px; width:100%; font-weight:bold; line-height:1.4;">
+                <tr><td width="35%">NO PESERTA</td><td>: ${s.noPeserta}</td></tr>
+                <tr><td>NAMA</td><td>: ${s.nama.toUpperCase()}</td></tr>
+                <tr><td>PASS SYSTEM</td><td>: ${s.password}</td></tr>
             </table>
-            <div style="margin-top: 15px; display: flex; justify-content: space-between;">
-                <div style="width: 75px; height: 95px; border: 1px solid #000; overflow: hidden; background: #fafafa; display: flex; align-items: center; justify-content: center;">
-                    <img src="${linkFotoFinal}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" style="width: 100%; height: 100%; object-fit: cover;">
-                    <div style="display:none; font-size: 8px; text-align: center; color: #999;">FOTO KOSONG<br>.jpeg</div>
-                </div>
-                <div style="text-align: center; width: 160px;">
-                    <div style="font-size: 9px; font-weight: bold;">OELEON, 21 MEI 2026</div>
-                    <div style="font-size: 9px; font-weight: bold; margin-bottom: 35px;">KEPALA SEKOLAH</div>
-                    <div style="font-size: 9px; font-weight: bold; text-decoration: underline;">YASINTHA TUALAKA, S.Pd</div>
+            <div style="display:flex; justify-content:space-between; margin-top:15px;">
+                <div style="width:65px; height:80px; border:1px solid #000;"><img src="${linkFotoFinal}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='https://via.placeholder.com/65x80?text=FOTO'"></div>
+                <div style="text-align:center; width:150px; font-size:8px; font-weight:bold;">
+                    ${config.lokasi || 'FAUTMOLO'}, ............ 2026<br>KEPALA SEKOLAH<br><br><br><br><span style="text-decoration:underline;">${config.kepalaSekolah || 'YASINTHA TUALAKA, S.Pd'}</span>
                 </div>
             </div>
         </div>`;
     });
-    const printArea = document.getElementById("printArea");
-    printArea.innerHTML = html; 
-    printArea.classList.remove("hidden");
-    setTimeout(() => { window.print(); printArea.classList.add("hidden"); }, 1000);
+    document.getElementById("printArea").innerHTML = html; document.getElementById("printArea").classList.remove("hidden");
+    setTimeout(() => { window.print(); document.getElementById("printArea").classList.add("hidden"); }, 500);
 };
 </script>
 </body>
