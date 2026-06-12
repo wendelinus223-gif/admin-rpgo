@@ -1,21 +1,20 @@
 {
-  "id": "rpgo-cbt-lintas-jenjang",
-  "short_name": "RPGO UJIAN",
-  "name": "RPGO - CBT UJIAN",
+  "name": "CBT MULTI_SEKOLAH FAUTMOLO",
+  "short_name": "CBT FAUTMOLO",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#2563eb",
+  "theme-color": "#2563eb",
   "icons": [
     {
-      "src": "LOGO.jpg",
+      "src": "https://i.ibb.co.com/mFgXrSxR/White-and-Blue-Illustrative-Class-Logo.jpg",
       "sizes": "192x192",
       "type": "image/jpeg"
     },
     {
-      "src": "LOGO.jpg",
+      "src": "https://i.ibb.co.com/mFgXrSxR/White-and-Blue-Illustrative-Class-Logo.jpg",
       "sizes": "512x512",
       "type": "image/jpeg"
     }
-  ],
-  "start_url": "./index.html",
-  "display": "standalone",
-  "theme_color": "#2563eb",
-  "background_color": "#ffffff"
+  ]
 }
